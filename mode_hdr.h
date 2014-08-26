@@ -206,7 +206,7 @@ mh_decl uint_16t bswap_16(uint_16t x) {
 
 
 #if !defined(bswap_32)
-#error "This should be compiled"
+//#error "This should not be compiled with OpenTag"
 mh_decl uint_32t bswap_32(uint_32t x) {
     return ((rotr32((x), 24) & 0x00ff00ff) | (rotr32((x), 8) & 0xff00ff00));
 }

@@ -335,7 +335,9 @@ ret_type eax_compute_tag(                   /* compute authentication tag   */
 
     /* complete OMAC* for ciphertext value  */
     p = UI8_PTR(ctx->pad_xvv);
-    if(i = ctx->txt_acnt &  BLK_ADR_MASK) {
+    i = ctx->txt_acnt &  BLK_ADR_MASK;
+    if (i) {
+    //if(i = ctx->txt_acnt &  BLK_ADR_MASK) {
         UI8_PTR(ctx->txt_cbc)[i] ^= 0x80;
         p += 16;
     }
@@ -400,9 +402,9 @@ ret_type eax_decrypt(                       /* authenticate & decrypt data  */
   */
 
 ret_type eax_encrypt_message(               /* encrypt an entire message    */
+            const unsigned char iv[],       /* the initialisation vector    */   
             unsigned char msg[],            /* the message buffer           */
-            unsigned long msg_len,          /* and its length in bytes      */
-            const unsigned char iv[],       /* the initialisation vector    */            
+            unsigned long msg_len,          /* and its length in bytes      */     
             eax_ctx ctx[1])                 /* the mode context             */
 {
     ///@note [JPN] Tag is always dealt-with as the data right after the message
@@ -416,9 +418,9 @@ ret_type eax_encrypt_message(               /* encrypt an entire message    */
 
 
 ret_type eax_decrypt_message(               /* decrypt an entire message    */
+            const unsigned char iv[],       /* the initialisation vector    */
             unsigned char msg[],            /* the message buffer           */
             unsigned long msg_len,          /* and its length in bytes      */
-            const unsigned char iv[],       /* the initialisation vector    */
             eax_ctx ctx[1])                 /* the mode context             */
 {   
     uint_8t     local_tag[4];
