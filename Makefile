@@ -1,4 +1,5 @@
-COMPILER=gcc
+#COMPILER=gcc
+COMPILER=arm-none-eabi-gcc
 
 INC = ./
 
@@ -13,8 +14,10 @@ TEST_O = _testmain.o
 OTEAXLIB_C = aes_modes_m2.c aescrypt.c aeskey.c aestab.c oteax.c
 OTEAXLIB_O = aes_modes_m2.o aescrypt.o aeskey.o aestab.o oteax.o
 
+DEFINES = -MD -mthumb -mcpu=cortex-m3 -D_STM3x_ -D_STM32x_ -D__opentag__ -D__LITTLE_ENDIAN__
+
 INCLUDES = -I$(INC)
-FLAGS = -O2
+FLAGS = -O3
 
 test: oteax_test_out 
 lib: oteax_lib_a
@@ -33,14 +36,14 @@ install: clean
 
 
 oteax_test_out: oteax_test_o oteax_lib_o $(TEST_O) $(OTEAXLIB_O)
-	$(COMPILER) $(INCLUDES) -o oteax_test $(TEST_O) $(OTEAXLIB_O)
+	$(COMPILER) $(DEFINES) $(INCLUDES) -o oteax_test $(TEST_O) $(OTEAXLIB_O)
 
 oteax_lib_a: $(OTEAXLIB_O)
 	libtool -o liboteax.a -static $(OTEAXLIB_O)
 
 oteax_test_o: $(TEST_C)
-	$(COMPILER) $(FLAGS) $(INCLUDES) -c $(TEST_C)
+	$(COMPILER) $(FLAGS) $(DEFINES) $(INCLUDES) -c $(TEST_C)
 
 oteax_lib_o: $(OTEAXLIB_C)
-	$(COMPILER) $(FLAGS) $(INCLUDES) -c $(OTEAXLIB_C)
+	$(COMPILER) $(FLAGS) $(DEFINES) $(INCLUDES) -c $(OTEAXLIB_C)
 

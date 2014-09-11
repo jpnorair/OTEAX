@@ -1,0 +1,6 @@
+
+<Project Header="Project 'RIDE_lib'" Path=".\RIDE_lib.rprj" Project="Yes" OutputFile="" sate="96" ActiveApp="RIDE_lib" >
+	<ApplicationLib Header="RIDE_lib" Extern=".\RIDE_lib.rapp" Path=".\RIDE_lib.rapp" OutputFile=".\RIDE_lib.lib" sate="96" />
+														=======
+	
+</Project>

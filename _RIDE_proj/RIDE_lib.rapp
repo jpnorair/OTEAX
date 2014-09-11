@@ -1,0 +1,63 @@
+
+<ApplicationLib Header="RIDE_lib" Extern=".\RIDE_lib.rapp" Path=".\RIDE_lib.rapp" OutputFile=".\RIDE_lib.lib" sate="96" >
+	<Group Header="OTEAX" Marker="-1" OutputFile="" sate="96" >
+		<NodeH Path="..\mode_hdr.h" Header="mode_hdr.h" Marker="-1" OutputFile="" sate="0" />
+		<NodeC Path="..\oteax.c" Header="oteax.c" Marker="-1" OutputFile=".\oteax.o" sate="0" />
+		<NodeH Path="..\oteax.h" Header="oteax.h" Marker="-1" OutputFile="" sate="0" />
+		<NodeH Path="..\aes.h" Header="aes.h" Marker="-1" OutputFile="" sate="0" />
+		<NodeC Path="..\aes_modes_m2.c" Header="aes_modes_m2.c" Marker="-1" OutputFile=".\aes_modes_m2.o" sate="0" />
+		<NodeC Path="..\aescrypt.c" Header="aescrypt.c" Marker="-1" OutputFile=".\aescrypt.o" sate="0" />
+		<NodeC Path="..\aeskey.c" Header="aeskey.c" Marker="-1" OutputFile=".\aeskey.o" sate="0" />
+		<NodeH Path="..\aesopt.h" Header="aesopt.h" Marker="-1" OutputFile="" sate="0" />
+		<NodeC Path="..\aestab.c" Header="aestab.c" Marker="-1" OutputFile=".\aestab.o" sate="2" />
+		<NodeH Path="..\aestab.h" Header="aestab.h" Marker="-1" OutputFile="" sate="0" />
+		<NodeH Path="..\brg_endian.h" Header="brg_endian.h" Marker="-1" OutputFile="" sate="0" />
+		<NodeH Path="..\brg_types.h" Header="brg_types.h" Marker="-1" OutputFile="" sate="0" />
+			
+	</Group>
+	<Options>
+		<Config Header="Standard" >
+			<Set Header="ApplicationLib" >
+				<Section Header="General" >
+					<Property Header="TargetFamily" Value="ARM" />
+																									
+				</Section>
+				<Section Header="Directories" >
+					<Property Header="IncDir" Value=".;$(RkitLib)\ARM\include;$(ApplicationDir)\..;$(ApplicationDir)\..\..\OpenTag\include;$(ApplicationDir)\..\..\OpenTag\lib\CMSIS\Device;$(ApplicationDir)\..\..\OpenTag\lib\CMSIS\Include" Removable="1" />
+							
+				</Section>
+					
+			</Set>
+			<Set Header="Target" >
+				<Section Header="ProcessorARM" >
+					<Property Header="Processor" Value="STM32L151CBT6" />
+																									
+				</Section>
+				<Section Header="ToolSetARM" >
+					<Property Header="BuildToolSetARM" Value="ARM\GNU.config" />
+																									
+				</Section>
+																			
+			</Set>
+			<Set Header="GCC" >
+				<Section Header="OPTIMIZE" >
+					<Property Header="Optimize" Value="-Os" Removable="1" />
+																
+				</Section>
+				<Section Header="DEBUG" >
+					<Property Header="DEBUGINFO" Value="" Removable="1" />
+																
+				</Section>
+				<Section Header="Dialect" >
+					<Property Header="CharSign" Value="-funsigned-char" Removable="1" />
+																
+				</Section>
+				<Section Header="Defines" >
+					<Property Header="Defines" Value="__LITTLE_ENDIAN__;__OPENTAG__" Removable="1" />
+																
+				</Section>
+												
+			</Set>
+		</Config>
+	</Options>
+</ApplicationLib>

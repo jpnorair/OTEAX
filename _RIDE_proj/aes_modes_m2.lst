@@ -1,0 +1,358 @@
+
+R:\OTEAX\_RIDE_proj\aes_modes_m2.o:     file format elf32-littlearm
+R:\OTEAX\_RIDE_proj\aes_modes_m2.o
+
+
+Disassembly of section .text.aes_test_alignment_detection:
+
+00000000 <aes_test_alignment_detection>:
+aes_test_alignment_detection():
+   0:	b5f0      	push	{r4, r5, r6, r7, lr}
+   2:	1f03      	subs	r3, r0, #4
+   4:	2b0c      	cmp	r3, #12
+   6:	b085      	sub	sp, #20
+   8:	d821      	bhi.n	4e <aes_test_alignment_detection+0x4e>
+   a:	2300      	movs	r3, #0
+   c:	4669      	mov	r1, sp
+   e:	461d      	mov	r5, r3
+  10:	461a      	mov	r2, r3
+  12:	1e44      	subs	r4, r0, #1
+  14:	ea01 0704 	and.w	r7, r1, r4
+  18:	ae00      	add	r6, sp, #0
+  1a:	1bd7      	subs	r7, r2, r7
+  1c:	19f7      	adds	r7, r6, r7
+  1e:	424e      	negs	r6, r1
+  20:	4026      	ands	r6, r4
+  22:	18b6      	adds	r6, r6, r2
+  24:	f10d 0c00 	add.w	ip, sp, #0
+  28:	4466      	add	r6, ip
+  2a:	42be      	cmp	r6, r7
+  2c:	d101      	bne.n	32 <aes_test_alignment_detection+0x32>
+  2e:	3501      	adds	r5, #1
+  30:	e003      	b.n	3a <aes_test_alignment_detection+0x3a>
+  32:	183f      	adds	r7, r7, r0
+  34:	42be      	cmp	r6, r7
+  36:	d10a      	bne.n	4e <aes_test_alignment_detection+0x4e>
+  38:	3301      	adds	r3, #1
+  3a:	3201      	adds	r2, #1
+  3c:	3101      	adds	r1, #1
+  3e:	4282      	cmp	r2, r0
+  40:	d1e7      	bne.n	12 <aes_test_alignment_detection+0x12>
+  42:	2d01      	cmp	r5, #1
+  44:	d103      	bne.n	4e <aes_test_alignment_detection+0x4e>
+  46:	1b18      	subs	r0, r3, r4
+  48:	bf18      	it	ne
+  4a:	2001      	movne	r0, #1
+  4c:	e000      	b.n	50 <aes_test_alignment_detection+0x50>
+  4e:	2001      	movs	r0, #1
+  50:	b005      	add	sp, #20
+  52:	bdf0      	pop	{r4, r5, r6, r7, pc}
+
+Disassembly of section .text.aes_mode_reset:
+
+00000000 <aes_mode_reset>:
+aes_mode_reset():
+   0:	2300      	movs	r3, #0
+   2:	f880 30b2 	strb.w	r3, [r0, #178]	; 0xb2
+   6:	4618      	mov	r0, r3
+   8:	4770      	bx	lr
+
+Disassembly of section .text.aes_ecb_encrypt:
+
+00000000 <aes_ecb_encrypt>:
+aes_ecb_encrypt():
+   0:	f012 0f0f 	tst.w	r2, #15
+   4:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
+   6:	4604      	mov	r4, r0
+   8:	460d      	mov	r5, r1
+   a:	461f      	mov	r7, r3
+   c:	d10d      	bne.n	2a <aes_ecb_encrypt+0x2a>
+   e:	1116      	asrs	r6, r2, #4
+  10:	e007      	b.n	22 <aes_ecb_encrypt+0x22>
+  12:	4620      	mov	r0, r4
+  14:	4629      	mov	r1, r5
+  16:	463a      	mov	r2, r7
+  18:	f7ff fffe 	bl	0 <aes_encrypt>
+  1c:	b938      	cbnz	r0, 2e <aes_ecb_encrypt+0x2e>
+  1e:	3410      	adds	r4, #16
+  20:	3510      	adds	r5, #16
+  22:	3e01      	subs	r6, #1
+  24:	d2f5      	bcs.n	12 <aes_ecb_encrypt+0x12>
+  26:	2000      	movs	r0, #0
+  28:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
+  2a:	2001      	movs	r0, #1
+  2c:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
+  2e:	2001      	movs	r0, #1
+  30:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
+
+Disassembly of section .text.aes_ecb_decrypt:
+
+00000000 <aes_ecb_decrypt>:
+aes_ecb_decrypt():
+   0:	f012 0f0f 	tst.w	r2, #15
+   4:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
+   6:	4604      	mov	r4, r0
+   8:	460d      	mov	r5, r1
+   a:	461f      	mov	r7, r3
+   c:	d10d      	bne.n	2a <aes_ecb_decrypt+0x2a>
+   e:	1116      	asrs	r6, r2, #4
+  10:	e007      	b.n	22 <aes_ecb_decrypt+0x22>
+  12:	4620      	mov	r0, r4
+  14:	4629      	mov	r1, r5
+  16:	463a      	mov	r2, r7
+  18:	f7ff fffe 	bl	0 <aes_decrypt>
+  1c:	b938      	cbnz	r0, 2e <aes_ecb_decrypt+0x2e>
+  1e:	3410      	adds	r4, #16
+  20:	3510      	adds	r5, #16
+  22:	3e01      	subs	r6, #1
+  24:	d2f5      	bcs.n	12 <aes_ecb_decrypt+0x12>
+  26:	2000      	movs	r0, #0
+  28:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
+  2a:	2001      	movs	r0, #1
+  2c:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
+  2e:	2001      	movs	r0, #1
+  30:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
+
+Disassembly of section .text.aes_ctr_crypt:
+
+00000000 <aes_ctr_crypt>:
+aes_ctr_crypt():
+   0:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
+   4:	b0a3      	sub	sp, #140	; 0x8c
+   6:	4617      	mov	r7, r2
+   8:	9a2d      	ldr	r2, [sp, #180]	; 0xb4
+   a:	4680      	mov	r8, r0
+   c:	f892 40b2 	ldrb.w	r4, [r2, #178]	; 0xb2
+  10:	460d      	mov	r5, r1
+  12:	461e      	mov	r6, r3
+  14:	2c00      	cmp	r4, #0
+  16:	f000 814c 	beq.w	2b2 <aes_ctr_crypt+0x2b2>
+  1a:	aa02      	add	r2, sp, #8
+  1c:	f103 0e10 	add.w	lr, r3, #16
+  20:	6818      	ldr	r0, [r3, #0]
+  22:	6859      	ldr	r1, [r3, #4]
+  24:	3308      	adds	r3, #8
+  26:	4573      	cmp	r3, lr
+  28:	c203      	stmia	r2!, {r0, r1}
+  2a:	d1f9      	bne.n	20 <aes_ctr_crypt+0x20>
+  2c:	a802      	add	r0, sp, #8
+  2e:	4601      	mov	r1, r0
+  30:	2210      	movs	r2, #16
+  32:	9b2d      	ldr	r3, [sp, #180]	; 0xb4
+  34:	f7ff fffe 	bl	0 <aes_ctr_crypt>
+  38:	2800      	cmp	r0, #0
+  3a:	f040 8144 	bne.w	2c6 <aes_ctr_crypt+0x2c6>
+  3e:	4643      	mov	r3, r8
+  40:	e009      	b.n	56 <aes_ctr_crypt+0x56>
+  42:	aa02      	add	r2, sp, #8
+  44:	5d11      	ldrb	r1, [r2, r4]
+  46:	f813 2c01 	ldrb.w	r2, [r3, #-1]
+  4a:	3401      	adds	r4, #1
+  4c:	ea81 0202 	eor.w	r2, r1, r2
+  50:	f805 2b01 	strb.w	r2, [r5], #1
+  54:	3f01      	subs	r7, #1
+  56:	2c0f      	cmp	r4, #15
+  58:	4698      	mov	r8, r3
+  5a:	dc03      	bgt.n	64 <aes_ctr_crypt+0x64>
+  5c:	3301      	adds	r3, #1
+  5e:	2f00      	cmp	r7, #0
+  60:	d1ef      	bne.n	42 <aes_ctr_crypt+0x42>
+  62:	e12b      	b.n	2bc <aes_ctr_crypt+0x2bc>
+  64:	2f00      	cmp	r7, #0
+  66:	f000 8124 	beq.w	2b2 <aes_ctr_crypt+0x2b2>
+  6a:	4630      	mov	r0, r6
+  6c:	9b2c      	ldr	r3, [sp, #176]	; 0xb0
+  6e:	4798      	blx	r3
+  70:	2400      	movs	r4, #0
+  72:	e11e      	b.n	2b2 <aes_ctr_crypt+0x2b2>
+  74:	2f80      	cmp	r7, #128	; 0x80
+  76:	bfb4      	ite	lt
+  78:	463c      	movlt	r4, r7
+  7a:	2480      	movge	r4, #128	; 0x80
+  7c:	1123      	asrs	r3, r4, #4
+  7e:	463a      	mov	r2, r7
+  80:	f04f 0b00 	mov.w	fp, #0
+  84:	462f      	mov	r7, r5
+  86:	f10d 0a08 	add.w	sl, sp, #8
+  8a:	4625      	mov	r5, r4
+  8c:	461c      	mov	r4, r3
+  8e:	4613      	mov	r3, r2
+  90:	e012      	b.n	b8 <aes_ctr_crypt+0xb8>
+  92:	4632      	mov	r2, r6
+  94:	4651      	mov	r1, sl
+  96:	f106 0010 	add.w	r0, r6, #16
+  9a:	f852 eb04 	ldr.w	lr, [r2], #4
+  9e:	4282      	cmp	r2, r0
+  a0:	f841 eb04 	str.w	lr, [r1], #4
+  a4:	d1f9      	bne.n	9a <aes_ctr_crypt+0x9a>
+  a6:	9301      	str	r3, [sp, #4]
+  a8:	4630      	mov	r0, r6
+  aa:	9a2c      	ldr	r2, [sp, #176]	; 0xb0
+  ac:	4790      	blx	r2
+  ae:	9b01      	ldr	r3, [sp, #4]
+  b0:	f10a 0a10 	add.w	sl, sl, #16
+  b4:	f10b 0b01 	add.w	fp, fp, #1
+  b8:	45a3      	cmp	fp, r4
+  ba:	dbea      	blt.n	92 <aes_ctr_crypt+0x92>
+  bc:	462c      	mov	r4, r5
+  be:	f014 0f0f 	tst.w	r4, #15
+  c2:	463d      	mov	r5, r7
+  c4:	461f      	mov	r7, r3
+  c6:	d00b      	beq.n	e0 <aes_ctr_crypt+0xe0>
+  c8:	4633      	mov	r3, r6
+  ca:	4652      	mov	r2, sl
+  cc:	f106 0110 	add.w	r1, r6, #16
+  d0:	f853 0b04 	ldr.w	r0, [r3], #4
+  d4:	428b      	cmp	r3, r1
+  d6:	f842 0b04 	str.w	r0, [r2], #4
+  da:	d1f9      	bne.n	d0 <aes_ctr_crypt+0xd0>
+  dc:	f10b 0b01 	add.w	fp, fp, #1
+  e0:	f10d 0a08 	add.w	sl, sp, #8
+  e4:	4650      	mov	r0, sl
+  e6:	4651      	mov	r1, sl
+  e8:	ea4f 120b 	mov.w	r2, fp, lsl #4
+  ec:	9b2d      	ldr	r3, [sp, #180]	; 0xb4
+  ee:	f7ff fffe 	bl	0 <aes_ctr_crypt>
+  f2:	2800      	cmp	r0, #0
+  f4:	f040 80e7 	bne.w	2c6 <aes_ctr_crypt+0x2c6>
+  f8:	f018 0f03 	tst.w	r8, #3
+  fc:	d102      	bne.n	104 <aes_ctr_crypt+0x104>
+  fe:	f015 0f03 	tst.w	r5, #3
+ 102:	d004      	beq.n	10e <aes_ctr_crypt+0x10e>
+ 104:	4641      	mov	r1, r8
+ 106:	462a      	mov	r2, r5
+ 108:	ab02      	add	r3, sp, #8
+ 10a:	2000      	movs	r0, #0
+ 10c:	e0b3      	b.n	276 <aes_ctr_crypt+0x276>
+ 10e:	f00a 0003 	and.w	r0, sl, #3
+ 112:	4642      	mov	r2, r8
+ 114:	462b      	mov	r3, r5
+ 116:	4651      	mov	r1, sl
+ 118:	e022      	b.n	160 <aes_ctr_crypt+0x160>
+ 11a:	ad02      	add	r5, sp, #8
+ 11c:	f855 c000 	ldr.w	ip, [r5, r0]
+ 120:	f852 5c10 	ldr.w	r5, [r2, #-16]
+ 124:	3010      	adds	r0, #16
+ 126:	ea8c 0505 	eor.w	r5, ip, r5
+ 12a:	f843 5c10 	str.w	r5, [r3, #-16]
+ 12e:	f8d1 c004 	ldr.w	ip, [r1, #4]
+ 132:	f852 5c0c 	ldr.w	r5, [r2, #-12]
+ 136:	ea8c 0505 	eor.w	r5, ip, r5
+ 13a:	f843 5c0c 	str.w	r5, [r3, #-12]
+ 13e:	f8d1 c008 	ldr.w	ip, [r1, #8]
+ 142:	f852 5c08 	ldr.w	r5, [r2, #-8]
+ 146:	ea8c 0505 	eor.w	r5, ip, r5
+ 14a:	f843 5c08 	str.w	r5, [r3, #-8]
+ 14e:	f8d1 c00c 	ldr.w	ip, [r1, #12]
+ 152:	f852 5c04 	ldr.w	r5, [r2, #-4]
+ 156:	3110      	adds	r1, #16
+ 158:	ea8c 0505 	eor.w	r5, ip, r5
+ 15c:	f843 5c04 	str.w	r5, [r3, #-4]
+ 160:	f100 080f 	add.w	r8, r0, #15
+ 164:	461d      	mov	r5, r3
+ 166:	4694      	mov	ip, r2
+ 168:	3310      	adds	r3, #16
+ 16a:	3210      	adds	r2, #16
+ 16c:	45a0      	cmp	r8, r4
+ 16e:	dbd4      	blt.n	11a <aes_ctr_crypt+0x11a>
+ 170:	468a      	mov	sl, r1
+ 172:	e08b      	b.n	28c <aes_ctr_crypt+0x28c>
+ 174:	f813 cc10 	ldrb.w	ip, [r3, #-16]
+ 178:	f811 5c10 	ldrb.w	r5, [r1, #-16]
+ 17c:	3010      	adds	r0, #16
+ 17e:	ea8c 0505 	eor.w	r5, ip, r5
+ 182:	f802 5c10 	strb.w	r5, [r2, #-16]
+ 186:	f813 cc0f 	ldrb.w	ip, [r3, #-15]
+ 18a:	f811 5c0f 	ldrb.w	r5, [r1, #-15]
+ 18e:	ea8c 0505 	eor.w	r5, ip, r5
+ 192:	f802 5c0f 	strb.w	r5, [r2, #-15]
+ 196:	f813 cc0e 	ldrb.w	ip, [r3, #-14]
+ 19a:	f811 5c0e 	ldrb.w	r5, [r1, #-14]
+ 19e:	ea8c 0505 	eor.w	r5, ip, r5
+ 1a2:	f802 5c0e 	strb.w	r5, [r2, #-14]
+ 1a6:	f813 cc0d 	ldrb.w	ip, [r3, #-13]
+ 1aa:	f811 5c0d 	ldrb.w	r5, [r1, #-13]
+ 1ae:	ea8c 0505 	eor.w	r5, ip, r5
+ 1b2:	f802 5c0d 	strb.w	r5, [r2, #-13]
+ 1b6:	f813 cc0c 	ldrb.w	ip, [r3, #-12]
+ 1ba:	f811 5c0c 	ldrb.w	r5, [r1, #-12]
+ 1be:	ea8c 0505 	eor.w	r5, ip, r5
+ 1c2:	f802 5c0c 	strb.w	r5, [r2, #-12]
+ 1c6:	f813 cc0b 	ldrb.w	ip, [r3, #-11]
+ 1ca:	f811 5c0b 	ldrb.w	r5, [r1, #-11]
+ 1ce:	ea8c 0505 	eor.w	r5, ip, r5
+ 1d2:	f802 5c0b 	strb.w	r5, [r2, #-11]
+ 1d6:	f813 cc0a 	ldrb.w	ip, [r3, #-10]
+ 1da:	f811 5c0a 	ldrb.w	r5, [r1, #-10]
+ 1de:	ea8c 0505 	eor.w	r5, ip, r5
+ 1e2:	f802 5c0a 	strb.w	r5, [r2, #-10]
+ 1e6:	f813 cc09 	ldrb.w	ip, [r3, #-9]
+ 1ea:	f811 5c09 	ldrb.w	r5, [r1, #-9]
+ 1ee:	ea8c 0505 	eor.w	r5, ip, r5
+ 1f2:	f802 5c09 	strb.w	r5, [r2, #-9]
+ 1f6:	f813 cc08 	ldrb.w	ip, [r3, #-8]
+ 1fa:	f811 5c08 	ldrb.w	r5, [r1, #-8]
+ 1fe:	ea8c 0505 	eor.w	r5, ip, r5
+ 202:	f802 5c08 	strb.w	r5, [r2, #-8]
+ 206:	f813 cc07 	ldrb.w	ip, [r3, #-7]
+ 20a:	f811 5c07 	ldrb.w	r5, [r1, #-7]
+ 20e:	ea8c 0505 	eor.w	r5, ip, r5
+ 212:	f802 5c07 	strb.w	r5, [r2, #-7]
+ 216:	f813 cc06 	ldrb.w	ip, [r3, #-6]
+ 21a:	f811 5c06 	ldrb.w	r5, [r1, #-6]
+ 21e:	ea8c 0505 	eor.w	r5, ip, r5
+ 222:	f802 5c06 	strb.w	r5, [r2, #-6]
+ 226:	f813 cc05 	ldrb.w	ip, [r3, #-5]
+ 22a:	f811 5c05 	ldrb.w	r5, [r1, #-5]
+ 22e:	ea8c 0505 	eor.w	r5, ip, r5
+ 232:	f802 5c05 	strb.w	r5, [r2, #-5]
+ 236:	f813 cc04 	ldrb.w	ip, [r3, #-4]
+ 23a:	f811 5c04 	ldrb.w	r5, [r1, #-4]
+ 23e:	ea8c 0505 	eor.w	r5, ip, r5
+ 242:	f802 5c04 	strb.w	r5, [r2, #-4]
+ 246:	f813 cc03 	ldrb.w	ip, [r3, #-3]
+ 24a:	f811 5c03 	ldrb.w	r5, [r1, #-3]
+ 24e:	ea8c 0505 	eor.w	r5, ip, r5
+ 252:	f802 5c03 	strb.w	r5, [r2, #-3]
+ 256:	f813 cc02 	ldrb.w	ip, [r3, #-2]
+ 25a:	f811 5c02 	ldrb.w	r5, [r1, #-2]
+ 25e:	ea8c 0505 	eor.w	r5, ip, r5
+ 262:	f802 5c02 	strb.w	r5, [r2, #-2]
+ 266:	f813 cc01 	ldrb.w	ip, [r3, #-1]
+ 26a:	f811 5c01 	ldrb.w	r5, [r1, #-1]
+ 26e:	ea8c 0505 	eor.w	r5, ip, r5
+ 272:	f802 5c01 	strb.w	r5, [r2, #-1]
+ 276:	f100 080f 	add.w	r8, r0, #15
+ 27a:	469a      	mov	sl, r3
+ 27c:	4615      	mov	r5, r2
+ 27e:	468c      	mov	ip, r1
+ 280:	3210      	adds	r2, #16
+ 282:	3110      	adds	r1, #16
+ 284:	3310      	adds	r3, #16
+ 286:	45a0      	cmp	r8, r4
+ 288:	f6ff af74 	blt.w	174 <aes_ctr_crypt+0x174>
+ 28c:	4663      	mov	r3, ip
+ 28e:	e00a      	b.n	2a6 <aes_ctr_crypt+0x2a6>
+ 290:	f81a 1009 	ldrb.w	r1, [sl, r9]
+ 294:	f813 2c01 	ldrb.w	r2, [r3, #-1]
+ 298:	f109 0901 	add.w	r9, r9, #1
+ 29c:	ea81 0202 	eor.w	r2, r1, r2
+ 2a0:	f805 2b01 	strb.w	r2, [r5], #1
+ 2a4:	3001      	adds	r0, #1
+ 2a6:	4698      	mov	r8, r3
+ 2a8:	3301      	adds	r3, #1
+ 2aa:	42a0      	cmp	r0, r4
+ 2ac:	dbf0      	blt.n	290 <aes_ctr_crypt+0x290>
+ 2ae:	1b3f      	subs	r7, r7, r4
+ 2b0:	e000      	b.n	2b4 <aes_ctr_crypt+0x2b4>
+ 2b2:	46a1      	mov	r9, r4
+ 2b4:	2f00      	cmp	r7, #0
+ 2b6:	f47f aedd 	bne.w	74 <aes_ctr_crypt+0x74>
+ 2ba:	464c      	mov	r4, r9
+ 2bc:	9a2d      	ldr	r2, [sp, #180]	; 0xb4
+ 2be:	2000      	movs	r0, #0
+ 2c0:	f882 40b2 	strb.w	r4, [r2, #178]	; 0xb2
+ 2c4:	e000      	b.n	2c8 <aes_ctr_crypt+0x2c8>
+ 2c6:	2001      	movs	r0, #1
+ 2c8:	b023      	add	sp, #140	; 0x8c
+ 2ca:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}

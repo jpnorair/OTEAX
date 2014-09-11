@@ -1,0 +1,104 @@
+
+<Debug>
+	<Flags>
+		<Report>
+			<Def Header="FlagReport" NbCol="9" >
+				<Col Type="PT_BOOL" Header="Check" sizeCache="18" AutoSize="0" Edit="1" Sortable="1" Icon="C:\Program Files\Raisonance\Ride\Config\Resources\check.bmp" />
+				<Col Type="PT_STRING" Header="Kind" sizeCache="DDDDDDDDDDD" AutoSize="1" Edit="0" Sortable="1" />
+				<Col Type="PT_STRING" Header="KindID" sizeCache="DD" AutoSize="1" Edit="0" Sortable="1" Visible="0" />
+				<Col Type="PT_STRING" Header="Space" sizeCache="DDDDDD" AutoSize="1" Edit="0" Sortable="1" />
+				<Col Type="PT_STRING" Header="SpaceID" sizeCache="DD" AutoSize="0" Edit="0" Sortable="0" Visible="0" />
+				<Col Type="PT_STRING" Header="Line" sizeCache="DDDDDDDDD" AutoSize="1" Edit="0" Sortable="1" Visible="1" />
+				<Col Type="PT_STRING" Header="File" sizeCache="DDDDDDDDDDDDDDDDDDDD" AutoSize="1" Edit="0" Sortable="1" Visible="1" />
+				<Col Type="PT_STRING" Header="Path" sizeCache="DDDDDDDDDDDDDDDDDDDD" AutoSize="1" Edit="0" Sortable="0" Visible="0" />
+				<Col Type="PT_STRING" Header="Condition" sizeCache="DDDDDDDDDDDDDDDDDDDDDDDD" AutoSize="1" Edit="0" Sortable="0" />
+				<Col Type="PT_STRING" Header="Condexpr" sizeCache="DD" AutoSize="1" Edit="0" Sortable="0" Visible="0" />
+				<Col Type="PT_STRING" Header="Condcount" sizeCache="DD" AutoSize="1" Edit="0" Sortable="0" Visible="0" />
+							
+			</Def>
+			<Rows/>
+					
+		</Report>
+			
+	</Flags>
+	<Views/>
+	<BookMarks>
+		<BookMark File="" Line="0" />
+		<BookMark File="" Line="0" />
+		<BookMark File="" Line="0" />
+		<BookMark File="" Line="0" />
+		<BookMark File="" Line="0" />
+		<BookMark File="" Line="0" />
+		<BookMark File="" Line="0" />
+		<BookMark File="" Line="0" />
+		<BookMark File="" Line="0" />
+		<BookMark File="" Line="0" />
+	</BookMarks>
+	<Grep>
+		<GrepIncludeSub>yes</GrepIncludeSub>
+		<GrepMatchCase>no</GrepMatchCase>
+		<GrepMatchWhole>no</GrepMatchWhole>
+		<GrepRegExp>no</GrepRegExp>
+		<GrepReplaceMode>no</GrepReplaceMode>
+		<GrepFileTypes>
+			<GrepFileTypesValue>*.c;*.h</GrepFileTypesValue>
+			<GrepFileType>*.c;*.h</GrepFileType>
+		</GrepFileTypes>
+		<GrepFindWhat>
+			<GrepFindWhatValue/>
+		</GrepFindWhat>
+		<GrepFindWhere>
+			<GrepFindWhereValue>Application Files</GrepFindWhereValue>
+			<GrepPathStr>Application Files</GrepPathStr>
+			<GrepPathStr>Application Path</GrepPathStr>
+			<GrepPathStr>Project Files</GrepPathStr>
+		</GrepFindWhere>
+		<GrepReplaceWhat>
+			<GrepReplaceWhatValue/>
+		</GrepReplaceWhat>
+	</Grep>
+	<FindStrings>
+		<Find>BOARD_COM_EXTI</Find>
+		<Find>PowerOff</Find>
+		<Find>BOARD_USB_PORT</Find>
+		<Find>BOARD_USB_PORTENABLE</Find>
+		<Find>USBCLK</Find>
+		<Find>CLKON</Find>
+		<Find>CLK</Find>
+		<Find>session</Find>
+		<Find>ENDIAN</Find>
+		<Find>ENDIAN_16</Find>
+		<Find>ENDIAN16</Find>
+		<Find>ALP_API</Find>
+		<Find>int_config</Find>
+		<Find>ishigh</Find>
+		<Find>MODE_Listen</Find>
+		<Find>platform_</Find>
+		<Find>ALRAWF</Find>
+		<Find>ALARE</Find>
+		<Find>event_manager</Find>
+		<Find>gptim.evt_span</Find>
+	</FindStrings>
+	<ReplaceStrings>
+		<Find>TIM9</Find>
+		<Find>GPTIM_FLAG</Find>
+		<Find>gptim.flags</Find>
+		<Find>if !defined(</Find>
+		<Find>event_ticks</Find>
+		<Find>ENABLE</Find>
+		<Find>GPTIM</Find>
+		<Find>LEDG</Find>
+		<Find>DMA_ENABLE</Find>
+		<Find>__N_ISR_DMA1_Channel</Find>
+		<Find>define __N_ISR</Find>
+		<Find>TXCHAN</Find>
+		<Find>FLOWCTL</Find>
+		<Find>USE_DMA1_CHAN7</Find>
+		<Find>USE_DMA1_CHAN6</Find>
+		<Find>USE_DMA1_CHAN5</Find>
+		<Find>USE_DMA1_CHAN4</Find>
+		<Find>USE_DMA1_CHAN3</Find>
+		<Find>USE_DMA1_CHAN2</Find>
+		<Find>USE_DMA1_CHAN1</Find>
+	</ReplaceStrings>
+</Debug>

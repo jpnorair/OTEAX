@@ -26,10 +26,10 @@ Issue Date: 20/12/2007
 
 /* Include files where endian defines and byteswap functions may reside */
 
-///@note added OpenTag part at the top
+///@note [JP Norair 25-Aug-2014] THis is a hack for STM32L CM3 on OpenTag
 #if (defined(__opentag__) || defined (__OPENTAG__))
-#   include <endian.h>
-#   include <byteswap.h>
+#   include <platform/config.h>
+//#include <cm3_endian.h>
 
 #elif defined( __sun )
 #   include <sys/isa_defs.h>
@@ -124,7 +124,7 @@ Issue Date: 20/12/2007
       defined( THINK_C ) || defined( __VMCMS__ ) || defined( _AIX )
 #  define PLATFORM_BYTE_ORDER IS_BIG_ENDIAN
 
-#elif 0     /* **** EDIT HERE IF NECESSARY **** */
+#elif 1     /* **** EDIT HERE IF NECESSARY **** */
 #  define PLATFORM_BYTE_ORDER IS_LITTLE_ENDIAN
 #elif 0     /* **** EDIT HERE IF NECESSARY **** */
 #  define PLATFORM_BYTE_ORDER IS_BIG_ENDIAN

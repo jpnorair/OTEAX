@@ -369,33 +369,33 @@ Issue Date: 20/12/2007
 ///      mode in order to fit into small memory.  See notes accompanying the
 ///      code distribution for metrics.
 
-#if 1   /* set tables for the normal encryption round */
+#if 0   /* set tables for the normal encryption round */
 #   define ENC_ROUND   FOUR_TABLES
-#elif 0
+#elif 1
 #   define ENC_ROUND   ONE_TABLE
 #else
 #   define ENC_ROUND   NO_TABLES
 #endif
 
-#if 1   /* set tables for the last encryption round */
+#if 0   /* set tables for the last encryption round */
 #   define LAST_ENC_ROUND  FOUR_TABLES
-#elif 0
+#elif 1
 #   define LAST_ENC_ROUND  ONE_TABLE
 #else
 #   define LAST_ENC_ROUND  NO_TABLES
 #endif
 
-#if 1   /* set tables for the normal decryption round */
+#if 0   /* set tables for the normal decryption round */
 #   define DEC_ROUND   FOUR_TABLES
-#elif 0
+#elif 1
 #   define DEC_ROUND   ONE_TABLE
 #else
 #   define DEC_ROUND   NO_TABLES
 #endif
 
-#if 1   /* set tables for the last decryption round */
+#if 0   /* set tables for the last decryption round */
 #  define LAST_DEC_ROUND  FOUR_TABLES
-#elif 0
+#elif 1
 #  define LAST_DEC_ROUND  ONE_TABLE
 #else
 #  define LAST_DEC_ROUND  NO_TABLES
@@ -405,9 +405,9 @@ Issue Date: 20/12/2007
     way that the round functions can.  Include or exclude the following
     defines to set this requirement.
 */
-#if 1
+#if 0
 #   define KEY_SCHED   FOUR_TABLES
-#elif 0
+#elif 1
 #   define KEY_SCHED   ONE_TABLE
 #else
 #   define KEY_SCHED   NO_TABLES

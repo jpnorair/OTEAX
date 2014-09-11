@@ -1,0 +1,11 @@
+
+R:\OTEAX\_RIDE_proj\aestab.o:     file format elf32-littlearm
+R:\OTEAX\_RIDE_proj\aestab.o
+
+
+Disassembly of section .text.aes_init:
+
+00000000 <aes_init>:
+aes_init():
+   0:	2000      	movs	r0, #0
+   2:	4770      	bx	lr

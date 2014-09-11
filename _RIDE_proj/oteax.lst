@@ -1,0 +1,631 @@
+
+R:\OTEAX\_RIDE_proj\oteax.o:     file format elf32-littlearm
+R:\OTEAX\_RIDE_proj\oteax.o
+
+
+Disassembly of section .text.xor_block:
+
+00000000 <xor_block>:
+xor_block():
+   0:	b510      	push	{r4, lr}
+   2:	780b      	ldrb	r3, [r1, #0]
+   4:	7814      	ldrb	r4, [r2, #0]
+   6:	ea84 0303 	eor.w	r3, r4, r3
+   a:	7003      	strb	r3, [r0, #0]
+   c:	7854      	ldrb	r4, [r2, #1]
+   e:	784b      	ldrb	r3, [r1, #1]
+  10:	ea84 0303 	eor.w	r3, r4, r3
+  14:	7043      	strb	r3, [r0, #1]
+  16:	7894      	ldrb	r4, [r2, #2]
+  18:	788b      	ldrb	r3, [r1, #2]
+  1a:	ea84 0303 	eor.w	r3, r4, r3
+  1e:	7083      	strb	r3, [r0, #2]
+  20:	78d4      	ldrb	r4, [r2, #3]
+  22:	78cb      	ldrb	r3, [r1, #3]
+  24:	ea84 0303 	eor.w	r3, r4, r3
+  28:	70c3      	strb	r3, [r0, #3]
+  2a:	7914      	ldrb	r4, [r2, #4]
+  2c:	790b      	ldrb	r3, [r1, #4]
+  2e:	ea84 0303 	eor.w	r3, r4, r3
+  32:	7103      	strb	r3, [r0, #4]
+  34:	7954      	ldrb	r4, [r2, #5]
+  36:	794b      	ldrb	r3, [r1, #5]
+  38:	ea84 0303 	eor.w	r3, r4, r3
+  3c:	7143      	strb	r3, [r0, #5]
+  3e:	7994      	ldrb	r4, [r2, #6]
+  40:	798b      	ldrb	r3, [r1, #6]
+  42:	ea84 0303 	eor.w	r3, r4, r3
+  46:	7183      	strb	r3, [r0, #6]
+  48:	79d4      	ldrb	r4, [r2, #7]
+  4a:	79cb      	ldrb	r3, [r1, #7]
+  4c:	ea84 0303 	eor.w	r3, r4, r3
+  50:	71c3      	strb	r3, [r0, #7]
+  52:	7a14      	ldrb	r4, [r2, #8]
+  54:	7a0b      	ldrb	r3, [r1, #8]
+  56:	ea84 0303 	eor.w	r3, r4, r3
+  5a:	7203      	strb	r3, [r0, #8]
+  5c:	7a54      	ldrb	r4, [r2, #9]
+  5e:	7a4b      	ldrb	r3, [r1, #9]
+  60:	ea84 0303 	eor.w	r3, r4, r3
+  64:	7243      	strb	r3, [r0, #9]
+  66:	7a94      	ldrb	r4, [r2, #10]
+  68:	7a8b      	ldrb	r3, [r1, #10]
+  6a:	ea84 0303 	eor.w	r3, r4, r3
+  6e:	7283      	strb	r3, [r0, #10]
+  70:	7ad4      	ldrb	r4, [r2, #11]
+  72:	7acb      	ldrb	r3, [r1, #11]
+  74:	ea84 0303 	eor.w	r3, r4, r3
+  78:	72c3      	strb	r3, [r0, #11]
+  7a:	7b14      	ldrb	r4, [r2, #12]
+  7c:	7b0b      	ldrb	r3, [r1, #12]
+  7e:	ea84 0303 	eor.w	r3, r4, r3
+  82:	7303      	strb	r3, [r0, #12]
+  84:	7b54      	ldrb	r4, [r2, #13]
+  86:	7b4b      	ldrb	r3, [r1, #13]
+  88:	ea84 0303 	eor.w	r3, r4, r3
+  8c:	7343      	strb	r3, [r0, #13]
+  8e:	7b94      	ldrb	r4, [r2, #14]
+  90:	7b8b      	ldrb	r3, [r1, #14]
+  92:	ea84 0303 	eor.w	r3, r4, r3
+  96:	7383      	strb	r3, [r0, #14]
+  98:	7bd2      	ldrb	r2, [r2, #15]
+  9a:	7bcb      	ldrb	r3, [r1, #15]
+  9c:	ea82 0303 	eor.w	r3, r2, r3
+  a0:	73c3      	strb	r3, [r0, #15]
+  a2:	bd10      	pop	{r4, pc}
+
+Disassembly of section .text.xor_block_aligned:
+
+00000000 <xor_block_aligned>:
+xor_block_aligned():
+   0:	680b      	ldr	r3, [r1, #0]
+   2:	b510      	push	{r4, lr}
+   4:	6814      	ldr	r4, [r2, #0]
+   6:	ea84 0303 	eor.w	r3, r4, r3
+   a:	6003      	str	r3, [r0, #0]
+   c:	6854      	ldr	r4, [r2, #4]
+   e:	684b      	ldr	r3, [r1, #4]
+  10:	ea84 0303 	eor.w	r3, r4, r3
+  14:	6043      	str	r3, [r0, #4]
+  16:	6894      	ldr	r4, [r2, #8]
+  18:	688b      	ldr	r3, [r1, #8]
+  1a:	ea84 0303 	eor.w	r3, r4, r3
+  1e:	6083      	str	r3, [r0, #8]
+  20:	68d2      	ldr	r2, [r2, #12]
+  22:	68cb      	ldr	r3, [r1, #12]
+  24:	ea82 0303 	eor.w	r3, r2, r3
+  28:	60c3      	str	r3, [r0, #12]
+  2a:	bd10      	pop	{r4, pc}
+
+Disassembly of section .text.eax_init_and_key:
+
+00000000 <eax_init_and_key>:
+eax_init_and_key():
+   0:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
+   2:	460d      	mov	r5, r1
+   4:	4604      	mov	r4, r0
+   6:	f44f 728e 	mov.w	r2, #284	; 0x11c
+   a:	4608      	mov	r0, r1
+   c:	f105 0660 	add.w	r6, r5, #96	; 0x60
+  10:	2100      	movs	r1, #0
+  12:	f7ff fffe 	bl	0 <ot_memset>
+  16:	4620      	mov	r0, r4
+  18:	4631      	mov	r1, r6
+  1a:	f105 0440 	add.w	r4, r5, #64	; 0x40
+  1e:	f7ff fffe 	bl	0 <aes_encrypt_key128>
+  22:	4621      	mov	r1, r4
+  24:	4632      	mov	r2, r6
+  26:	4620      	mov	r0, r4
+  28:	f7ff fffe 	bl	0 <aes_encrypt>
+  2c:	f895 1040 	ldrb.w	r1, [r5, #64]	; 0x40
+  30:	4620      	mov	r0, r4
+  32:	0989      	lsrs	r1, r1, #6
+  34:	354f      	adds	r5, #79	; 0x4f
+  36:	4622      	mov	r2, r4
+  38:	4623      	mov	r3, r4
+  3a:	f813 6b01 	ldrb.w	r6, [r3], #1
+  3e:	f812 7f01 	ldrb.w	r7, [r2, #1]!
+  42:	00b6      	lsls	r6, r6, #2
+  44:	b2f6      	uxtb	r6, r6
+  46:	ea46 1697 	orr.w	r6, r6, r7, lsr #6
+  4a:	73de      	strb	r6, [r3, #15]
+  4c:	f810 6f01 	ldrb.w	r6, [r0, #1]!
+  50:	f813 7c01 	ldrb.w	r7, [r3, #-1]
+  54:	09f6      	lsrs	r6, r6, #7
+  56:	ea46 0647 	orr.w	r6, r6, r7, lsl #1
+  5a:	42ab      	cmp	r3, r5
+  5c:	f803 6c01 	strb.w	r6, [r3, #-1]
+  60:	d1eb      	bne.n	3a <eax_init_and_key+0x3a>
+  62:	4a08      	ldr	r2, [pc, #32]	; (84 <eax_init_and_key+0x84>)
+  64:	7be0      	ldrb	r0, [r4, #15]
+  66:	5c53      	ldrb	r3, [r2, r1]
+  68:	ea83 0380 	eor.w	r3, r3, r0, lsl #2
+  6c:	77e3      	strb	r3, [r4, #31]
+  6e:	084b      	lsrs	r3, r1, #1
+  70:	7fa1      	ldrb	r1, [r4, #30]
+  72:	ea83 0101 	eor.w	r1, r3, r1
+  76:	5cd3      	ldrb	r3, [r2, r3]
+  78:	77a1      	strb	r1, [r4, #30]
+  7a:	ea83 0340 	eor.w	r3, r3, r0, lsl #1
+  7e:	73e3      	strb	r3, [r4, #15]
+  80:	2000      	movs	r0, #0
+  82:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
+  84:	00000000 	.word	0x00000000
+
+Disassembly of section .text.eax_init_message:
+
+00000000 <eax_init_message>:
+eax_init_message():
+   0:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
+   2:	460d      	mov	r5, r1
+   4:	f101 0430 	add.w	r4, r1, #48	; 0x30
+   8:	2210      	movs	r2, #16
+   a:	2100      	movs	r1, #0
+   c:	f105 0620 	add.w	r6, r5, #32
+  10:	4607      	mov	r7, r0
+  12:	4620      	mov	r0, r4
+  14:	f7ff fffe 	bl	0 <ot_memset>
+  18:	4630      	mov	r0, r6
+  1a:	2100      	movs	r1, #0
+  1c:	2210      	movs	r2, #16
+  1e:	f7ff fffe 	bl	0 <ot_memset>
+  22:	2600      	movs	r6, #0
+  24:	2302      	movs	r3, #2
+  26:	f885 302f 	strb.w	r3, [r5, #47]	; 0x2f
+  2a:	f8c5 6114 	str.w	r6, [r5, #276]	; 0x114
+  2e:	f8c5 6118 	str.w	r6, [r5, #280]	; 0x118
+  32:	330e      	adds	r3, #14
+  34:	2b10      	cmp	r3, #16
+  36:	d106      	bne.n	46 <eax_init_message+0x46>
+  38:	4620      	mov	r0, r4
+  3a:	4621      	mov	r1, r4
+  3c:	f105 0260 	add.w	r2, r5, #96	; 0x60
+  40:	f7ff fffe 	bl	0 <aes_encrypt>
+  44:	2300      	movs	r3, #0
+  46:	5ce1      	ldrb	r1, [r4, r3]
+  48:	5dba      	ldrb	r2, [r7, r6]
+  4a:	3601      	adds	r6, #1
+  4c:	ea81 0202 	eor.w	r2, r1, r2
+  50:	54e2      	strb	r2, [r4, r3]
+  52:	3301      	adds	r3, #1
+  54:	2e07      	cmp	r6, #7
+  56:	d1ed      	bne.n	34 <eax_init_message+0x34>
+  58:	2b10      	cmp	r3, #16
+  5a:	f105 0240 	add.w	r2, r5, #64	; 0x40
+  5e:	d007      	beq.n	70 <eax_init_message+0x70>
+  60:	5ce1      	ldrb	r1, [r4, r3]
+  62:	f06f 027f 	mvn.w	r2, #127	; 0x7f
+  66:	ea81 0202 	eor.w	r2, r1, r2
+  6a:	54e2      	strb	r2, [r4, r3]
+  6c:	f105 0250 	add.w	r2, r5, #80	; 0x50
+  70:	2600      	movs	r6, #0
+  72:	5d91      	ldrb	r1, [r2, r6]
+  74:	5da3      	ldrb	r3, [r4, r6]
+  76:	ea81 0303 	eor.w	r3, r1, r3
+  7a:	55a3      	strb	r3, [r4, r6]
+  7c:	3601      	adds	r6, #1
+  7e:	2e10      	cmp	r6, #16
+  80:	d1f7      	bne.n	72 <eax_init_message+0x72>
+  82:	4621      	mov	r1, r4
+  84:	f105 0260 	add.w	r2, r5, #96	; 0x60
+  88:	4620      	mov	r0, r4
+  8a:	f7ff fffe 	bl	0 <aes_encrypt>
+  8e:	4628      	mov	r0, r5
+  90:	4621      	mov	r1, r4
+  92:	4632      	mov	r2, r6
+  94:	f7ff fffe 	bl	0 <ot_memcpy>
+  98:	2000      	movs	r0, #0
+  9a:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
+
+Disassembly of section .text.eax_auth_header:
+
+00000000 <eax_auth_header>:
+eax_auth_header():
+   0:	f04f 30ff 	mov.w	r0, #4294967295
+   4:	4770      	bx	lr
+
+Disassembly of section .text.eax_auth_data:
+
+00000000 <eax_auth_data>:
+eax_auth_data():
+   0:	e92d 47f0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, lr}
+   4:	4680      	mov	r8, r0
+   6:	4617      	mov	r7, r2
+   8:	f8d2 4118 	ldr.w	r4, [r2, #280]	; 0x118
+   c:	4689      	mov	r9, r1
+   e:	2900      	cmp	r1, #0
+  10:	d07c      	beq.n	10c <eax_auth_data+0x10c>
+  12:	f004 040f 	and.w	r4, r4, #15
+  16:	f102 0620 	add.w	r6, r2, #32
+  1a:	1935      	adds	r5, r6, r4
+  1c:	1b45      	subs	r5, r0, r5
+  1e:	f015 0503 	ands.w	r5, r5, #3
+  22:	d135      	bne.n	90 <eax_auth_data+0x90>
+  24:	b95c      	cbnz	r4, 3e <eax_auth_data+0x3e>
+  26:	4625      	mov	r5, r4
+  28:	e02d      	b.n	86 <eax_auth_data+0x86>
+  2a:	f818 2005 	ldrb.w	r2, [r8, r5]
+  2e:	5d33      	ldrb	r3, [r6, r4]
+  30:	3501      	adds	r5, #1
+  32:	ea82 0303 	eor.w	r3, r2, r3
+  36:	5533      	strb	r3, [r6, r4]
+  38:	3401      	adds	r4, #1
+  3a:	454d      	cmp	r5, r9
+  3c:	d00f      	beq.n	5e <eax_auth_data+0x5e>
+  3e:	f014 0f03 	tst.w	r4, #3
+  42:	d1f2      	bne.n	2a <eax_auth_data+0x2a>
+  44:	e00b      	b.n	5e <eax_auth_data+0x5e>
+  46:	f107 0220 	add.w	r2, r7, #32
+  4a:	eb08 0103 	add.w	r1, r8, r3
+  4e:	5910      	ldr	r0, [r2, r4]
+  50:	f851 1c04 	ldr.w	r1, [r1, #-4]
+  54:	461d      	mov	r5, r3
+  56:	ea80 0101 	eor.w	r1, r0, r1
+  5a:	5111      	str	r1, [r2, r4]
+  5c:	3404      	adds	r4, #4
+  5e:	1d2b      	adds	r3, r5, #4
+  60:	454b      	cmp	r3, r9
+  62:	d810      	bhi.n	86 <eax_auth_data+0x86>
+  64:	2c0c      	cmp	r4, #12
+  66:	d9ee      	bls.n	46 <eax_auth_data+0x46>
+  68:	e00d      	b.n	86 <eax_auth_data+0x86>
+  6a:	4631      	mov	r1, r6
+  6c:	f107 0260 	add.w	r2, r7, #96	; 0x60
+  70:	4630      	mov	r0, r6
+  72:	f7ff fffe 	bl	0 <aes_encrypt>
+  76:	f1a8 0210 	sub.w	r2, r8, #16
+  7a:	4630      	mov	r0, r6
+  7c:	4631      	mov	r1, r6
+  7e:	4452      	add	r2, sl
+  80:	f7ff fffe 	bl	0 <eax_auth_data>
+  84:	4655      	mov	r5, sl
+  86:	f105 0a10 	add.w	sl, r5, #16
+  8a:	45ca      	cmp	sl, r9
+  8c:	d9ed      	bls.n	6a <eax_auth_data+0x6a>
+  8e:	e036      	b.n	fe <eax_auth_data+0xfe>
+  90:	b964      	cbnz	r4, ac <eax_auth_data+0xac>
+  92:	4625      	mov	r5, r4
+  94:	e01c      	b.n	d0 <eax_auth_data+0xd0>
+  96:	f818 2005 	ldrb.w	r2, [r8, r5]
+  9a:	5d33      	ldrb	r3, [r6, r4]
+  9c:	3501      	adds	r5, #1
+  9e:	ea82 0303 	eor.w	r3, r2, r3
+  a2:	5533      	strb	r3, [r6, r4]
+  a4:	3401      	adds	r4, #1
+  a6:	454d      	cmp	r5, r9
+  a8:	d101      	bne.n	ae <eax_auth_data+0xae>
+  aa:	e011      	b.n	d0 <eax_auth_data+0xd0>
+  ac:	2500      	movs	r5, #0
+  ae:	2c10      	cmp	r4, #16
+  b0:	d1f1      	bne.n	96 <eax_auth_data+0x96>
+  b2:	e00d      	b.n	d0 <eax_auth_data+0xd0>
+  b4:	4631      	mov	r1, r6
+  b6:	f107 0260 	add.w	r2, r7, #96	; 0x60
+  ba:	4630      	mov	r0, r6
+  bc:	f7ff fffe 	bl	0 <aes_encrypt>
+  c0:	f1a8 0210 	sub.w	r2, r8, #16
+  c4:	4630      	mov	r0, r6
+  c6:	4631      	mov	r1, r6
+  c8:	4452      	add	r2, sl
+  ca:	f7ff fffe 	bl	0 <eax_auth_data>
+  ce:	4655      	mov	r5, sl
+  d0:	f105 0a10 	add.w	sl, r5, #16
+  d4:	45ca      	cmp	sl, r9
+  d6:	d9ed      	bls.n	b4 <eax_auth_data+0xb4>
+  d8:	e011      	b.n	fe <eax_auth_data+0xfe>
+  da:	2c10      	cmp	r4, #16
+  dc:	d000      	beq.n	e0 <eax_auth_data+0xe0>
+  de:	b934      	cbnz	r4, ee <eax_auth_data+0xee>
+  e0:	4630      	mov	r0, r6
+  e2:	4631      	mov	r1, r6
+  e4:	f107 0260 	add.w	r2, r7, #96	; 0x60
+  e8:	f7ff fffe 	bl	0 <aes_encrypt>
+  ec:	2400      	movs	r4, #0
+  ee:	5d32      	ldrb	r2, [r6, r4]
+  f0:	f818 3005 	ldrb.w	r3, [r8, r5]
+  f4:	3501      	adds	r5, #1
+  f6:	ea82 0303 	eor.w	r3, r2, r3
+  fa:	5533      	strb	r3, [r6, r4]
+  fc:	3401      	adds	r4, #1
+  fe:	454d      	cmp	r5, r9
+ 100:	d3eb      	bcc.n	da <eax_auth_data+0xda>
+ 102:	f8d7 3118 	ldr.w	r3, [r7, #280]	; 0x118
+ 106:	195d      	adds	r5, r3, r5
+ 108:	f8c7 5118 	str.w	r5, [r7, #280]	; 0x118
+ 10c:	2000      	movs	r0, #0
+ 10e:	e8bd 87f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, pc}
+
+Disassembly of section .text.eax_crypt_data:
+
+00000000 <eax_crypt_data>:
+eax_crypt_data():
+   0:	e92d 4ff8 	stmdb	sp!, {r3, r4, r5, r6, r7, r8, r9, sl, fp, lr}
+   4:	4607      	mov	r7, r0
+   6:	4616      	mov	r6, r2
+   8:	f8d2 5114 	ldr.w	r5, [r2, #276]	; 0x114
+   c:	4689      	mov	r9, r1
+   e:	2900      	cmp	r1, #0
+  10:	f000 809d 	beq.w	14e <eax_crypt_data+0x14e>
+  14:	f005 050f 	and.w	r5, r5, #15
+  18:	f102 0810 	add.w	r8, r2, #16
+  1c:	eb08 0405 	add.w	r4, r8, r5
+  20:	1b04      	subs	r4, r0, r4
+  22:	f014 0403 	ands.w	r4, r4, #3
+  26:	d13e      	bne.n	a6 <eax_crypt_data+0xa6>
+  28:	b95d      	cbnz	r5, 42 <eax_crypt_data+0x42>
+  2a:	462c      	mov	r4, r5
+  2c:	e018      	b.n	60 <eax_crypt_data+0x60>
+  2e:	f818 2005 	ldrb.w	r2, [r8, r5]
+  32:	5d3b      	ldrb	r3, [r7, r4]
+  34:	3501      	adds	r5, #1
+  36:	ea82 0303 	eor.w	r3, r2, r3
+  3a:	553b      	strb	r3, [r7, r4]
+  3c:	3401      	adds	r4, #1
+  3e:	454c      	cmp	r4, r9
+  40:	d00b      	beq.n	5a <eax_crypt_data+0x5a>
+  42:	f015 0f03 	tst.w	r5, #3
+  46:	d1f2      	bne.n	2e <eax_crypt_data+0x2e>
+  48:	e007      	b.n	5a <eax_crypt_data+0x5a>
+  4a:	1972      	adds	r2, r6, r5
+  4c:	5939      	ldr	r1, [r7, r4]
+  4e:	6912      	ldr	r2, [r2, #16]
+  50:	3504      	adds	r5, #4
+  52:	ea81 0202 	eor.w	r2, r1, r2
+  56:	513a      	str	r2, [r7, r4]
+  58:	461c      	mov	r4, r3
+  5a:	1d23      	adds	r3, r4, #4
+  5c:	454b      	cmp	r3, r9
+  5e:	d902      	bls.n	66 <eax_crypt_data+0x66>
+  60:	eb07 0a04 	add.w	sl, r7, r4
+  64:	e01a      	b.n	9c <eax_crypt_data+0x9c>
+  66:	2d0c      	cmp	r5, #12
+  68:	d9ef      	bls.n	4a <eax_crypt_data+0x4a>
+  6a:	e7f9      	b.n	60 <eax_crypt_data+0x60>
+  6c:	4630      	mov	r0, r6
+  6e:	4641      	mov	r1, r8
+  70:	f106 0260 	add.w	r2, r6, #96	; 0x60
+  74:	f7ff fffe 	bl	0 <aes_encrypt>
+  78:	2310      	movs	r3, #16
+  7a:	e000      	b.n	7e <eax_crypt_data+0x7e>
+  7c:	b133      	cbz	r3, 8c <eax_crypt_data+0x8c>
+  7e:	3b01      	subs	r3, #1
+  80:	5cf2      	ldrb	r2, [r6, r3]
+  82:	3201      	adds	r2, #1
+  84:	b2d2      	uxtb	r2, r2
+  86:	54f2      	strb	r2, [r6, r3]
+  88:	2a00      	cmp	r2, #0
+  8a:	d0f7      	beq.n	7c <eax_crypt_data+0x7c>
+  8c:	4650      	mov	r0, sl
+  8e:	4651      	mov	r1, sl
+  90:	4642      	mov	r2, r8
+  92:	f7ff fffe 	bl	0 <eax_crypt_data>
+  96:	f10a 0a10 	add.w	sl, sl, #16
+  9a:	465c      	mov	r4, fp
+  9c:	f104 0b10 	add.w	fp, r4, #16
+  a0:	45cb      	cmp	fp, r9
+  a2:	d9e3      	bls.n	6c <eax_crypt_data+0x6c>
+  a4:	e04c      	b.n	140 <eax_crypt_data+0x140>
+  a6:	b975      	cbnz	r5, c6 <eax_crypt_data+0xc6>
+  a8:	462c      	mov	r4, r5
+  aa:	e009      	b.n	c0 <eax_crypt_data+0xc0>
+  ac:	f818 2005 	ldrb.w	r2, [r8, r5]
+  b0:	5d3b      	ldrb	r3, [r7, r4]
+  b2:	3501      	adds	r5, #1
+  b4:	ea82 0303 	eor.w	r3, r2, r3
+  b8:	553b      	strb	r3, [r7, r4]
+  ba:	3401      	adds	r4, #1
+  bc:	454c      	cmp	r4, r9
+  be:	d103      	bne.n	c8 <eax_crypt_data+0xc8>
+  c0:	eb07 0a04 	add.w	sl, r7, r4
+  c4:	e01b      	b.n	fe <eax_crypt_data+0xfe>
+  c6:	2400      	movs	r4, #0
+  c8:	2d10      	cmp	r5, #16
+  ca:	d1ef      	bne.n	ac <eax_crypt_data+0xac>
+  cc:	e7f8      	b.n	c0 <eax_crypt_data+0xc0>
+  ce:	4630      	mov	r0, r6
+  d0:	4641      	mov	r1, r8
+  d2:	f106 0260 	add.w	r2, r6, #96	; 0x60
+  d6:	f7ff fffe 	bl	0 <aes_encrypt>
+  da:	2310      	movs	r3, #16
+  dc:	e000      	b.n	e0 <eax_crypt_data+0xe0>
+  de:	b133      	cbz	r3, ee <eax_crypt_data+0xee>
+  e0:	3b01      	subs	r3, #1
+  e2:	5cf2      	ldrb	r2, [r6, r3]
+  e4:	3201      	adds	r2, #1
+  e6:	b2d2      	uxtb	r2, r2
+  e8:	54f2      	strb	r2, [r6, r3]
+  ea:	2a00      	cmp	r2, #0
+  ec:	d0f7      	beq.n	de <eax_crypt_data+0xde>
+  ee:	4650      	mov	r0, sl
+  f0:	4651      	mov	r1, sl
+  f2:	4642      	mov	r2, r8
+  f4:	f7ff fffe 	bl	0 <eax_crypt_data>
+  f8:	f10a 0a10 	add.w	sl, sl, #16
+  fc:	465c      	mov	r4, fp
+  fe:	f104 0b10 	add.w	fp, r4, #16
+ 102:	45cb      	cmp	fp, r9
+ 104:	d9e3      	bls.n	ce <eax_crypt_data+0xce>
+ 106:	e01b      	b.n	140 <eax_crypt_data+0x140>
+ 108:	2d10      	cmp	r5, #16
+ 10a:	d000      	beq.n	10e <eax_crypt_data+0x10e>
+ 10c:	b985      	cbnz	r5, 130 <eax_crypt_data+0x130>
+ 10e:	4630      	mov	r0, r6
+ 110:	4641      	mov	r1, r8
+ 112:	f106 0260 	add.w	r2, r6, #96	; 0x60
+ 116:	f7ff fffe 	bl	0 <aes_encrypt>
+ 11a:	2510      	movs	r5, #16
+ 11c:	e000      	b.n	120 <eax_crypt_data+0x120>
+ 11e:	b13d      	cbz	r5, 130 <eax_crypt_data+0x130>
+ 120:	3d01      	subs	r5, #1
+ 122:	5d73      	ldrb	r3, [r6, r5]
+ 124:	3301      	adds	r3, #1
+ 126:	b2db      	uxtb	r3, r3
+ 128:	5573      	strb	r3, [r6, r5]
+ 12a:	2b00      	cmp	r3, #0
+ 12c:	d0f7      	beq.n	11e <eax_crypt_data+0x11e>
+ 12e:	2500      	movs	r5, #0
+ 130:	f818 2005 	ldrb.w	r2, [r8, r5]
+ 134:	5d3b      	ldrb	r3, [r7, r4]
+ 136:	3501      	adds	r5, #1
+ 138:	ea82 0303 	eor.w	r3, r2, r3
+ 13c:	553b      	strb	r3, [r7, r4]
+ 13e:	3401      	adds	r4, #1
+ 140:	454c      	cmp	r4, r9
+ 142:	d3e1      	bcc.n	108 <eax_crypt_data+0x108>
+ 144:	f8d6 3114 	ldr.w	r3, [r6, #276]	; 0x114
+ 148:	191c      	adds	r4, r3, r4
+ 14a:	f8c6 4114 	str.w	r4, [r6, #276]	; 0x114
+ 14e:	2000      	movs	r0, #0
+ 150:	e8bd 8ff8 	ldmia.w	sp!, {r3, r4, r5, r6, r7, r8, r9, sl, fp, pc}
+
+Disassembly of section .text.eax_compute_tag:
+
+00000000 <eax_compute_tag>:
+eax_compute_tag():
+   0:	f8d1 3118 	ldr.w	r3, [r1, #280]	; 0x118
+   4:	f8d1 2114 	ldr.w	r2, [r1, #276]	; 0x114
+   8:	b570      	push	{r4, r5, r6, lr}
+   a:	4293      	cmp	r3, r2
+   c:	4606      	mov	r6, r0
+   e:	460c      	mov	r4, r1
+  10:	d001      	beq.n	16 <eax_compute_tag+0x16>
+  12:	2a00      	cmp	r2, #0
+  14:	d140      	bne.n	98 <eax_compute_tag+0x98>
+  16:	f013 030f 	ands.w	r3, r3, #15
+  1a:	f104 0240 	add.w	r2, r4, #64	; 0x40
+  1e:	d009      	beq.n	34 <eax_compute_tag+0x34>
+  20:	f104 0220 	add.w	r2, r4, #32
+  24:	5cd0      	ldrb	r0, [r2, r3]
+  26:	f06f 017f 	mvn.w	r1, #127	; 0x7f
+  2a:	ea80 0101 	eor.w	r1, r0, r1
+  2e:	54d1      	strb	r1, [r2, r3]
+  30:	f104 0250 	add.w	r2, r4, #80	; 0x50
+  34:	f104 0520 	add.w	r5, r4, #32
+  38:	4628      	mov	r0, r5
+  3a:	4629      	mov	r1, r5
+  3c:	f7ff fffe 	bl	0 <eax_compute_tag>
+  40:	4629      	mov	r1, r5
+  42:	f104 0260 	add.w	r2, r4, #96	; 0x60
+  46:	4628      	mov	r0, r5
+  48:	f7ff fffe 	bl	0 <aes_encrypt>
+  4c:	f894 1020 	ldrb.w	r1, [r4, #32]
+  50:	f894 2030 	ldrb.w	r2, [r4, #48]	; 0x30
+  54:	ea81 0202 	eor.w	r2, r1, r2
+  58:	7032      	strb	r2, [r6, #0]
+  5a:	f894 1021 	ldrb.w	r1, [r4, #33]	; 0x21
+  5e:	f894 2031 	ldrb.w	r2, [r4, #49]	; 0x31
+  62:	ea81 0202 	eor.w	r2, r1, r2
+  66:	7072      	strb	r2, [r6, #1]
+  68:	f894 1022 	ldrb.w	r1, [r4, #34]	; 0x22
+  6c:	f894 2032 	ldrb.w	r2, [r4, #50]	; 0x32
+  70:	ea81 0202 	eor.w	r2, r1, r2
+  74:	70b2      	strb	r2, [r6, #2]
+  76:	f894 2023 	ldrb.w	r2, [r4, #35]	; 0x23
+  7a:	f894 3033 	ldrb.w	r3, [r4, #51]	; 0x33
+  7e:	ea82 0303 	eor.w	r3, r2, r3
+  82:	70f3      	strb	r3, [r6, #3]
+  84:	f8d4 0114 	ldr.w	r0, [r4, #276]	; 0x114
+  88:	f8d4 3118 	ldr.w	r3, [r4, #280]	; 0x118
+  8c:	4298      	cmp	r0, r3
+  8e:	bf14      	ite	ne
+  90:	f04f 30ff 	movne.w	r0, #4294967295
+  94:	2000      	moveq	r0, #0
+  96:	bd70      	pop	{r4, r5, r6, pc}
+  98:	f04f 30ff 	mov.w	r0, #4294967295
+  9c:	bd70      	pop	{r4, r5, r6, pc}
+
+Disassembly of section .text.eax_end:
+
+00000000 <eax_end>:
+eax_end():
+   0:	b508      	push	{r3, lr}
+   2:	2100      	movs	r1, #0
+   4:	f44f 728e 	mov.w	r2, #284	; 0x11c
+   8:	f7ff fffe 	bl	0 <ot_memset>
+   c:	2000      	movs	r0, #0
+   e:	bd08      	pop	{r3, pc}
+
+Disassembly of section .text.eax_encrypt:
+
+00000000 <eax_encrypt>:
+eax_encrypt():
+   0:	b570      	push	{r4, r5, r6, lr}
+   2:	4606      	mov	r6, r0
+   4:	460d      	mov	r5, r1
+   6:	4614      	mov	r4, r2
+   8:	f7ff fffe 	bl	0 <eax_encrypt>
+   c:	4630      	mov	r0, r6
+   e:	4629      	mov	r1, r5
+  10:	4622      	mov	r2, r4
+  12:	f7ff fffe 	bl	0 <eax_encrypt>
+  16:	2000      	movs	r0, #0
+  18:	bd70      	pop	{r4, r5, r6, pc}
+
+Disassembly of section .text.eax_decrypt:
+
+00000000 <eax_decrypt>:
+eax_decrypt():
+   0:	b570      	push	{r4, r5, r6, lr}
+   2:	4606      	mov	r6, r0
+   4:	460d      	mov	r5, r1
+   6:	4614      	mov	r4, r2
+   8:	f7ff fffe 	bl	0 <eax_decrypt>
+   c:	4630      	mov	r0, r6
+   e:	4629      	mov	r1, r5
+  10:	4622      	mov	r2, r4
+  12:	f7ff fffe 	bl	0 <eax_decrypt>
+  16:	2000      	movs	r0, #0
+  18:	bd70      	pop	{r4, r5, r6, pc}
+
+Disassembly of section .text.eax_encrypt_message:
+
+00000000 <eax_encrypt_message>:
+eax_encrypt_message():
+   0:	b570      	push	{r4, r5, r6, lr}
+   2:	4614      	mov	r4, r2
+   4:	461e      	mov	r6, r3
+   6:	460d      	mov	r5, r1
+   8:	4619      	mov	r1, r3
+   a:	f7ff fffe 	bl	0 <eax_encrypt_message>
+   e:	4621      	mov	r1, r4
+  10:	4628      	mov	r0, r5
+  12:	4632      	mov	r2, r6
+  14:	f7ff fffe 	bl	0 <eax_encrypt_message>
+  18:	1928      	adds	r0, r5, r4
+  1a:	4631      	mov	r1, r6
+  1c:	e8bd 4070 	ldmia.w	sp!, {r4, r5, r6, lr}
+  20:	f7ff bffe 	b.w	0 <eax_encrypt_message>
+
+Disassembly of section .text.eax_decrypt_message:
+
+00000000 <eax_decrypt_message>:
+eax_decrypt_message():
+   0:	b573      	push	{r0, r1, r4, r5, r6, lr}
+   2:	4616      	mov	r6, r2
+   4:	461d      	mov	r5, r3
+   6:	5d8b      	ldrb	r3, [r1, r6]
+   8:	188a      	adds	r2, r1, r2
+   a:	f88d 3000 	strb.w	r3, [sp]
+   e:	1c53      	adds	r3, r2, #1
+  10:	7852      	ldrb	r2, [r2, #1]
+  12:	460c      	mov	r4, r1
+  14:	f88d 2001 	strb.w	r2, [sp, #1]
+  18:	785a      	ldrb	r2, [r3, #1]
+  1a:	4629      	mov	r1, r5
+  1c:	f88d 2002 	strb.w	r2, [sp, #2]
+  20:	789b      	ldrb	r3, [r3, #2]
+  22:	f88d 3003 	strb.w	r3, [sp, #3]
+  26:	f7ff fffe 	bl	0 <eax_decrypt_message>
+  2a:	462a      	mov	r2, r5
+  2c:	4631      	mov	r1, r6
+  2e:	4620      	mov	r0, r4
+  30:	f7ff fffe 	bl	0 <eax_decrypt_message>
+  34:	a801      	add	r0, sp, #4
+  36:	4629      	mov	r1, r5
+  38:	f7ff fffe 	bl	0 <eax_decrypt_message>
+  3c:	9b01      	ldr	r3, [sp, #4]
+  3e:	9a00      	ldr	r2, [sp, #0]
+  40:	429a      	cmp	r2, r3
+  42:	bf18      	it	ne
+  44:	3801      	subne	r0, #1
+  46:	bd7c      	pop	{r2, r3, r4, r5, r6, pc}

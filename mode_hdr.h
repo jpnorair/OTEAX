@@ -27,11 +27,13 @@ This header file is an INTERNAL file which supports mode implementation
 #include "brg_endian.h"
 
 
-///@note [JP Norair 25-Aug-2014] I added this part for OpenTag
+///@note [JP Norair 25-Aug-2014] THis is a hack for STM32L CM3 on OpenTag
 #if defined(__opentag__) || defined(__OPENTAG__)
-#   include <OT_platform.h>
-#   include <byteswap.h>
-#   include <endian.h>
+#   include <platform/config.h>
+#   include <otlib/memcpy.h>
+//#include <cm3_endian.h>
+//#include <cm3_byteswap.h>
+//#include <cm3_bitrotate.h>
 
 #   define rotl32       __rotl32
 #   define rotr32       __rotr32
