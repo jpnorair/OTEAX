@@ -27,7 +27,7 @@ Issue Date: 20/12/2007
 /* Include files where endian defines and byteswap functions may reside */
 
 ///@note [JP Norair 25-Aug-2014] THis is a hack for STM32L CM3 on OpenTag
-#if (defined(__opentag__) || defined (__OPENTAG__))
+#if 1 || (defined(__opentag__) || defined (__OPENTAG__))
 #   include <platform/config.h>
 //#include <cm3_endian.h>
 
