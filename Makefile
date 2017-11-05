@@ -14,7 +14,11 @@ TEST_O = _testmain.o
 OTEAXLIB_C = aes_modes_m2.c aescrypt.c aeskey.c aestab.c oteax.c
 OTEAXLIB_O = aes_modes_m2.o aescrypt.o aeskey.o aestab.o oteax.o
 
-DEFINES = -MD -mthumb -mcpu=cortex-m3 -D_STM3x_ -D_STM32x_ -D__opentag__ -D__LITTLE_ENDIAN__
+# STM32 BUILD DEFINES
+#DEFINES = -MD -mthumb -mcpu=cortex-m3 -D_STM3x_ -D_STM32x_ -D__opentag__ -D__LITTLE_ENDIAN__
+
+# x86 BUILD
+DEFINES = -D__opentag__ -D__LITTLE_ENDIAN__
 
 INCLUDES = -I$(INC)
 FLAGS = -O3
