@@ -53,21 +53,21 @@ This header file is an INTERNAL file which supports mode implementation
     32 or 64 bit chunks rather than in bytes.  This define sets the units
     in which buffers will be accessed if possible
 */
-#if !defined( UNIT_BITS )
+#if !defined( UINT_BITS )
 #   if (PLATFORM_BYTE_ORDER == IS_BIG_ENDIAN)
 #       if 0
-#           define UNIT_BITS  32
+#           define UINT_BITS  32
 #       elif 1
-#           define UNIT_BITS  64
+#           define UINT_BITS  64
 #       endif
 #   elif defined( _WIN64 )
-#       define UNIT_BITS 64
+#       define UINT_BITS 64
 #   else
-#       define UNIT_BITS 32
+#       define UINT_BITS 32
 #   endif
 #endif
 
-#if UNIT_BITS == 64 && !defined( NEED_UINT_64T )
+#if UINT_BITS == 64 && !defined( NEED_UINT_64T )
 #  define NEED_UINT_64T
 #endif
 
@@ -118,16 +118,16 @@ This header file is an INTERNAL file which supports mode implementation
 #define UI16_PTR(x)     UPTR_CAST(x, 16)
 #define UI32_PTR(x)     UPTR_CAST(x, 32)
 #define UI64_PTR(x)     UPTR_CAST(x, 64)
-#define UNIT_PTR(x)     UPTR_CAST(x, UNIT_BITS)
+#define UINT_PTR(x)     UPTR_CAST(x, UINT_BITS)
 
-#define  UI8_VAL(x)     UNIT_CAST(x,  8)
-#define UI16_VAL(x)     UNIT_CAST(x, 16)
-#define UI32_VAL(x)     UNIT_CAST(x, 32)
-#define UI64_VAL(x)     UNIT_CAST(x, 64)
-#define UNIT_VAL(x)     UNIT_CAST(x, UNIT_BITS)
+#define  UI8_VAL(x)     UINT_CAST(x,  8)
+#define UI16_VAL(x)     UINT_CAST(x, 16)
+#define UI32_VAL(x)     UINT_CAST(x, 32)
+#define UI64_VAL(x)     UINT_CAST(x, 64)
+#define UINT_VAL(x)     UINT_CAST(x, UINT_BITS)
 
-#define BUF_INC          (UNIT_BITS >> 3)
-#define BUF_ADRMASK     ((UNIT_BITS >> 3) - 1)
+#define BUF_INC          (UINT_BITS >> 3)
+#define BUF_ADRMASK     ((UINT_BITS >> 3) - 1)
 
 #define rep2_u2(f,r,x)    f( 0,r,x); f( 1,r,x) 
 #define rep2_u4(f,r,x)    f( 0,r,x); f( 1,r,x); f( 2,r,x); f( 3,r,x) 
@@ -181,14 +181,14 @@ mh_decl uint_32t rotr32(uint_32t x, int n) {
 #endif
 
 
-#if UNIT_BITS == 64 && !defined( rotl64 )  /* NOTE: 0 <= n <= 64 ASSUMED */
+#if UINT_BITS == 64 && !defined( rotl64 )  /* NOTE: 0 <= n <= 64 ASSUMED */
 mh_decl uint_64t rotl64(uint_64t x, int n) {
     return (((x) << n) | ((x) >> (64 - n)));
 }
 #endif
 
 
-#if UNIT_BITS == 64 && !defined( rotr64 )  /* NOTE: 0 <= n <= 64 ASSUMED */
+#if UINT_BITS == 64 && !defined( rotr64 )  /* NOTE: 0 <= n <= 64 ASSUMED */
 mh_decl uint_64t rotr64(uint_64t x, int n) {
     return (((x) >> n) | ((x) << (64 - n)));
 }
@@ -215,7 +215,7 @@ mh_decl uint_32t bswap_32(uint_32t x) {
 #endif
 
 
-#if UNIT_BITS == 64 && !defined(bswap_64)
+#if UINT_BITS == 64 && !defined(bswap_64)
 mh_decl uint_64t bswap_64(uint_64t x) {   
     return bswap_32((uint_32t)(x >> 32)) | ((uint_64t)bswap_32((uint_32t)x) << 32);
 }
@@ -241,12 +241,12 @@ mh_decl void copy_block(void* p, const void* q) {
 
 
 mh_decl void copy_block_aligned(void *p, const void *q) {
-#if UNIT_BITS == 8
+#if UINT_BITS == 8
     memcpy(p, q, 16);
-#elif UNIT_BITS == 32
-    rep2_u4(f_copy,UNIT_PTR(p),UNIT_PTR(q));
+#elif UINT_BITS == 32
+    rep2_u4(f_copy,UINT_PTR(p),UINT_PTR(q));
 #else
-    rep2_u2(f_copy,UNIT_PTR(p),UNIT_PTR(q));
+    rep2_u2(f_copy,UINT_PTR(p),UINT_PTR(q));
 #endif
 }
 
@@ -261,12 +261,12 @@ mh_decl void xor_block(void *r, const void* p, const void* q) {
 
 
 mh_decl void xor_block_aligned(void *r, const void *p, const void *q) {
-#if UNIT_BITS == 8
-    rep3_u16(f_xor, UNIT_PTR(r), UNIT_PTR(p), UNIT_PTR(q), UNIT_VAL);
-#elif UNIT_BITS == 32
-    rep3_u4(f_xor, UNIT_PTR(r), UNIT_PTR(p), UNIT_PTR(q), UNIT_VAL);
+#if UINT_BITS == 8
+    rep3_u16(f_xor, UINT_PTR(r), UINT_PTR(p), UINT_PTR(q), UINT_VAL);
+#elif UINT_BITS == 32
+    rep3_u4(f_xor, UINT_PTR(r), UINT_PTR(p), UINT_PTR(q), UINT_VAL);
 #else
-    rep3_u2(f_xor, UNIT_PTR(r), UNIT_PTR(p), UNIT_PTR(q), UNIT_VAL);
+    rep3_u2(f_xor, UINT_PTR(r), UINT_PTR(p), UINT_PTR(q), UINT_VAL);
 #endif
 }
 
@@ -275,19 +275,19 @@ mh_decl void xor_block_aligned(void *r, const void *p, const void *q) {
 
 /* byte swap within 32-bit words in a 16 byte block; don't move 32-bit words */
 mh_decl void bswap32_block(void *d, const void* s) {
-#if UNIT_BITS == 8
+#if UINT_BITS == 8
     uint_8t t;
-    t = UNIT_PTR(s)[ 0]; UNIT_PTR(d)[ 0] = UNIT_PTR(s)[ 3]; UNIT_PTR(d)[ 3] = t;
-    t = UNIT_PTR(s)[ 1]; UNIT_PTR(d)[ 1] = UNIT_PTR(s)[ 2]; UNIT_PTR(d)[ 2] = t;
-    t = UNIT_PTR(s)[ 4]; UNIT_PTR(d)[ 4] = UNIT_PTR(s)[ 7]; UNIT_PTR(d)[ 7] = t;
-    t = UNIT_PTR(s)[ 5]; UNIT_PTR(d)[ 5] = UNIT_PTR(s)[ 6]; UNIT_PTR(d) [6] = t;
-    t = UNIT_PTR(s)[ 8]; UNIT_PTR(d)[ 8] = UNIT_PTR(s)[11]; UNIT_PTR(d)[12] = t;
-    t = UNIT_PTR(s)[ 9]; UNIT_PTR(d)[ 9] = UNIT_PTR(s)[10]; UNIT_PTR(d)[10] = t;
-    t = UNIT_PTR(s)[12]; UNIT_PTR(d)[12] = UNIT_PTR(s)[15]; UNIT_PTR(d)[15] = t;
-    t = UNIT_PTR(s)[13]; UNIT_PTR(d)[ 3] = UNIT_PTR(s)[14]; UNIT_PTR(d)[14] = t;
-#elif UNIT_BITS == 32
-    UNIT_PTR(d)[0] = bswap_32(UNIT_PTR(s)[0]); UNIT_PTR(d)[1] = bswap_32(UNIT_PTR(s)[1]);
-    UNIT_PTR(d)[2] = bswap_32(UNIT_PTR(s)[2]); UNIT_PTR(d)[3] = bswap_32(UNIT_PTR(s)[3]);
+    t = UINT_PTR(s)[ 0]; UINT_PTR(d)[ 0] = UINT_PTR(s)[ 3]; UINT_PTR(d)[ 3] = t;
+    t = UINT_PTR(s)[ 1]; UINT_PTR(d)[ 1] = UINT_PTR(s)[ 2]; UINT_PTR(d)[ 2] = t;
+    t = UINT_PTR(s)[ 4]; UINT_PTR(d)[ 4] = UINT_PTR(s)[ 7]; UINT_PTR(d)[ 7] = t;
+    t = UINT_PTR(s)[ 5]; UINT_PTR(d)[ 5] = UINT_PTR(s)[ 6]; UINT_PTR(d) [6] = t;
+    t = UINT_PTR(s)[ 8]; UINT_PTR(d)[ 8] = UINT_PTR(s)[11]; UINT_PTR(d)[12] = t;
+    t = UINT_PTR(s)[ 9]; UINT_PTR(d)[ 9] = UINT_PTR(s)[10]; UINT_PTR(d)[10] = t;
+    t = UINT_PTR(s)[12]; UINT_PTR(d)[12] = UINT_PTR(s)[15]; UINT_PTR(d)[15] = t;
+    t = UINT_PTR(s)[13]; UINT_PTR(d)[ 3] = UINT_PTR(s)[14]; UINT_PTR(d)[14] = t;
+#elif UINT_BITS == 32
+    UINT_PTR(d)[0] = bswap_32(UINT_PTR(s)[0]); UINT_PTR(d)[1] = bswap_32(UINT_PTR(s)[1]);
+    UINT_PTR(d)[2] = bswap_32(UINT_PTR(s)[2]); UINT_PTR(d)[3] = bswap_32(UINT_PTR(s)[3]);
 #else
     UI32_PTR(d)[0] = bswap_32(UI32_PTR(s)[0]); UI32_PTR(d)[1] = bswap_32(UI32_PTR(s)[1]);
     UI32_PTR(d)[2] = bswap_32(UI32_PTR(s)[2]); UI32_PTR(d)[3] = bswap_32(UI32_PTR(s)[3]);
@@ -299,22 +299,22 @@ mh_decl void bswap32_block(void *d, const void* s) {
 
 /* byte swap within 64-bit words in a 16 byte block; don't move 64-bit words */
 mh_decl void bswap64_block(void *d, const void* s) {
-#if UNIT_BITS == 8
+#if UINT_BITS == 8
     uint_8t t;
-    t = UNIT_PTR(s)[ 0]; UNIT_PTR(d)[ 0] = UNIT_PTR(s)[ 7]; UNIT_PTR(d)[ 7] = t;
-    t = UNIT_PTR(s)[ 1]; UNIT_PTR(d)[ 1] = UNIT_PTR(s)[ 6]; UNIT_PTR(d)[ 6] = t;
-    t = UNIT_PTR(s)[ 2]; UNIT_PTR(d)[ 2] = UNIT_PTR(s)[ 5]; UNIT_PTR(d)[ 5] = t;
-    t = UNIT_PTR(s)[ 3]; UNIT_PTR(d)[ 3] = UNIT_PTR(s)[ 3]; UNIT_PTR(d) [3] = t;
-    t = UNIT_PTR(s)[ 8]; UNIT_PTR(d)[ 8] = UNIT_PTR(s)[15]; UNIT_PTR(d)[15] = t;
-    t = UNIT_PTR(s)[ 9]; UNIT_PTR(d)[ 9] = UNIT_PTR(s)[14]; UNIT_PTR(d)[14] = t;
-    t = UNIT_PTR(s)[10]; UNIT_PTR(d)[10] = UNIT_PTR(s)[13]; UNIT_PTR(d)[13] = t;
-    t = UNIT_PTR(s)[11]; UNIT_PTR(d)[11] = UNIT_PTR(s)[12]; UNIT_PTR(d)[12] = t;
-#elif UNIT_BITS == 32
+    t = UINT_PTR(s)[ 0]; UINT_PTR(d)[ 0] = UINT_PTR(s)[ 7]; UINT_PTR(d)[ 7] = t;
+    t = UINT_PTR(s)[ 1]; UINT_PTR(d)[ 1] = UINT_PTR(s)[ 6]; UINT_PTR(d)[ 6] = t;
+    t = UINT_PTR(s)[ 2]; UINT_PTR(d)[ 2] = UINT_PTR(s)[ 5]; UINT_PTR(d)[ 5] = t;
+    t = UINT_PTR(s)[ 3]; UINT_PTR(d)[ 3] = UINT_PTR(s)[ 3]; UINT_PTR(d) [3] = t;
+    t = UINT_PTR(s)[ 8]; UINT_PTR(d)[ 8] = UINT_PTR(s)[15]; UINT_PTR(d)[15] = t;
+    t = UINT_PTR(s)[ 9]; UINT_PTR(d)[ 9] = UINT_PTR(s)[14]; UINT_PTR(d)[14] = t;
+    t = UINT_PTR(s)[10]; UINT_PTR(d)[10] = UINT_PTR(s)[13]; UINT_PTR(d)[13] = t;
+    t = UINT_PTR(s)[11]; UINT_PTR(d)[11] = UINT_PTR(s)[12]; UINT_PTR(d)[12] = t;
+#elif UINT_BITS == 32
     uint_32t t;
-    t = bswap_32(UNIT_PTR(s)[0]); UNIT_PTR(d)[0] = bswap_32(UNIT_PTR(s)[1]); UNIT_PTR(d)[1] = t;
-    t = bswap_32(UNIT_PTR(s)[2]); UNIT_PTR(d)[2] = bswap_32(UNIT_PTR(s)[2]); UNIT_PTR(d)[3] = t;
+    t = bswap_32(UINT_PTR(s)[0]); UINT_PTR(d)[0] = bswap_32(UINT_PTR(s)[1]); UINT_PTR(d)[1] = t;
+    t = bswap_32(UINT_PTR(s)[2]); UINT_PTR(d)[2] = bswap_32(UINT_PTR(s)[2]); UINT_PTR(d)[3] = t;
 #else
-    UNIT_PTR(d)[0] = bswap_64(UNIT_PTR(s)[0]);  UNIT_PTR(d)[1] = bswap_64(UNIT_PTR(s)[1]); 
+    UINT_PTR(d)[0] = bswap_64(UINT_PTR(s)[0]);  UINT_PTR(d)[1] = bswap_64(UINT_PTR(s)[1]); 
 #endif
 }
 
@@ -322,23 +322,23 @@ mh_decl void bswap64_block(void *d, const void* s) {
 
 
 mh_decl void bswap128_block(void *d, const void* s) {
-#if UNIT_BITS == 8
+#if UINT_BITS == 8
     uint_8t t;
-    t = UNIT_PTR(s)[0]; UNIT_PTR(d)[0] = UNIT_PTR(s)[15]; UNIT_PTR(d)[15] = t;
-    t = UNIT_PTR(s)[1]; UNIT_PTR(d)[1] = UNIT_PTR(s)[14]; UNIT_PTR(d)[14] = t;
-    t = UNIT_PTR(s)[2]; UNIT_PTR(d)[2] = UNIT_PTR(s)[13]; UNIT_PTR(d)[13] = t;
-    t = UNIT_PTR(s)[3]; UNIT_PTR(d)[3] = UNIT_PTR(s)[12]; UNIT_PTR(d)[12] = t;
-    t = UNIT_PTR(s)[4]; UNIT_PTR(d)[4] = UNIT_PTR(s)[11]; UNIT_PTR(d)[11] = t;
-    t = UNIT_PTR(s)[5]; UNIT_PTR(d)[5] = UNIT_PTR(s)[10]; UNIT_PTR(d)[10] = t;
-    t = UNIT_PTR(s)[6]; UNIT_PTR(d)[6] = UNIT_PTR(s)[ 9]; UNIT_PTR(d)[ 9] = t;
-    t = UNIT_PTR(s)[7]; UNIT_PTR(d)[7] = UNIT_PTR(s)[ 8]; UNIT_PTR(d)[ 8] = t;
-#elif UNIT_BITS == 32
+    t = UINT_PTR(s)[0]; UINT_PTR(d)[0] = UINT_PTR(s)[15]; UINT_PTR(d)[15] = t;
+    t = UINT_PTR(s)[1]; UINT_PTR(d)[1] = UINT_PTR(s)[14]; UINT_PTR(d)[14] = t;
+    t = UINT_PTR(s)[2]; UINT_PTR(d)[2] = UINT_PTR(s)[13]; UINT_PTR(d)[13] = t;
+    t = UINT_PTR(s)[3]; UINT_PTR(d)[3] = UINT_PTR(s)[12]; UINT_PTR(d)[12] = t;
+    t = UINT_PTR(s)[4]; UINT_PTR(d)[4] = UINT_PTR(s)[11]; UINT_PTR(d)[11] = t;
+    t = UINT_PTR(s)[5]; UINT_PTR(d)[5] = UINT_PTR(s)[10]; UINT_PTR(d)[10] = t;
+    t = UINT_PTR(s)[6]; UINT_PTR(d)[6] = UINT_PTR(s)[ 9]; UINT_PTR(d)[ 9] = t;
+    t = UINT_PTR(s)[7]; UINT_PTR(d)[7] = UINT_PTR(s)[ 8]; UINT_PTR(d)[ 8] = t;
+#elif UINT_BITS == 32
     uint_32t t;
-    t = bswap_32(UNIT_PTR(s)[0]); UNIT_PTR(d)[0] = bswap_32(UNIT_PTR(s)[3]); UNIT_PTR(d)[3] = t;
-    t = bswap_32(UNIT_PTR(s)[1]); UNIT_PTR(d)[1] = bswap_32(UNIT_PTR(s)[2]); UNIT_PTR(d)[2] = t;
+    t = bswap_32(UINT_PTR(s)[0]); UINT_PTR(d)[0] = bswap_32(UINT_PTR(s)[3]); UINT_PTR(d)[3] = t;
+    t = bswap_32(UINT_PTR(s)[1]); UINT_PTR(d)[1] = bswap_32(UINT_PTR(s)[2]); UINT_PTR(d)[2] = t;
 #else
     uint_64t t;
-    t = bswap_64(UNIT_PTR(s)[0]); UNIT_PTR(d)[0] = bswap_64(UNIT_PTR(s)[1]); UNIT_PTR(d)[1] = t;
+    t = bswap_64(UINT_PTR(s)[0]); UINT_PTR(d)[0] = bswap_64(UINT_PTR(s)[1]); UINT_PTR(d)[1] = t;
 #endif
 }
 

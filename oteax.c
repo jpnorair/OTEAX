@@ -152,7 +152,7 @@ ret_type eax_auth_header(                   /* authenticate the header      */
 
             while(cnt + BUF_INC <= hdr_len && b_pos <= BLOCK_SIZE - BUF_INC)
             {
-                *UNIT_PTR(UI8_PTR(ctx->hdr_cbc) + b_pos) ^= *UNIT_PTR(hdr + cnt);
+                *UINT_PTR(UI8_PTR(ctx->hdr_cbc) + b_pos) ^= *UINT_PTR(hdr + cnt);
                 cnt += BUF_INC; b_pos += BUF_INC;
             }
         }
@@ -212,7 +212,7 @@ ret_type eax_auth_data(                     /* authenticate ciphertext data */
                UI8_PTR(ctx->txt_cbc)[b_pos++] ^= data[cnt++];
             }
             while(cnt + BUF_INC <= data_len && b_pos <= BLOCK_SIZE - BUF_INC) {
-                *UNIT_PTR(UI8_PTR(ctx->txt_cbc) + b_pos) ^= *UNIT_PTR(data + cnt);
+                *UINT_PTR(UI8_PTR(ctx->txt_cbc) + b_pos) ^= *UINT_PTR(data + cnt);
                 cnt += BUF_INC; b_pos += BUF_INC;
             }
         }
@@ -270,7 +270,7 @@ ret_type eax_crypt_data(                    /* encrypt or decrypt data      */
               }
 
             while(cnt + BUF_INC <= data_len && b_pos <= BLOCK_SIZE - BUF_INC) {
-                *UNIT_PTR(data + cnt) ^= *UNIT_PTR(UI8_PTR(ctx->enc_ctr) + b_pos);
+                *UINT_PTR(data + cnt) ^= *UINT_PTR(UI8_PTR(ctx->enc_ctr) + b_pos);
                 cnt += BUF_INC; b_pos += BUF_INC;
             }
         }

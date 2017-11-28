@@ -191,7 +191,7 @@ extern "C" {
     defines 'size' must be a power of 2 and >= 8. NOTE that the 
     buffer size is in bytes but the type length is in bits
 
-    UNIT_TYPEDEF(x,size)        declares a variable 'x' of length 
+    UINT_TYPEDEF(x,size)        declares a variable 'x' of length 
                                 'size' bits
 
     BUFR_TYPEDEF(x,size,bsize)  declares a buffer 'x' of length 'bsize' 
@@ -199,7 +199,7 @@ extern "C" {
                                 each of 'size' bits (bsize must be a 
                                 multiple of size / 8)
 
-    UNIT_CAST(x,size)           casts a variable to a type of 
+    UINT_CAST(x,size)           casts a variable to a type of 
                                 length 'size' bits
 
     UPTR_CAST(x,size)           casts a pointer to a pointer to a 
@@ -207,9 +207,9 @@ extern "C" {
 */
 
 #define UI_TYPE(size)               uint_##size##t
-#define UNIT_TYPEDEF(x,size)        typedef UI_TYPE(size) x
+#define UINT_TYPEDEF(x,size)        typedef UI_TYPE(size) x
 #define BUFR_TYPEDEF(x,size,bsize)  typedef UI_TYPE(size) x[bsize / (size >> 3)]
-#define UNIT_CAST(x,size)           ((UI_TYPE(size) )(x))  
+#define UINT_CAST(x,size)           ((UI_TYPE(size) )(x))  
 #define UPTR_CAST(x,size)           ((UI_TYPE(size)*)(x))
 
 #if defined(__cplusplus)

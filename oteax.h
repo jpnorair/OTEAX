@@ -48,17 +48,17 @@ and fitness for purpose.
     and xor operations on buffers when the alignment matches this value. 
 */
 ///@note [JPN] I changed the default here from 64 bits to 32 bits
-#if !defined( UNIT_BITS )
+#if !defined( UINT_BITS )
 #   if 0
-#       define UNIT_BITS 64
+#       define UINT_BITS 64
 #   elif 1
-#       define UNIT_BITS 32
+#       define UINT_BITS 32
 #   else
-#       define UNIT_BITS  8
+#       define UINT_BITS  8
 #   endif
 #endif
 
-#if UNIT_BITS == 64 && !defined( NEED_UINT_64T )
+#if UINT_BITS == 64 && !defined( NEED_UINT_64T )
 #   define NEED_UINT_64T
 #endif
 
@@ -87,9 +87,9 @@ extern "C"
 #ifndef RET_TYPE_DEFINED
   typedef int  ret_type;
 #endif
-UNIT_TYPEDEF(eax_unit_t, UNIT_BITS);
-BUFR_TYPEDEF(eax_buf_t, UNIT_BITS, AES_BLOCK_SIZE);
-BUFR_TYPEDEF(eax_dbuf_t, UNIT_BITS, 2 * AES_BLOCK_SIZE);
+UINT_TYPEDEF(eax_unit_t, UINT_BITS);
+BUFR_TYPEDEF(eax_buf_t, UINT_BITS, AES_BLOCK_SIZE);
+BUFR_TYPEDEF(eax_dbuf_t, UINT_BITS, 2 * AES_BLOCK_SIZE);
 
 #define EAX_BLOCK_SIZE  AES_BLOCK_SIZE
 
