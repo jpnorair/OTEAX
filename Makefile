@@ -1,32 +1,34 @@
-#COMPILER=gcc
-COMPILER=arm-none-eabi-gcc
 
-INC = ./
+INCDIR = ./
 
-#OT_HEADERS := $(OTLIB)/$(wildcard *.h)
-#PL_HEADERS := $(PLATFORM)/$(wildcard *.h)
-#NOTE: I don't use wildcards in the build strings, because I like to keep the
-#      compilations selective.
+#NOTE: this build is so small that the source and objects are 
+#      easy enough to supply explicitly.
+OTEAXLIB_C := ./aes_modes_m2.c ./aescrypt.c ./aeskey.c ./aestab.c ./oteax.c
 
-TEST_C = _testmain.c
-TEST_O = _testmain.o
+TEST_C := _testmain.c
+TEST_O := _testmain.o
 
-OTEAXLIB_C = aes_modes_m2.c aescrypt.c aeskey.c aestab.c oteax.c
-OTEAXLIB_O = aes_modes_m2.o aescrypt.o aeskey.o aestab.o oteax.o
 
-# STM32 BUILD DEFINES
-#DEFINES = -MD -mthumb -mcpu=cortex-m3 -D_STM3x_ -D_STM32x_ -D__opentag__ -D__LITTLE_ENDIAN__
+# STM32 BUILD (LIB)
+STM32_DEFINES := -MD -mthumb -mcpu=cortex-m3 -D_STM3x_ -D_STM32x_ -D__opentag__ -D__LITTLE_ENDIAN__
+STM32_CC      := arm-none-eabi-gcc
+STM32_CFLAGS  := -O2
+STM32_OBJECTS  := $(patsubst ./%,build/stm32_m3/%,$(OTEAXLIB_C:.c=.o))
 
-# x86 BUILD
-DEFINES = -D__opentag__ -D__LITTLE_ENDIAN__
+# NATIVE BUILD (LIB)
+CC       := gcc
+DEFINES  := -D__opentag__ -D__LITTLE_ENDIAN__
+CFLAGS   := -O3
+OBJECTS  := $(patsubst ./%,build/native/%,$(OTEAXLIB_C:.c=.o))
 
-INCLUDES = -I$(INC)
-FLAGS = -O3
+#Derived Variables
+INC := -I$(INCDIR)
+
 
 test: oteax_test_out 
 lib: oteax_lib_a
 
-all: test lib
+all: test lib lib_stm32
 
 clean:
 	rm -f *.o 
@@ -49,5 +51,7 @@ oteax_test_o: $(TEST_C)
 	$(COMPILER) $(FLAGS) $(DEFINES) $(INCLUDES) -c $(TEST_C)
 
 oteax_lib_o: $(OTEAXLIB_C)
-	$(COMPILER) $(FLAGS) $(DEFINES) $(INCLUDES) -c $(OTEAXLIB_C)
+	$(COMPILER) $(FLAGS) $(DEFINES) $(INCLUDES) -c $^
+	
+
 
