@@ -7,7 +7,7 @@ Changes in this Version (16/04/2007)
 
 These changes remove errors in the VC++ build files and add some 
 improvements in file naming consitency and portability. There are
-no changes to overcome reported bugs in the code.
+no changes to overcome reported bugs in the code. 
 
 1. gen_tabs() has been renamed to aes_init() to better decribe its
    function to those not familiar with AES internals.
