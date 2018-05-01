@@ -36,11 +36,11 @@
 #define u8      unsigned char
 #define ulong   unsigned long
 
-int test_encrypt(uint8_t* nonce, uint8_t* data, size_t datalen, uint8_t* key);
-int test_decrypt(uint8_t* nonce, uint8_t* data, size_t datalen, uint8_t* key);
+int test_encrypt(u8* nonce, u8* data, size_t datalen, u8* key);
+int test_decrypt(u8* nonce, u8* data, size_t datalen, u8* key);
 
 
-int __eaxcrypt(uint8_t* nonce, uint8_t* data, size_t datalen, uint8_t* key,
+int __eaxcrypt(u8* nonce, u8* data, size_t datalen, u8* key,
                      int (*__crypt)(cu8*, u8*, ulong, eax_ctx*) )   {
     eax_ctx context;
     int     retval;
@@ -54,18 +54,18 @@ int __eaxcrypt(uint8_t* nonce, uint8_t* data, size_t datalen, uint8_t* key,
 }
 
 
-int test_encrypt(uint8_t* nonce, uint8_t* data, size_t datalen, uint8_t* key) {
+int test_encrypt(u8* nonce, u8* data, size_t datalen, u8* key) {
     return __eaxcrypt(nonce, data, datalen, key, &eax_encrypt_message);
 }
 
 
-int test_decrypt(uint8_t* nonce, uint8_t* data, size_t datalen, uint8_t* key) {
+int test_decrypt(u8* nonce, u8* data, size_t datalen, u8* key) {
     return __eaxcrypt(nonce, data, datalen, key, &eax_decrypt_message);
 }
 
 
 
-void print_hex(uint8_t* data, int length) {
+void print_hex(u8* data, int length) {
     int i;
     for (i=0; i<length;) {
         printf("%02X ", data[i]);
@@ -82,25 +82,26 @@ void print_hex(uint8_t* data, int length) {
 
 int main(void) {
     int tag_size;
+    int i;
 
-    uint8_t data_buf[256];
-    uint8_t nonce_buf[16];
+    u8 data_buf[256];
+    u8 nonce_buf[16];
     
-    uint8_t test_key[16]    = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 };
+    u8 test_key[16]    = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 };
     
     // Only the first 7 bytes are actually used, rest just RFU
-    uint8_t test_nonce[16]  = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 };
+    u8 test_nonce[16]  = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 };
     
     // Test payload: set to a prime-number of bytes to show non-aligned 
     // cipher feature of EAX
-    uint8_t test_data[43]   = {   0,  1,  2,  3,  4,  5,  6,  7,  8,  9,
+    u8 test_data[43]   = {   0,  1,  2,  3,  4,  5,  6,  7,  8,  9,
                                  10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
                                  20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
                                  30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
                                  40, 41, 42 };
     
     // Expected output of test encryption
-    uint8_t test_check[47]  = { 
+    u8 test_check[47]  = {
         0xF2, 0xD7, 0xF3, 0xDE, 0xF3, 0x61, 0x85, 0x5F, 0xCB, 0x5E, 
         0x7E, 0xF4, 0x96, 0x51, 0x44, 0x6E, 0x24, 0x9C, 0x81, 0xA7, 
         0x63, 0x34, 0xF7, 0x4D, 0xC4, 0xD6, 0xAA, 0x31, 0xB3, 0x77, 
@@ -115,7 +116,29 @@ int main(void) {
     memcpy(data_buf, test_data, sizeof(test_data));
     
     // Run first encryption
-    tag_size = test_encrypt(test_nonce, data_buf, sizeof(test_data), test_key);
+    {   eax_ctx context;
+        int     retval;
+
+        retval = eax_init_and_key((cu8*)test_key, &context);
+        if (retval != 0) {
+            printf("eax_init_and_key() failed, unknown error\n\n");
+        }
+        else {
+            for (i=0; i<44; i++) {
+                printf("ks[%02d] = %u\n", i, context.aes[0].ks[i]);
+            }
+            printf("aes.inf.l = %u\n", context.aes[0].inf.l);
+
+            retval = eax_encrypt_message((cu8*)test_nonce, (u8*)data_buf, sizeof(test_data), &context);
+            if (retval != 0) {
+                printf("eax_encrypt_message() failed, unknown error\n\n");
+            }
+        }
+
+        tag_size = 4;
+    }
+
+    //tag_size = test_encrypt(test_nonce, data_buf, sizeof(test_data), test_key);
     if (tag_size < 0) {
         printf("test_encrypt() failed, unknown error\n\n");
     }
@@ -123,23 +146,31 @@ int main(void) {
     putchar('\n');
     
     // Check against test
-    {   int i, j;
+    {   int j;
         for (i=0, j=0; i<(sizeof(test_data) + tag_size); i++) {
             int k;
             k   = (data_buf[i] != test_check[i]);
             j  += k;
             
-            if (j == 1) printf("Errors: ");
-            if (k)      printf("%d, ", i);
+            if (j == 1) {
+                printf("Errors: ");
+            }
+            if (k) {
+                printf("%d, ", i);
+            }
         }
-        if (j != 0) putchar('\n');
-        else        printf("Check done: no errors!\n");
+        if (j != 0) {
+            putchar('\n');
+        }
+        else {
+            printf("Check done: no errors!\n");
+        }
         putchar('\n');
     }
     
     // Decrypt
     tag_size = test_decrypt(test_nonce, data_buf, sizeof(test_data), test_key);
-    if (tag_size < 0) {
+    if (tag_size != 4) {
         printf("test_decrypt() failed, unknown error\n\n");
     }
     print_hex(data_buf, sizeof(test_data));

@@ -51,7 +51,10 @@ extern "C" {
 
 #ifndef BRG_UI8
 #   define BRG_UI8
-#   if UCHAR_MAX == 255u
+#   if defined(__C2000__)
+#       warning "Using C2000, which has no 8bit type.  All uint8_t usage is padded."
+        typedef unsigned char uint_8t;
+#   elif UCHAR_MAX == 255u
         typedef unsigned char uint_8t;
 #   else
 #       error Please define uint_8t as an 8-bit unsigned integer type in brg_types.h

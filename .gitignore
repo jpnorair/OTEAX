@@ -7,14 +7,16 @@
 ###############
 # Local Build #
 ###############
+/pkg
 /bin
-*.a
+/build
 
 #######################
-# Xcode Project Bloat #
+# IDE Project Bloat   #
 #######################
 /xcode_oteax
 /_ccs_c2000_proj
+/_RIDE_proj
 
 ###################################
 # Compiler/Linker Generated Files #

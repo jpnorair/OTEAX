@@ -97,6 +97,42 @@ Issue Date: 20/12/2007
 
 #include "brg_endian.h"
 
+
+
+/** Optimization Shortcuts from OTEAX
+  * These should be defined in the makefile or otherwise during the compilation stage,
+  * and passed into the compiler.  
+  *
+  * The OTEAX makefile defaults to "normal".  The makefile optimization levels convert
+  * to these optimizations as follows:
+  * - size --> -1
+  * - normal --> 0
+  * - speed --> 2
+  *
+  * You can pass OPTIMIZATION=[normal, size, speed] into make in order to explicitly
+  * select one of the high level optimization modes.
+  *
+  * Normal Optimization: (OTEAX_OPTIMIZATION == 0)
+  * 0   : Two Table optimization, Loop unrolling on
+  *
+  * Size Optimization: (OTEAX_OPTIMIZATION < 0)
+  * -1  : No Tables, Some code unrolling
+  * -2  : No Tables, No unrolling at all
+  *
+  * Speed Optimization: (OTEAX_OPTIMIZATION > 0)
+  * 1   : Five Table optimization, Loop unrolling on
+  * 2   : Eight Table optimization, Loop unrolling on
+  */
+  
+#if !defined(OTEAX_OPTIMIZATION)
+#   define OTEAX_OPTIMIZATION   0
+#endif
+
+
+
+
+
+
 /*  CONFIGURATION - THE USE OF DEFINES
 
     Later in this section there are a number of defines that control the
@@ -165,7 +201,7 @@ Issue Date: 20/12/2007
 
 #if defined( __GNUC__ ) && defined( __i386__ ) \
  || defined( _WIN32   ) && defined( _M_IX86  ) \
- && !(defined( _WIN64 ) || defined( _WIN32_WCE ) || defined( _MSC_VER ) && ( _MSC_VER <= 800 ))
+ && !( defined(_WIN64) || defined(_WIN32_WCE) || defined(_MSC_VER) && (_MSC_VER <= 800) )
 #  define VIA_ACE_POSSIBLE
 #endif
 
@@ -242,6 +278,7 @@ Issue Date: 20/12/2007
     assumed that access to byte arrays as if they are arrays of 32-bit
     words will not cause problems when such accesses are misaligned.
 */
+///@todo review this for usage with Cortex M3
 #if 1 && !defined( _MSC_VER )
 #   define SAFE_IO
 #endif
@@ -257,27 +294,27 @@ Issue Date: 20/12/2007
     unrolling.  The following options allow partial or full loop unrolling
     to be set independently for encryption and decryption
 */
-#if 1
+#if (OTEAX_OPTIMIZATION >= 0)
 #   define ENC_UNROLL  FULL
-#elif 0
+#elif (OTEAX_OPTIMIZATION == -1)
 #   define ENC_UNROLL  PARTIAL
 #else
 #   define ENC_UNROLL  NONE
 #endif
 
-#if 1
+#if (OTEAX_OPTIMIZATION >= 0)
 #   define DEC_UNROLL  FULL
-#elif 0
+#elif (OTEAX_OPTIMIZATION == -1)
 #   define DEC_UNROLL  PARTIAL
 #else
 #   define DEC_UNROLL  NONE
 #endif
 
-#if 1
+#if (OTEAX_OPTIMIZATION >= -1)
 #   define ENC_KS_UNROLL
 #endif
 
-#if 1
+#if (OTEAX_OPTIMIZATION >= -1)
 #   define DEC_KS_UNROLL
 #endif
 
@@ -316,6 +353,8 @@ Issue Date: 20/12/2007
     In some systems it is better to mask longer values to extract bytes 
     rather than using a cast. This option allows this choice.
 */
+
+///@todo have this do casting on CM3, CM4, which have mixed width memory controller
 #if 0
 #   define to_byte(x)  ((uint_8t)(x))
 #else
@@ -369,33 +408,33 @@ Issue Date: 20/12/2007
 ///      mode in order to fit into small memory.  See notes accompanying the
 ///      code distribution for metrics.
 
-#if 0   /* set tables for the normal encryption round */
+#if (OTEAX_OPTIMIZATION > 0)
 #   define ENC_ROUND   FOUR_TABLES
-#elif 1
+#elif (OTEAX_OPTIMIZATION == 0)
 #   define ENC_ROUND   ONE_TABLE
-#else
+#else 
 #   define ENC_ROUND   NO_TABLES
 #endif
 
-#if 0   /* set tables for the last encryption round */
+#if (OTEAX_OPTIMIZATION > 1)
 #   define LAST_ENC_ROUND  FOUR_TABLES
-#elif 1
+#elif (OTEAX_OPTIMIZATION >= 0)
 #   define LAST_ENC_ROUND  ONE_TABLE
 #else
 #   define LAST_ENC_ROUND  NO_TABLES
 #endif
 
-#if 0   /* set tables for the normal decryption round */
+#if (OTEAX_OPTIMIZATION > 0)
 #   define DEC_ROUND   FOUR_TABLES
-#elif 1
+#elif (OTEAX_OPTIMIZATION == 0)
 #   define DEC_ROUND   ONE_TABLE
 #else
 #   define DEC_ROUND   NO_TABLES
 #endif
 
-#if 0   /* set tables for the last decryption round */
+#if (OTEAX_OPTIMIZATION > 1)
 #  define LAST_DEC_ROUND  FOUR_TABLES
-#elif 1
+#elif (OTEAX_OPTIMIZATION >= 0)
 #  define LAST_DEC_ROUND  ONE_TABLE
 #else
 #  define LAST_DEC_ROUND  NO_TABLES
@@ -405,13 +444,16 @@ Issue Date: 20/12/2007
     way that the round functions can.  Include or exclude the following
     defines to set this requirement.
 */
-#if 0
+#if (OTEAX_OPTIMIZATION > 0)
 #   define KEY_SCHED   FOUR_TABLES
-#elif 1
+#elif (OTEAX_OPTIMIZATION == 0)
 #   define KEY_SCHED   ONE_TABLE
 #else
 #   define KEY_SCHED   NO_TABLES
 #endif
+
+
+
 
 /*  ---- END OF USER CONFIGURED OPTIONS ---- */
 

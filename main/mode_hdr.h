@@ -53,6 +53,13 @@ This header file is an INTERNAL file which supports mode implementation
     32 or 64 bit chunks rather than in bytes.  This define sets the units
     in which buffers will be accessed if possible
 */
+
+///@note hack to force C2000 to use 32 bit data elements
+#if defined(__C2000__)
+#   undef UINT_BITS
+#   define UINT_BITS    32
+#endif
+
 #if !defined( UINT_BITS )
 #   if (PLATFORM_BYTE_ORDER == IS_BIG_ENDIAN)
 #       if 0
