@@ -81,7 +81,7 @@ static void print_hex(u8* data, int length) {
 }
 
 
-int testc2000(void) {
+int main(void) {
     int tag_size;
     int i;
 
