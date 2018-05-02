@@ -27,20 +27,28 @@ This header file is an INTERNAL file which supports mode implementation
 #include "brg_endian.h"
 
 
-///@note [JP Norair 25-Aug-2014] THis is a hack for STM32L CM3 on OpenTag
-#if (defined(__STM32__) || defined(_STM32x_)) && (defined(__OPENTAG__) || defined(__opentag__))
+///@note this is to link against platform-specific memcpy functions.
+#if (defined(__OPENTAG__) || defined(__opentag__) || defined(__LIBOTFS__))
 #   include <platform/config.h>
 #   include <otlib/memcpy.h>
-//#include <cm3_endian.h>
-//#include <cm3_byteswap.h>
-//#include <cm3_bitrotate.h>
 
-#   define rotl32       __rotl32
-#   define rotr32       __rotr32
-#   define rotl16       __rotr
-#   define bswap_16(x)  __bswap16(x)
-#   define bswap_32(x)  __bswap32(x)
-#   define bswap_64(x)  __bswap64(x)
+///@todo [JP Norair 25-Aug-2014] THis is a hack for STM32L CM3 on OpenTag
+#   if (defined(__STM32__) || defined(_STM32x_))
+//#       include <cm3_endian.h>
+//#       include <cm3_byteswap.h>
+//#       include <cm3_bitrotate.h>
+
+#       define rotl32       __rotl32
+#       define rotr32       __rotr32
+#       define rotl16       __rotr
+#       define bswap_16(x)  __bswap16(x)
+#       define bswap_32(x)  __bswap32(x)
+#       define bswap_64(x)  __bswap64(x)
+
+#   elif (defined(__C2000__))
+//  Some assembly hooks for fast rotator functions
+
+#   endif
 
 #else
 #   include <string.h>

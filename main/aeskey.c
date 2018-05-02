@@ -18,11 +18,11 @@ and fitness for purpose.
 Issue Date: 20/12/2007
 */
 
-#include "aesopt.h"
-#include "aestab.h"
+#include "oteax/aesopt.h"
+#include "oteax/aestab.h"
 
 #ifdef USE_VIA_ACE_IF_PRESENT
-#  include "aes_via_ace.h"
+#  include "oteax/aes_via_ace.h"
 #endif
 
 #if defined(__cplusplus)

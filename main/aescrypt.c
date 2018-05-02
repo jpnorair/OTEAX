@@ -18,9 +18,9 @@ and fitness for purpose.
 Issue Date: 20/12/2007
 */
 
-#include "brg_types.h"
-#include "aesopt.h"
-#include "aestab.h"
+#include "oteax/brg_types.h"
+#include "oteax/aesopt.h"
+#include "oteax/aestab.h"
 
 #if defined(__cplusplus)
 extern "C"

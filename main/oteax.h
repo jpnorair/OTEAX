@@ -62,7 +62,7 @@ and fitness for purpose.
 #   define NEED_UINT_64T
 #endif
 
-#include "aes.h"
+#include "oteax/aes.h"
 
 #if defined(__cplusplus)
 extern "C"

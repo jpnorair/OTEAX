@@ -103,24 +103,25 @@ test: $(X_PRDCT)
 	cd ./$@ && $(MAKE) -f $(MKFILE).mk obj
 
 #Packaging stage: copy/move files to pkg output directory
-$(X_PRDCT): $(X_PRDCT).a
+$(X_PRDCT): $(X_PRDCT).lib
 	@cp ./main/$(PRODUCT).h ./pkg
+	@cp -R ./main/oteax ./pkg/
 
 #Build the static library
 #There are several supported variants.
-$(LIBNAME).Darwin.a: $(SUBMODULES) $(LIBMODULES)
+$(LIBNAME).Darwin.lib: $(SUBMODULES) $(LIBMODULES)
 	$(eval LIBTOOL_OBJ := $(shell find $(BUILDDIR) -type f -name "*.$(OBJEXT)"))
 #	$(X_LIBTOOL) -static -o $(LIBNAME).a $(LIBTOOL_OBJ)
 #	@mv $(LIBNAME).a pkg/
 	$(X_CC) -dynamiclib -o pkg/$(LIBNAME).dylib $(LIBTOOL_OBJ)
 
-$(LIBNAME).Linux.a: $(SUBMODULES) $(LIBMODULES)
+$(LIBNAME).Linux.lib: $(SUBMODULES) $(LIBMODULES)
 	$(eval LIBTOOL_OBJ := $(shell find $(BUILDDIR) -type f -name "*.$(OBJEXT)"))
 #	$(X_LIBTOOL) --tag=CC --mode=link $(X_CC) -all-static -g -O3 $(X_INC) $(X_LIB) -o $(LIBNAME).a $(LIBTOOL_OBJ)
 #	@mv $$(LIBNAME).a pkg/
 	$(X_CC) -shared -o pkg/$(LIBNAME).so $(LIBTOOL_OBJ)
 
-$(LIBNAME).c2000.a: $(SUBMODULES) $(LIBMODULES)
+$(LIBNAME).c2000.lib: $(SUBMODULES) $(LIBMODULES)
 	$(eval LIBTOOL_OBJ := $(shell find $(BUILDDIR)/$(LIBNAME).c2000 -type f -name "*.$(OBJEXT)"))
 	ar2000 -a $(LIBNAME).a $(LIBTOOL_OBJ)
 	@mv $(LIBNAME).a pkg/

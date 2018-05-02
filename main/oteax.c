@@ -24,7 +24,7 @@ Issue Date: 21/07/2009
 */
 
 #include "oteax.h"
-#include "mode_hdr.h"
+#include "oteax/mode_hdr.h"
 
 #if defined(__cplusplus)
 extern "C"

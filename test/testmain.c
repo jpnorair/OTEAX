@@ -29,7 +29,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "oteax.h"
+#include <oteax.h>
 
 
 #define cu8     const unsigned char

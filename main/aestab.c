@@ -20,8 +20,8 @@ Issue Date: 20/12/2007
 
 #define DO_TABLES
 
-#include "aes.h"
-#include "aesopt.h"
+#include "oteax/aes.h"
+#include "oteax/aesopt.h"
 
 #if defined(FIXED_TABLES)
 
@@ -173,7 +173,7 @@ Issue Date: 20/12/2007
 
 #endif
 
-#include "aestab.h"
+#include "oteax/aestab.h"
 
 #if defined(__cplusplus)
 extern "C"

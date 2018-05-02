@@ -31,7 +31,7 @@ and fitness for purpose.
 #include <string.h>
 #include <assert.h>
 
-#include "aesopt.h"
+#include "oteax/aesopt.h"
 
 #if defined( AES_MODES )
 
