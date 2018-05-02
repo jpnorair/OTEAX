@@ -49,13 +49,28 @@ extern "C" {
 #   define ptrint_t int
 #endif
 
+
+#if defined(__C2000__)
+#   ifndef BYTE16
+#       define BYTE16
+#   endif
+#endif
+
+#ifdef BYTE16
+    typedef const uint16_t          cubyte;
+    typedef uint16_t                ubyte;
+#else
+    typedef const unsigned char     cubyte;
+    typedef unsigned char           ubyte;
+#endif
+
 #ifndef BRG_UI8
 #   define BRG_UI8
-#   if defined(__C2000__)
-#       warning "Using C2000, which has no 8bit type.  All uint8_t usage is padded."
+#   if UCHAR_MAX == 255u
         typedef unsigned char uint_8t;
-#   elif UCHAR_MAX == 255u
-        typedef unsigned char uint_8t;
+#   elif defined(BYTE16)
+#       warning "You are using a 16-bit byte size: see readme for necessary configuration options."
+        typedef ubyte uint_8t;
 #   else
 #       error Please define uint_8t as an 8-bit unsigned integer type in brg_types.h
 #   endif

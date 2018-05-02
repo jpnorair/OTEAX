@@ -14,7 +14,7 @@
   *
   */
 /**
-  * @file       /oteax/_testmain.c
+  * @file       /oteax/testc2000.c
   * @author     JP Norair
   * @version    R100
   * @date       21 Aug 2014
@@ -33,40 +33,40 @@
 #include <oteax.h>
 
 
-#define cu8     const unsigned char
-#define u8      unsigned char
-#define ulong   unsigned long
+#define cuword  const uint32_t
+#define uword   uint32_t
+#define ulong   uword
 
-static int test_encrypt(u8* nonce, u8* data, size_t datalen, u8* key);
-static int test_decrypt(u8* nonce, u8* data, size_t datalen, u8* key);
+static int test_encrypt(uword* nonce, uword* data, size_t datalen, uword* key);
+static int test_decrypt(uword* nonce, uword* data, size_t datalen, uword* key);
 
 
-static int __eaxcrypt(u8* nonce, u8* data, size_t datalen, u8* key,
-                     int (*__crypt)(cu8*, u8*, ulong, eax_ctx*) )   {
+static int __eaxcrypt(uword* nonce, uword* data, size_t datalen, uword* key,
+                     int (*__crypt)(cuword*, uword*, ulong, eax_ctx*) )   {
     eax_ctx context;
     int     retval;
     
-    retval = eax_init_and_key((cu8*)key, &context);
+    retval = eax_init_and_key((cuword*)key, &context);
     if (retval == 0) {
-        retval = __crypt((cu8*)nonce, (u8*)data, (ulong)datalen, &context);
+        retval = __crypt((cuword*)nonce, (uword*)data, (ulong)datalen, &context);
         retval = retval ? -2 : 4;
     }
     return retval;
 }
 
 
-static int test_encrypt(u8* nonce, u8* data, size_t datalen, u8* key) {
+static int test_encrypt(uword* nonce, uword* data, size_t datalen, uword* key) {
     return __eaxcrypt(nonce, data, datalen, key, &eax_encrypt_message);
 }
 
 
-static int test_decrypt(u8* nonce, u8* data, size_t datalen, u8* key) {
+static int test_decrypt(uword* nonce, uword* data, size_t datalen, uword* key) {
     return __eaxcrypt(nonce, data, datalen, key, &eax_decrypt_message);
 }
 
 
 
-static void print_hex(u8* data, int length) {
+static void print_hex(uword* data, int length) {
     int i;
     for (i=0; i<length;) {
         printf("%02X ", data[i]);
@@ -81,33 +81,28 @@ static void print_hex(u8* data, int length) {
 }
 
 
-int testc2000(void) {
+int main(void) {
     int tag_size;
     int i;
 
-    u8 data_buf[256];
-    u8 nonce_buf[16];
+    uword data_buf[64];
+    uword nonce_buf[4];
     
-    u8 test_key[16]    = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 };
+    uword test_key[4]    = { 0x01020304, 0x04050607, 0x08090A0B, 0x0C0D0E0F };
     
     // Only the first 7 bytes are actually used, rest just RFU
-    u8 test_nonce[16]  = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 };
+    ///@todo may need to make NONCE 8 bytes for C2000
+    uword test_nonce[4]  = { 0x01020304, 0x04050607, 0x08090A0B, 0x0C0D0E0F };
     
     // Test payload: set to a prime-number of bytes to show non-aligned 
     // cipher feature of EAX
-    u8 test_data[43]   = {   0,  1,  2,  3,  4,  5,  6,  7,  8,  9,
-                                 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-                                 20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
-                                 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
-                                 40, 41, 42 };
+    uword test_data[11]  = { 0x01020304, 0x05060708, 0x090A0B0C, 0x0D0E0F10,
+                            0x11121314, 0x15161718, 0x191A1B1C, 0x1D1E1F20,
+                            0x21222324, 0x25262728, 0x292A0000 };
     
     // Expected output of test encryption
-    u8 test_check[47]  = {
-        0xF2, 0xD7, 0xF3, 0xDE, 0xF3, 0x61, 0x85, 0x5F, 0xCB, 0x5E, 
-        0x7E, 0xF4, 0x96, 0x51, 0x44, 0x6E, 0x24, 0x9C, 0x81, 0xA7, 
-        0x63, 0x34, 0xF7, 0x4D, 0xC4, 0xD6, 0xAA, 0x31, 0xB3, 0x77, 
-        0x65, 0x7B, 0x02, 0xB4, 0xF4, 0x49, 0xF1, 0x75, 0xF2, 0x1A, 
-        0x54, 0x64, 0x50, 0xA1, 0x16, 0x0F, 0xE4 };
+    ///@todo get this output
+    uword test_check[12]  = { };
     
     // Clear buffers
     memset(data_buf, 0, sizeof(data_buf));
@@ -120,7 +115,7 @@ int testc2000(void) {
     {   eax_ctx context;
         int     retval;
 
-        retval = eax_init_and_key((cu8*)test_key, &context);
+        retval = eax_init_and_key((cuword*)test_key, &context);
         if (retval != 0) {
             printf("eax_init_and_key() failed, unknown error\n\n");
         }
@@ -130,7 +125,7 @@ int testc2000(void) {
             }
             printf("aes.inf.l = %u\n", context.aes[0].inf.l);
 
-            retval = eax_encrypt_message((cu8*)test_nonce, (u8*)data_buf, sizeof(test_data), &context);
+            retval = eax_encrypt_message((cuword*)test_nonce, (uword*)data_buf, sizeof(test_data), &context);
             if (retval != 0) {
                 printf("eax_encrypt_message() failed, unknown error\n\n");
             }

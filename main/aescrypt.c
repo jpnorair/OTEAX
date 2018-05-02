@@ -87,7 +87,7 @@ extern "C"
 #   define fwd_lrnd(y,x,k,c)   (s(y,c) = (k)[c] ^ no_table(x,t_use(s,box),fwd_var,rf1,c))
 #endif
 
-AES_RETURN aes_encrypt(const unsigned char *in, unsigned char *out, const aes_encrypt_ctx cx[1]) {   
+AES_RETURN aes_encrypt(const uint_8t *in, uint_8t *out, const aes_encrypt_ctx cx[1]) {   
     uint_32t         locals(bb0, bb1);
     const uint_32t   *kp;
 #if defined( dec_fmvars )

@@ -99,13 +99,16 @@ extern "C" {
 #endif
 
 #if defined(DO_TABLES) && defined(FIXED_TABLES)
-#define d_1(t,n,b,e)       EXTERN ALIGN CONST XP_DIR t n[256]    =   b(e)
-#define d_4(t,n,b,e,f,g,h) EXTERN ALIGN CONST XP_DIR t n[4][256] = { b(e), b(f), b(g), b(h) }
-EXTERN ALIGN CONST uint_32t t_dec(r,c)[RC_LENGTH] = rc_data(w0);
+///@note this is the primary implementation
+#   define d_1(t,n,b,e)       EXTERN ALIGN CONST XP_DIR t n[256]    =   b(e)
+#   define d_4(t,n,b,e,f,g,h) EXTERN ALIGN CONST XP_DIR t n[4][256] = { b(e), b(f), b(g), b(h) }
+    EXTERN ALIGN CONST uint_32t t_dec(r,c)[RC_LENGTH] = rc_data(w0);
+
 #else
-#define d_1(t,n,b,e)       EXTERN ALIGN CONST XP_DIR t n[256]
-#define d_4(t,n,b,e,f,g,h) EXTERN ALIGN CONST XP_DIR t n[4][256]
-EXTERN ALIGN CONST uint_32t t_dec(r,c)[RC_LENGTH];
+#   define d_1(t,n,b,e)       EXTERN ALIGN CONST XP_DIR t n[256]
+#   define d_4(t,n,b,e,f,g,h) EXTERN ALIGN CONST XP_DIR t n[4][256]
+    EXTERN ALIGN CONST uint_32t t_dec(r,c)[RC_LENGTH];
+
 #endif
 
 #if defined( SBX_SET )

@@ -23,6 +23,7 @@ Issue Date: 20/12/2007
 #include "oteax/aes.h"
 #include "oteax/aesopt.h"
 
+///@note For MCU usage, you want to make sure to use FIXED_TABLES
 #if defined(FIXED_TABLES)
 
 #define sb_data(w) {\

@@ -529,6 +529,10 @@ Issue Date: 20/12/2007
 #   define DFUNCS_IN_C   0
 #endif
 
+///@note nominal value of FUNCS_IN_C is:
+/// = (ENCRYPTION_IN_C | ENC_KEYING_IN_C | DECRYPTION_IN_C | DEC_KEYING_IN_C )
+/// = (1 | 4 | 2 | 8)
+/// = 15
 #define FUNCS_IN_C  ( EFUNCS_IN_C | DFUNCS_IN_C )
 
 /* END OF CONFIGURATION OPTIONS */
@@ -691,7 +695,6 @@ Issue Date: 20/12/2007
 #  endif
 #endif
 
-///@note this is the setup routine used with typical OpenTag build
 #if !(defined( REDUCE_CODE_SIZE ) && (defined( ASM_X86_V2 ) || defined( ASM_X86_V2C )))
 #   if ((FUNCS_IN_C & ENC_KEYING_IN_C) || (FUNCS_IN_C & DEC_KEYING_IN_C))
 #       if KEY_SCHED == ONE_TABLE
@@ -745,42 +748,41 @@ Issue Date: 20/12/2007
 /* parallel. NOTE: x must be a simple variable, NOT an expression in these macros.  */
 
 #if !(defined( REDUCE_CODE_SIZE ) && (defined( ASM_X86_V2 ) || defined( ASM_X86_V2C ))) 
+#   if defined( FM4_SET )       /* not currently used */
+#       define fwd_mcol(x)      four_tables(x,t_use(f,m),vf1,rf1,0)
+#   elif defined( FM1_SET )     /* not currently used */
+#       define fwd_mcol(x)      one_table(x,upr,t_use(f,m),vf1,rf1,0)
+#   else
+#       define dec_fmvars       uint_32t g2
+#       define fwd_mcol(x)      (g2 = gf_mulx(x), g2 ^ upr((x) ^ g2, 3) ^ upr((x), 2) ^ upr((x), 1))
+#   endif
 
-#if defined( FM4_SET )      /* not currently used */
-#  define fwd_mcol(x)       four_tables(x,t_use(f,m),vf1,rf1,0)
-#elif defined( FM1_SET )    /* not currently used */
-#  define fwd_mcol(x)       one_table(x,upr,t_use(f,m),vf1,rf1,0)
-#else
-#  define dec_fmvars        uint_32t g2
-#  define fwd_mcol(x)       (g2 = gf_mulx(x), g2 ^ upr((x) ^ g2, 3) ^ upr((x), 2) ^ upr((x), 1))
-#endif
+#   if defined( IM4_SET )
+#       define inv_mcol(x)      four_tables(x,t_use(i,m),vf1,rf1,0)
+#   elif defined( IM1_SET )
+#       define inv_mcol(x)      one_table(x,upr,t_use(i,m),vf1,rf1,0)
+#   else
+#       define dec_imvars       uint_32t g2, g4, g9
+#       define inv_mcol(x)      (g2 = gf_mulx(x), g4 = gf_mulx(g2), g9 = (x) ^ gf_mulx(g4), g4 ^= g9, \
+                                (x) ^ g2 ^ g4 ^ upr(g2 ^ g9, 3) ^ upr(g4, 2) ^ upr(g9, 1))
+#   endif
 
-#if defined( IM4_SET )
-#  define inv_mcol(x)       four_tables(x,t_use(i,m),vf1,rf1,0)
-#elif defined( IM1_SET )
-#  define inv_mcol(x)       one_table(x,upr,t_use(i,m),vf1,rf1,0)
-#else
-#  define dec_imvars        uint_32t g2, g4, g9
-#  define inv_mcol(x)       (g2 = gf_mulx(x), g4 = gf_mulx(g2), g9 = (x) ^ gf_mulx(g4), g4 ^= g9, \
-                            (x) ^ g2 ^ g4 ^ upr(g2 ^ g9, 3) ^ upr(g4, 2) ^ upr(g9, 1))
-#endif
-
-#if defined( FL4_SET )
-#  define ls_box(x,c)       four_tables(x,t_use(f,l),vf1,rf2,c)
-#elif defined( LS4_SET )
-#  define ls_box(x,c)       four_tables(x,t_use(l,s),vf1,rf2,c)
-#elif defined( FL1_SET )
-#  define ls_box(x,c)       one_table(x,upr,t_use(f,l),vf1,rf2,c)
-#elif defined( LS1_SET )
-#  define ls_box(x,c)       one_table(x,upr,t_use(l,s),vf1,rf2,c)
-#else
-#  define ls_box(x,c)       no_table(x,t_use(s,box),vf1,rf2,c)
-#endif
+#   if defined( FL4_SET )
+#       define ls_box(x,c)       four_tables(x,t_use(f,l),vf1,rf2,c)    /* Used on C2000 */
+#   elif defined( LS4_SET )
+#       define ls_box(x,c)       four_tables(x,t_use(l,s),vf1,rf2,c)
+#   elif defined( FL1_SET )
+#       define ls_box(x,c)       one_table(x,upr,t_use(f,l),vf1,rf2,c)
+#   elif defined( LS1_SET )
+#       define ls_box(x,c)       one_table(x,upr,t_use(l,s),vf1,rf2,c)
+#   else
+#       define ls_box(x,c)       no_table(x,t_use(s,box),vf1,rf2,c)
+#   endif
 
 #endif
 
 #if defined( ASM_X86_V1C ) && defined( AES_DECRYPT ) && !defined( ISB_SET )
-#  define ISB_SET
+#   define ISB_SET
 #endif
 
 #endif
