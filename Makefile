@@ -44,7 +44,7 @@ ifeq ($(X_TARG),$(THISMACHINE))
 	X_CFLAGS    := -std=gnu99 -fPIC -O3 -pthread
 	X_DEF       := $(OPTIM_DEF) $(EXT_DEF)
 	X_INC       := -I$(DEFAULT_INC) $(EXT_INC)
-	X_LIB       := -Wl,-Bstatic $(EXT_LIBS)
+	X_LIB       := $(EXT_LIBS)
 	X_PLAT      := ./platform/posix_c
 
 else ifeq ($(X_TARG),c2000)
@@ -100,7 +100,7 @@ cleaner: clean
 # Test
 test: $(X_PRDCT)
 	$(eval MKFILE := $(notdir $@))
-	cd ./$@ && $(MAKE) -f $(MKFILE).mk obj
+	cd ./$@ && $(MAKE) -f $(MKFILE).mk all
 
 #Packaging stage: copy/move files to pkg output directory
 $(X_PRDCT): $(X_PRDCT).lib
@@ -136,5 +136,5 @@ $(SUBMODULES): %: $(LIBMODULES) directories
 	cd ./$@ && $(MAKE) -f $(MKFILE).mk obj
 
 #Non-File Targets
-.PHONY: all lib remake clean cleaner
+.PHONY: all lib remake test clean cleaner
 
