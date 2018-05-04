@@ -587,15 +587,21 @@ Issue Date: 20/12/2007
                time constants
 */
 
-#if ( ALGORITHM_BYTE_ORDER == IS_LITTLE_ENDIAN )
+#if defined(BYTE16)
+#   define upr(x,n)      (((uint_32t)(x) << (8 * (n))) | ((uint_32t)(x) >> (32 - 8 * (n))))
+#   define ups(x,n)      ((uint_32t) (x) << (8 * (n)))
+#   define bval(x,n)     to_byte((x) >> (8 * (n)))
+#   define bytes2word(b0, b1, b2, b3)  \
+        (((uint_32t)(b3&0xFF) << 24) | ((uint_32t)(b2&0xFF) << 16) | ((uint_32t)(b1&0xFF) << 8) | (b0&0xFF))
+
+#elif ( ALGORITHM_BYTE_ORDER == IS_LITTLE_ENDIAN )
 #   define upr(x,n)      (((uint_32t)(x) << (8 * (n))) | ((uint_32t)(x) >> (32 - 8 * (n))))
 #   define ups(x,n)      ((uint_32t) (x) << (8 * (n)))
 #   define bval(x,n)     to_byte((x) >> (8 * (n)))
 #   define bytes2word(b0, b1, b2, b3)  \
         (((uint_32t)(b3) << 24) | ((uint_32t)(b2) << 16) | ((uint_32t)(b1) << 8) | (b0))
-#endif
 
-#if ( ALGORITHM_BYTE_ORDER == IS_BIG_ENDIAN )
+#elif ( ALGORITHM_BYTE_ORDER == IS_BIG_ENDIAN )
 #   define upr(x,n)      (((uint_32t)(x) >> (8 * (n))) | ((uint_32t)(x) << (32 - 8 * (n))))
 #   define ups(x,n)      ((uint_32t) (x) >> (8 * (n)))
 #   define bval(x,n)     to_byte((x) >> (24 - 8 * (n)))
@@ -603,14 +609,24 @@ Issue Date: 20/12/2007
         (((uint_32t)(b0) << 24) | ((uint_32t)(b1) << 16) | ((uint_32t)(b2) << 8) | (b3))
 #endif
 
-#if defined( SAFE_IO )
+
+#if defined(__C2000__)
+///@todo finish this
+/// Compiler intrinsic:  int __byte(int *array, unsigned int byte_index);
+#   define word_in(x,c)    bytes2word(__byte((int*)(x), 4*c+0), __byte((int*)(x), 4*c+1), __byte((int*)(x), 4*c+2), __byte((int*)(x), 4*c+3))
+
+#   define word_out(x,c,v)  { ((uint_16t*)(x)+2*c)[0] = bval(v,0); ((uint_16t*)(x)+2*c)[1] = bval(v,1); }
+
+#elif defined( SAFE_IO )
 #   define word_in(x,c)    bytes2word(((const uint_8t*)(x)+4*c)[0], ((const uint_8t*)(x)+4*c)[1], \
                                    ((const uint_8t*)(x)+4*c)[2], ((const uint_8t*)(x)+4*c)[3])
 #   define word_out(x,c,v) { ((uint_8t*)(x)+4*c)[0] = bval(v,0); ((uint_8t*)(x)+4*c)[1] = bval(v,1); \
                           ((uint_8t*)(x)+4*c)[2] = bval(v,2); ((uint_8t*)(x)+4*c)[3] = bval(v,3); }
+
 #elif ( ALGORITHM_BYTE_ORDER == PLATFORM_BYTE_ORDER )
 #   define word_in(x,c)    (*((uint_32t*)(x)+(c)))
 #   define word_out(x,c,v) (*((uint_32t*)(x)+(c)) = (v))
+
 #else
 #   define word_in(x,c)    aes_sw32(*((uint_32t*)(x)+(c)))
 #   define word_out(x,c,v) (*((uint_32t*)(x)+(c)) = aes_sw32(v))
