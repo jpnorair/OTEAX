@@ -587,10 +587,11 @@ Issue Date: 20/12/2007
                time constants
 */
 
-#if defined(BYTE16)
+#if defined(__C2000__)
 #   define upr(x,n)      (((uint_32t)(x) << (8 * (n))) | ((uint_32t)(x) >> (32 - 8 * (n))))
 #   define ups(x,n)      ((uint_32t) (x) << (8 * (n)))
-#   define bval(x,n)     to_byte((x) >> (8 * (n)))
+//#   define bval(x,n)     to_byte((x) >> (8 * (n)))
+#   define bval(x,n)     __byte((int*)(x), n)
 #   define bytes2word(b0, b1, b2, b3)  \
         (((uint_32t)(b3&0xFF) << 24) | ((uint_32t)(b2&0xFF) << 16) | ((uint_32t)(b1&0xFF) << 8) | (b0&0xFF))
 
@@ -611,11 +612,47 @@ Issue Date: 20/12/2007
 
 
 #if defined(__C2000__)
-///@todo finish this
+///@todo If we insist on word aligned input, then we can skip word_in/word_out and just store/load words.
 /// Compiler intrinsic:  int __byte(int *array, unsigned int byte_index);
-#   define word_in(x,c)    bytes2word(__byte((int*)(x), 4*c+0), __byte((int*)(x), 4*c+1), __byte((int*)(x), 4*c+2), __byte((int*)(x), 4*c+3))
+inline uint_32t fn_word_in(uint_32t* x, int c) { 
+    __byte(&word, 0) = __byte(x, 4*c+0);   
+    __byte(&word, 1) = __byte(x, 4*c+1);   
+    __byte(&word, 2) = __byte(x, 4*c+2);   
+    __byte(&word, 3) = __byte(x, 4*c+3);
+    return word;
+}
 
-#   define word_out(x,c,v)  { ((uint_16t*)(x)+2*c)[0] = bval(v,0); ((uint_16t*)(x)+2*c)[1] = bval(v,1); }
+// Variant 1: makes assumption that x is int aligned
+#   define word_in(x,c)    fn_word_in((uint_32t*)x, (int)c)
+#   define word_out(x,c,v)  do { \
+                                __byte((int*)(x), 4*c+0) = bval(v,0);   \
+                                __byte((int*)(x), 4*c+1) = bval(v,1);   \
+                                __byte((int*)(x), 4*c+2) = bval(v,2);   \
+                                __byte((int*)(x), 4*c+3) = bval(v,3);   \
+                            } while(0)
+
+
+// Variant 2: makes no assumption about alignment of input.
+//inline uint_32t fn_word_in(void* x, int c) { 
+//    uint_16t  xoff  = ((uint_32t)x) & 3;     
+//    uint_32t* xbase = ((uint_32t)x) ^ xoff;  
+//    uint_32t  word;
+//    __byte(&word, 0) = __byte(xbase, 4*c+0+xoff);   
+//    __byte(&word, 1) = __byte(xbase, 4*c+1+xoff);   
+//    __byte(&word, 2) = __byte(xbase, 4*c+2+xoff);   
+//    __byte(&word, 3) = __byte(xbase, 4*c+3+xoff);
+//    return word;
+//}
+//
+//#   define word_in(x,c)     fn_word_in((void*)x, (int)c)
+//#   define word_out(x,c,v)  do { \
+//                                uint_16t  xoff  = ((uint_32t)x) & 3;     \
+//                                uint_32t* xbase = ((uint_32t)x) ^ xoff;  \
+//                                __byte(xbase, 4*c+0+xoff) = bval(v,0);   \
+//                                __byte(xbase, 4*c+1+xoff) = bval(v,1);   \
+//                                __byte(xbase, 4*c+2+xoff) = bval(v,2);   \
+//                                __byte(xbase, 4*c+3+xoff) = bval(v,3);   \
+//                            } while(0)
 
 #elif defined( SAFE_IO )
 #   define word_in(x,c)    bytes2word(((const uint_8t*)(x)+4*c)[0], ((const uint_8t*)(x)+4*c)[1], \
