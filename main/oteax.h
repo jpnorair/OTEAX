@@ -112,55 +112,100 @@ typedef struct {
 
 /* The following calls handle mode initialisation, keying and completion    */
 
-ret_type eax_init_and_key(                  /* initialise mode and set key  */
-            const unsigned char key[],      /* the key value                */
-            eax_ctx ctx[1]);                /* the mode context             */
+/** @brief First step for EAX encryption or decryption: initialize context and key
+  * @param key  (const io_t*) AES key.  Typically 128 bits.
+  * @param ctx  (eax_ctx) Mode context, which acts as the control input.
+  * @retval     (ret_type) returns 0 on success.
+  *
+  * The Key input is of type (const io_t).  io_t is usually uint8_t*, but it
+  * can be set to larger increments in order to improve performance or for
+  * compatibility on machines without byte addressing (some DSPs).
+  */
+ret_type eax_init_and_key(const io_t key[], eax_ctx ctx[1]);
 
-ret_type eax_end(                           /* clean up and end operation   */
-            eax_ctx ctx[1]);                /* the mode context             */
+
+/** @brief Wrap-up cryptography process, do context clean-up.
+  * @param ctx  (eax_ctx) Mode context, which acts as the control input.
+  * @retval     (ret_type) returns 0 on success.
+  */
+ret_type eax_end(eax_ctx ctx[1]);
+
+
+
 
 /* The following calls handle complete messages in memory as one operation  */
 
-ret_type eax_encrypt_message(               /* encrypt an entire message    */
-            const unsigned char iv[],       /* the initialisation vector    */
-            unsigned char msg[],            /* the message buffer           */
-            unsigned long msg_len,          /* and its length in bytes      */
-            eax_ctx ctx[1]);                /* the mode context             */
+/** @brief Single-call function to encrypt a plain-text data input.
+  * @param iv       (const io_t*) Initialization vector.
+  * @param msg      (io_t*) Plain Text message data
+  * @param msg_len  (unsigned long) Number of io_t units in length, for msg
+  * @param ctx      (eax_ctx) Mode context, which acts as the control input.
+  * @retval         (ret_type) returns 0 on success.
+  */
+ret_type eax_encrypt_message(const io_t iv[], io_t msg[], unsigned long msg_len, eax_ctx ctx[1]);
 
-                                /* RETURN_GOOD is returned if the input tag */
-                                /* matches that for the decrypted message   */
-ret_type eax_decrypt_message(               /* decrypt an entire message    */
-            const unsigned char iv[],       /* the initialisation vector    */
-            unsigned char msg[],            /* the message buffer           */
-            unsigned long msg_len,          /* and its length in bytes      */
-            eax_ctx ctx[1]);                /* the mode context             */
+
+/** @brief Single-call function to decrypt an EAX data input into plain-text.
+  * @param iv       (const io_t*) Initialization vector.
+  * @param msg      (io_t*) Plain Text message data
+  * @param msg_len  (unsigned long) Number of io_t units in length, for msg
+  * @param ctx      (eax_ctx) Mode context, which acts as the control input.
+  * @retval         (ret_type) returns 0 (success) when authentication tag 
+  *                 of msg matches the computed tag.
+  */
+ret_type eax_decrypt_message(const io_t iv[], io_t msg[], unsigned long msg_len, eax_ctx ctx[1]);
+
+
+
+
 
 /* The following calls handle messages in a sequence of operations followed */
 /* by tag computation after the sequence has been completed. In these calls */
 /* the user is responsible for verfiying the computed tag on decryption     */
 
-ret_type eax_init_message(                  /* initialise a new message     */
-            const unsigned char iv[],       /* the initialisation vector    */
-            eax_ctx ctx[1]);                /* the mode context             */
+/** @brief Initialize EAX message with IV.
+  * @param iv       (const io_t*) Initialization vector.
+  * @param ctx      (eax_ctx) Mode context, which acts as the control input.
+  * @retval         (ret_type) returns 0 on success.
+  */
+ret_type eax_init_message(const io_t iv[], eax_ctx ctx[1]);
 
-ret_type eax_auth_header(                   /* authenticate the header      */
-            const unsigned char hdr[],      /* the header buffer            */
-            unsigned long hdr_len,          /* and its length in bytes      */
-            eax_ctx ctx[1]);                /* the mode context             */
 
-ret_type eax_encrypt(                       /* encrypt & authenticate data  */
-            unsigned char data[],           /* the data buffer              */
-            unsigned long data_len,         /* and its length in bytes      */
-            eax_ctx ctx[1]);                /* the mode context             */
+/** @brief Initialize EAX message header (not actually supported in OTEAX)
+  * @param hdr      (const io_t*) Initialization header.
+  * @param hdr_len  (unsigned long) Length of header in io_t units.
+  * @param ctx      (eax_ctx) Mode context, which acts as the control input.
+  * @retval         (ret_type) returns 0 on success.
+  */
+ret_type eax_auth_header(const io_t hdr[], unsigned long hdr_len, eax_ctx ctx[1]);
 
-ret_type eax_decrypt(                       /* authenticate & decrypt data  */
-            unsigned char data[],           /* the data buffer              */
-            unsigned long data_len,         /* and its length in bytes      */
-            eax_ctx ctx[1]);                /* the mode context             */
 
-ret_type eax_compute_tag(                   /* compute authentication tag   */
-            unsigned char tag[],            /* the buffer for the tag       */
-            eax_ctx ctx[1]);                /* the mode context             */
+/** @brief Encrypt data using already initialized context, IV, Header
+  * @param data     (io_t*) In-place data input/output
+  * @param data_len (unsigned long) Length of data in io_t units.
+  * @param ctx      (eax_ctx) Mode context, which acts as the control input.
+  * @retval         (ret_type) returns 0 on success.
+  */
+ret_type eax_encrypt(io_t data[], unsigned long data_len, eax_ctx ctx[1]);
+
+
+/** @brief Decrypt data using already initialized context, IV, Header
+  * @param data     (io_t*) In-place data input/output
+  * @param data_len (unsigned long) Length of data in io_t units.
+  * @param ctx      (eax_ctx) Mode context, which acts as the control input.
+  * @retval         (ret_type) returns 0 on success.
+  */
+ret_type eax_decrypt(io_t data[], unsigned long data_len, eax_ctx ctx[1]);
+
+
+/** @brief Compute tag using already initialized context, IV, Header, Data
+  * @param tag      (io_t*) In-place tag input/output
+  * @param ctx      (eax_ctx) Mode context, which acts as the control input.
+  * @retval         (ret_type) returns 0 on success.
+  */
+ret_type eax_compute_tag(io_t tag[], eax_ctx ctx[1]);
+
+
 
 
 /*  The use of the following calls should be avoided if possible because 
@@ -192,15 +237,27 @@ ret_type eax_compute_tag(                   /* compute authentication tag   */
     of the data authenticated and decrypted don't match.
 */
 
-ret_type eax_auth_data(                     /* authenticate ciphertext data */
-            const unsigned char data[],     /* the data buffer              */
-            unsigned long data_len,         /* and its length in bytes      */
-            eax_ctx ctx[1]);                /* the mode context             */
 
-ret_type eax_crypt_data(                    /* encrypt or decrypt data      */
-            unsigned char data[],           /* the data buffer              */
-            unsigned long data_len,         /* and its length in bytes      */
-            eax_ctx ctx[1]);                /* the mode context             */
+
+/** @brief Run EAX Authenticator over initialized context, with input data.
+  * @param data     (const io_t*) Data input
+  * @param data_len (unsigned long) Length of data in io_t units.
+  * @param ctx      (eax_ctx) Mode context, which acts as the control input.
+  * @retval         (ret_type) returns 0 on success.
+  */
+ret_type eax_auth_data(const io_t data[], unsigned long data_len, eax_ctx ctx[1]);
+
+
+/** @brief Run EAX Cryptographer over initialized context, with input data.
+  * @param data     (io_t*) In place Data input/output
+  * @param data_len (unsigned long) Length of data in io_t units.
+  * @param ctx      (eax_ctx) Mode context, which acts as the control input.
+  * @retval         (ret_type) returns 0 on success.
+  *
+  * @note EAX is a symmetric encryption, so encrypt and decrypt is the same
+  * actual process.
+  */
+ret_type eax_crypt_data(io_t data[], unsigned long data_len, eax_ctx ctx[1]);
 
 #if defined(__cplusplus)
 }

@@ -150,6 +150,16 @@ extern "C" {
 #   endif
 #endif
 
+
+///@note [JPN] Set this in makefile to build API as word-aligned.
+#if defined(__ALIGN32__)
+    typedef uint_32t    io_t;
+#else
+    typedef uint_8t     io_t;
+#endif
+
+
+
 #ifndef RETURN_VALUES
 #   define RETURN_VALUES
 #   if defined( DLL_EXPORT )

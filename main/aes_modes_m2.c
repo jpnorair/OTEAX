@@ -84,15 +84,16 @@ AES_RETURN aes_test_alignment_detection(unsigned int n)	/* 4 <= n <= 16 */
 
 
 AES_RETURN aes_mode_reset(aes_encrypt_ctx ctx[1]) {
-    ctx->inf.b[2] = 0;
+    ///@note [JPN] changing inf access to support INF macro
+    //ctx->inf.b[2] = 0;
+    INF_B(ctx->inf, 2) = 0;
     return EXIT_SUCCESS;
 }
 
 
 
 
-AES_RETURN aes_ecb_encrypt(const unsigned char *ibuf, unsigned char *obuf,
-                    int len, const aes_encrypt_ctx ctx[1])
+AES_RETURN aes_ecb_encrypt(const io_t *ibuf, io_t *obuf, int len, const aes_encrypt_ctx ctx[1])
 {   int nb = len >> 4;
 
     if(len & (AES_BLOCK_SIZE - 1))
@@ -111,8 +112,7 @@ AES_RETURN aes_ecb_encrypt(const unsigned char *ibuf, unsigned char *obuf,
 
 
 
-AES_RETURN aes_ecb_decrypt(const unsigned char *ibuf, unsigned char *obuf,
-                    int len, const aes_decrypt_ctx ctx[1])
+AES_RETURN aes_ecb_decrypt(const io_t *ibuf, io_t *obuf, int len, const aes_decrypt_ctx ctx[1])
 {   int nb = len >> 4;
 
     if(len & (AES_BLOCK_SIZE - 1))
@@ -136,12 +136,14 @@ AES_RETURN aes_ecb_decrypt(const unsigned char *ibuf, unsigned char *obuf,
 
 #define BFR_LENGTH  (BFR_BLOCKS * AES_BLOCK_SIZE)
 
-AES_RETURN aes_ctr_crypt(const unsigned char *ibuf, unsigned char *obuf,
-            int len, unsigned char *cbuf, cbuf_inc ctr_inc, aes_encrypt_ctx ctx[1])
+AES_RETURN aes_ctr_crypt(const io_t *ibuf, io_t *obuf, int len, io_t *cbuf, cbuf_inc ctr_inc, aes_encrypt_ctx ctx[1])
 {   unsigned char   *ip;
-    int             i, blen, b_pos = (int)(ctx->inf.b[2]);
-
-    uint_8t buf[BFR_LENGTH];
+    int             i, blen, b_pos;
+    uint_8t         buf[BFR_LENGTH];
+    
+    ///@note [JPN] changing inf access to support INF macro
+    //b_pos = (int)(ctx->inf.b[2]);
+    b_pos = (int)INF_B(ctx->inf, 2);
 
     if (b_pos) {
         memcpy(buf, cbuf, AES_BLOCK_SIZE);
@@ -208,7 +210,9 @@ AES_RETURN aes_ctr_crypt(const unsigned char *ibuf, unsigned char *obuf,
             *obuf++ = *ibuf++ ^ ip[b_pos++];
     }
 
-    ctx->inf.b[2] = (uint_8t)b_pos;
+    ///@note [JPN] changing inf access to support INF macro
+    //ctx->inf.b[2] = (uint_8t)b_pos;
+    INF_B(ctx->inf, 2) = (uint_8t)b_pos;
     return EXIT_SUCCESS;
 }
 

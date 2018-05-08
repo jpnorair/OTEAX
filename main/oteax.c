@@ -41,10 +41,7 @@ extern "C"
 
 
 
-ret_type eax_init_and_key(                  /* initialise mode and set key  */
-            const unsigned char key[],      /* the key value                */
-            eax_ctx ctx[1])                 /* the mode context             */
-{   
+ret_type eax_init_and_key(const io_t key[], eax_ctx ctx[1]) {
     static uint_8t x_t[4] = { 0x00, 0x87, 0x0e, 0x87 ^ 0x0e };
     uint_8t t, *p;
     uint_32t i;
@@ -74,9 +71,7 @@ ret_type eax_init_and_key(                  /* initialise mode and set key  */
 
 
 
-ret_type eax_init_message(                  /* initialise a new message     */
-            const unsigned char iv[],       /* the initialisation vector    */
-            eax_ctx ctx[1])                 /* the mode context             */
+ret_type eax_init_message(const io_t iv[], eax_ctx ctx[1])
 {   
     uint_32t i = 0, n_pos = 0;
     uint_8t *p;
@@ -132,10 +127,7 @@ ret_type eax_init_message(                  /* initialise a new message     */
 
 ///@todo this function doesn't need to be optimized because no header is 
 ///      used with OpenTag's variant of EAX
-ret_type eax_auth_header(                   /* authenticate the header      */
-            const unsigned char hdr[],      /* the header buffer            */
-            unsigned long hdr_len,          /* and its length in bytes      */
-            eax_ctx ctx[1])                 /* the mode context             */
+ret_type eax_auth_header(const io_t hdr[], unsigned long hdr_len, eax_ctx ctx[1])
 {   
 /*
     uint_32t cnt = 0;
@@ -196,10 +188,7 @@ ret_type eax_auth_header(                   /* authenticate the header      */
 
 
 
-ret_type eax_auth_data(                     /* authenticate ciphertext data */
-            const unsigned char data[],     /* the data buffer              */
-            unsigned long data_len,         /* and its length in bytes      */
-            eax_ctx ctx[1])                 /* the mode context             */
+ret_type eax_auth_data(const io_t data[], unsigned long data_len, eax_ctx ctx[1])
 {   uint_32t cnt = 0, b_pos = ctx->txt_acnt & BLK_ADR_MASK;
 
     if (!data_len) {
@@ -252,10 +241,7 @@ ret_type eax_auth_data(                     /* authenticate ciphertext data */
 
 
 
-ret_type eax_crypt_data(                    /* encrypt or decrypt data      */
-            unsigned char data[],           /* the data buffer              */
-            unsigned long data_len,         /* and its length in bytes      */
-            eax_ctx ctx[1])                 /* the mode context             */
+ret_type eax_crypt_data(io_t data[], unsigned long data_len, eax_ctx ctx[1])
 {   
     uint_32t cnt = 0, b_pos = ctx->txt_ccnt & BLK_ADR_MASK;
 
@@ -311,9 +297,7 @@ ret_type eax_crypt_data(                    /* encrypt or decrypt data      */
 
 
 
-ret_type eax_compute_tag(                   /* compute authentication tag   */
-            unsigned char tag[],            /* the buffer for the tag       */
-            eax_ctx ctx[1])                 /* the mode context             */
+ret_type eax_compute_tag(io_t tag[], eax_ctx ctx[1])
 {   uint_32t i;
     uint_8t *p;
 
@@ -364,27 +348,20 @@ ret_type eax_compute_tag(                   /* compute authentication tag   */
     return 0 - (ctx->txt_ccnt != ctx->txt_acnt);
 }
 
-ret_type eax_end(                           /* clean up and end operation   */
-            eax_ctx ctx[1])                 /* the mode context             */
+ret_type eax_end(eax_ctx ctx[1])
 {
     memset(ctx, 0, sizeof(eax_ctx));
     return RETURN_GOOD;
 }
 
-ret_type eax_encrypt(                       /* encrypt & authenticate data  */
-            unsigned char data[],           /* the data buffer              */
-            unsigned long data_len,         /* and its length in bytes      */
-            eax_ctx ctx[1])                 /* the mode context             */
+ret_type eax_encrypt(io_t data[], unsigned long data_len, eax_ctx ctx[1])
 {
     eax_crypt_data(data, data_len, ctx);
     eax_auth_data(data, data_len, ctx);
     return RETURN_GOOD;
 }
 
-ret_type eax_decrypt(                       /* authenticate & decrypt data  */
-            unsigned char data[],           /* the data buffer              */
-            unsigned long data_len,         /* and its length in bytes      */
-            eax_ctx ctx[1])                 /* the mode context             */
+ret_type eax_decrypt(io_t data[], unsigned long data_len, eax_ctx ctx[1])
 {
     eax_auth_data(data, data_len, ctx);
     eax_crypt_data(data, data_len, ctx);
@@ -401,14 +378,10 @@ ret_type eax_decrypt(                       /* authenticate & decrypt data  */
   * ========================================================================<BR>
   */
 
-ret_type eax_encrypt_message(               /* encrypt an entire message    */
-            const unsigned char iv[],       /* the initialisation vector    */   
-            unsigned char msg[],            /* the message buffer           */
-            unsigned long msg_len,          /* and its length in bytes      */     
-            eax_ctx ctx[1])                 /* the mode context             */
+ret_type eax_encrypt_message(const io_t iv[], io_t msg[], unsigned long msg_len, eax_ctx ctx[1])
 {
     ///@note [JPN] Tag is always dealt-with as the data right after the message
-    unsigned char *tag = msg + msg_len;
+    io_t *tag = msg + msg_len;
 
     eax_init_message(iv, ctx);
     eax_encrypt(msg, msg_len, ctx);
@@ -417,11 +390,7 @@ ret_type eax_encrypt_message(               /* encrypt an entire message    */
 
 
 
-ret_type eax_decrypt_message(               /* decrypt an entire message    */
-            const unsigned char iv[],       /* the initialisation vector    */
-            unsigned char msg[],            /* the message buffer           */
-            unsigned long msg_len,          /* and its length in bytes      */
-            eax_ctx ctx[1])                 /* the mode context             */
+ret_type eax_decrypt_message(const io_t iv[], io_t msg[], unsigned long msg_len, eax_ctx ctx[1])
 {   
     uint_8t     local_tag[4];
     ret_type    rr;
@@ -433,7 +402,7 @@ ret_type eax_decrypt_message(               /* decrypt an entire message    */
 #   if defined (__UNALIGNED_ACCESS__)
         *((uint_32t*)tag) = *((uint_32t*)(msg + msg_len)); 
 #   else
-    {   unsigned char *cursor;
+    {   io_t *cursor;
         cursor  = msg + msg_len;
         tag[0]  = *cursor++;
         tag[1]  = *cursor++;

@@ -72,7 +72,7 @@ extern "C"
     k[4*(i)+7] = ss[3] ^= ss[2]; \
 }
 
-AES_RETURN aes_encrypt_key128(const unsigned char *key, aes_encrypt_ctx cx[1])
+AES_RETURN aes_encrypt_key128(const io_t *key, aes_encrypt_ctx cx[1])
 {   uint_32t    ss[4];
 
     cx->ks[0] = ss[0] = word_in(key, 0);
@@ -94,11 +94,15 @@ AES_RETURN aes_encrypt_key128(const unsigned char *key, aes_encrypt_ctx cx[1])
 #endif
     ke4(cx->ks, 9);
     cx->inf.l = 0;
-    cx->inf.b[0] = 10 * 16;
+    ///@note [JPN] changing inf access to support INF macro
+    //cx->inf.b[0] = 10 * 16;
+    INF_B(cx->inf,0) = 10 * 16;
 
 #ifdef USE_VIA_ACE_IF_PRESENT
     if(VIA_ACE_AVAILABLE)
-        cx->inf.b[1] = 0xff;
+        ///@note [JPN] changing inf access to support INF macro
+        //cx->inf.b[1] = 0xff;
+        INF_B(cx->inf,1) = 0xff;
 #endif
     return EXIT_SUCCESS;
 }
@@ -120,7 +124,7 @@ AES_RETURN aes_encrypt_key128(const unsigned char *key, aes_encrypt_ctx cx[1])
     k[6*(i)+11] = ss[5] ^= ss[4]; \
 }
 
-AES_RETURN aes_encrypt_key192(const unsigned char *key, aes_encrypt_ctx cx[1])
+AES_RETURN aes_encrypt_key192(const io_t *key, aes_encrypt_ctx cx[1])
 {   uint_32t    ss[6];
 
     cx->ks[0] = ss[0] = word_in(key, 0);
@@ -143,11 +147,15 @@ AES_RETURN aes_encrypt_key192(const unsigned char *key, aes_encrypt_ctx cx[1])
 #endif
     kef6(cx->ks, 7);
     cx->inf.l = 0;
-    cx->inf.b[0] = 12 * 16;
+    ///@note [JPN] changing inf access to support INF macro
+    //cx->inf.b[0] = 12 * 16;
+    INF_B(cx->inf,0) = 12*16;
 
 #ifdef USE_VIA_ACE_IF_PRESENT
     if(VIA_ACE_AVAILABLE)
-        cx->inf.b[1] = 0xff;
+        ///@note [JPN] changing inf access to support INF macro
+        //cx->inf.b[1] = 0xff;
+        INF_B(cx->inf,1) = 0xff;
 #endif
     return EXIT_SUCCESS;
 }
@@ -171,7 +179,7 @@ AES_RETURN aes_encrypt_key192(const unsigned char *key, aes_encrypt_ctx cx[1])
     k[8*(i)+15] = ss[7] ^= ss[6]; \
 }
 
-AES_RETURN aes_encrypt_key256(const unsigned char *key, aes_encrypt_ctx cx[1])
+AES_RETURN aes_encrypt_key256(const io_t *key, aes_encrypt_ctx cx[1])
 {   uint_32t    ss[8];
 
     cx->ks[0] = ss[0] = word_in(key, 0);
@@ -195,11 +203,15 @@ AES_RETURN aes_encrypt_key256(const unsigned char *key, aes_encrypt_ctx cx[1])
 #endif
     kef8(cx->ks, 6);
     cx->inf.l = 0;
-    cx->inf.b[0] = 14 * 16;
+    ///@note [JPN] changing inf access to support INF macro
+    //cx->inf.b[0] = 14 * 16;
+    INF_B(cx->inf,0) = 14 * 16;
 
 #ifdef USE_VIA_ACE_IF_PRESENT
     if(VIA_ACE_AVAILABLE)
-        cx->inf.b[1] = 0xff;
+        ///@note [JPN] changing inf access to support INF macro
+        //cx->inf.b[1] = 0xff;
+        INF_B(cx->inf,1) = 0xff;
 #endif
     return EXIT_SUCCESS;
 }
@@ -208,7 +220,7 @@ AES_RETURN aes_encrypt_key256(const unsigned char *key, aes_encrypt_ctx cx[1])
 
 #if defined( AES_VAR )
 
-AES_RETURN aes_encrypt_key(const unsigned char *key, int key_len, aes_encrypt_ctx cx[1])
+AES_RETURN aes_encrypt_key(const io_t *key, int key_len, aes_encrypt_ctx cx[1])
 {   
     switch(key_len)
     {
@@ -309,7 +321,7 @@ AES_RETURN aes_encrypt_key(const unsigned char *key, int key_len, aes_encrypt_ct
 
 #endif
 
-AES_RETURN aes_decrypt_key128(const unsigned char *key, aes_decrypt_ctx cx[1])
+AES_RETURN aes_decrypt_key128(const io_t *key, aes_decrypt_ctx cx[1])
 {   uint_32t    ss[5];
 #if defined( d_vars )
         d_vars;
@@ -336,11 +348,15 @@ AES_RETURN aes_decrypt_key128(const unsigned char *key, aes_decrypt_ctx cx[1])
     }
 #endif
     cx->inf.l = 0;
-    cx->inf.b[0] = 10 * 16;
+    ///@note [JPN] changing inf access to support INF macro
+    //cx->inf.b[0] = 10 * 16;
+    INF_B(cx->inf,0) = 10 * 16;
 
 #ifdef USE_VIA_ACE_IF_PRESENT
     if(VIA_ACE_AVAILABLE)
-        cx->inf.b[1] = 0xff;
+        ///@note [JPN] changing inf access to support INF macro
+        //cx->inf.b[1] = 0xff;
+        INF_B(cx->inf,1) = 0xff;
 #endif
     return EXIT_SUCCESS;
 }
@@ -388,7 +404,7 @@ AES_RETURN aes_decrypt_key128(const unsigned char *key, aes_decrypt_ctx cx[1])
     ss[3] ^= ss[2]; k[v(48,(6*(i))+ 9)] = ss[3]; \
 }
 
-AES_RETURN aes_decrypt_key192(const unsigned char *key, aes_decrypt_ctx cx[1])
+AES_RETURN aes_decrypt_key192(const io_t *key, aes_decrypt_ctx cx[1])
 {   uint_32t    ss[7];
 #if defined( d_vars )
         d_vars;
@@ -420,11 +436,15 @@ AES_RETURN aes_decrypt_key192(const unsigned char *key, aes_decrypt_ctx cx[1])
     }
 #endif
     cx->inf.l = 0;
-    cx->inf.b[0] = 12 * 16;
+    ///@note [JPN] changing inf access to support INF macro
+    //cx->inf.b[0] = 12 * 16;
+    INF_B(cx->inf,0) = 12 * 16;
 
 #ifdef USE_VIA_ACE_IF_PRESENT
     if(VIA_ACE_AVAILABLE)
-        cx->inf.b[1] = 0xff;
+        ///@note [JPN] changing inf access to support INF macro
+        //cx->inf.b[1] = 0xff;
+        INF_B(cx->inf,1) = 0xff;
 #endif
     return EXIT_SUCCESS;
 }
@@ -479,7 +499,7 @@ AES_RETURN aes_decrypt_key192(const unsigned char *key, aes_decrypt_ctx cx[1])
     ss[3] ^= ss[2]; k[v(56,(8*(i))+11)] = ss[3]; \
 }
 
-AES_RETURN aes_decrypt_key256(const unsigned char *key, aes_decrypt_ctx cx[1])
+AES_RETURN aes_decrypt_key256(const io_t *key, aes_decrypt_ctx cx[1])
 {   uint_32t    ss[9];
 #if defined( d_vars )
         d_vars;
@@ -515,11 +535,15 @@ AES_RETURN aes_decrypt_key256(const unsigned char *key, aes_decrypt_ctx cx[1])
     }
 #endif
     cx->inf.l = 0;
-    cx->inf.b[0] = 14 * 16;
+    ///@note [JPN] changing inf access to support INF macro
+    //cx->inf.b[0] = 14 * 16;
+    INF_B(cx->inf,0) = 14 * 16;
 
 #ifdef USE_VIA_ACE_IF_PRESENT
     if(VIA_ACE_AVAILABLE)
+        ///@note [JPN] changing inf access to support INF macro
         cx->inf.b[1] = 0xff;
+        INF_B(cx->inf,1) = 0xff;
 #endif
     return EXIT_SUCCESS;
 }
@@ -528,7 +552,7 @@ AES_RETURN aes_decrypt_key256(const unsigned char *key, aes_decrypt_ctx cx[1])
 
 #if defined( AES_VAR )
 
-AES_RETURN aes_decrypt_key(const unsigned char *key, int key_len, aes_decrypt_ctx cx[1])
+AES_RETURN aes_decrypt_key(const io_t *key, int key_len, aes_decrypt_ctx cx[1])
 {
     switch(key_len)
     {

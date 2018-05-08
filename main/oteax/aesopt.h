@@ -576,6 +576,7 @@ Issue Date: 20/12/2007
 #   define aes_sw32(x) ((brot((x),8) & 0x00ff00ff) | (brot((x),24) & 0xff00ff00))
 #endif
 
+
 /*  upr(x,n):  rotates bytes within words by n positions, moving bytes to
                higher index positions with wrap around into low positions
     ups(x,n):  moves bytes by n positions to higher index positions in
@@ -586,16 +587,7 @@ Issue Date: 20/12/2007
                unsigned variables and with shift counts that are compile
                time constants
 */
-
-#if defined(__C2000__)
-#   define upr(x,n)      (((uint_32t)(x) << (8 * (n))) | ((uint_32t)(x) >> (32 - 8 * (n))))
-#   define ups(x,n)      ((uint_32t) (x) << (8 * (n)))
-//#   define bval(x,n)     to_byte((x) >> (8 * (n)))
-#   define bval(x,n)     __byte((int*)(x), n)
-#   define bytes2word(b0, b1, b2, b3)  \
-        (((uint_32t)(b3&0xFF) << 24) | ((uint_32t)(b2&0xFF) << 16) | ((uint_32t)(b1&0xFF) << 8) | (b0&0xFF))
-
-#elif ( ALGORITHM_BYTE_ORDER == IS_LITTLE_ENDIAN )
+#if ( ALGORITHM_BYTE_ORDER == IS_LITTLE_ENDIAN )
 #   define upr(x,n)      (((uint_32t)(x) << (8 * (n))) | ((uint_32t)(x) >> (32 - 8 * (n))))
 #   define ups(x,n)      ((uint_32t) (x) << (8 * (n)))
 #   define bval(x,n)     to_byte((x) >> (8 * (n)))
@@ -610,51 +602,21 @@ Issue Date: 20/12/2007
         (((uint_32t)(b0) << 24) | ((uint_32t)(b1) << 16) | ((uint_32t)(b2) << 8) | (b3))
 #endif
 
-
 #if defined(__C2000__)
-///@todo If we insist on word aligned input, then we can skip word_in/word_out and just store/load words.
-/// Compiler intrinsic:  int __byte(int *array, unsigned int byte_index);
-inline uint_32t fn_word_in(uint_32t* x, int c) { 
-    __byte(&word, 0) = __byte(x, 4*c+0);   
-    __byte(&word, 1) = __byte(x, 4*c+1);   
-    __byte(&word, 2) = __byte(x, 4*c+2);   
-    __byte(&word, 3) = __byte(x, 4*c+3);
-    return word;
-}
-
-// Variant 1: makes assumption that x is int aligned
-#   define word_in(x,c)    fn_word_in((uint_32t*)x, (int)c)
-#   define word_out(x,c,v)  do { \
-                                __byte((int*)(x), 4*c+0) = bval(v,0);   \
-                                __byte((int*)(x), 4*c+1) = bval(v,1);   \
-                                __byte((int*)(x), 4*c+2) = bval(v,2);   \
-                                __byte((int*)(x), 4*c+3) = bval(v,3);   \
-                            } while(0)
+#   undef bval
+#   define bval(x,n)     __byte((int*)(x), n)
+#   undef bytes2word
+#   define bytes2word(b0, b1, b2, b3)  \
+        (((uint_32t)(b3&0xFF) << 24) | ((uint_32t)(b2&0xFF) << 16) | ((uint_32t)(b1&0xFF) << 8) | (b0&0xFF))
+#endif
 
 
-// Variant 2: makes no assumption about alignment of input.
-//inline uint_32t fn_word_in(void* x, int c) { 
-//    uint_16t  xoff  = ((uint_32t)x) & 3;     
-//    uint_32t* xbase = ((uint_32t)x) ^ xoff;  
-//    uint_32t  word;
-//    __byte(&word, 0) = __byte(xbase, 4*c+0+xoff);   
-//    __byte(&word, 1) = __byte(xbase, 4*c+1+xoff);   
-//    __byte(&word, 2) = __byte(xbase, 4*c+2+xoff);   
-//    __byte(&word, 3) = __byte(xbase, 4*c+3+xoff);
-//    return word;
-//}
-//
-//#   define word_in(x,c)     fn_word_in((void*)x, (int)c)
-//#   define word_out(x,c,v)  do { \
-//                                uint_16t  xoff  = ((uint_32t)x) & 3;     \
-//                                uint_32t* xbase = ((uint_32t)x) ^ xoff;  \
-//                                __byte(xbase, 4*c+0+xoff) = bval(v,0);   \
-//                                __byte(xbase, 4*c+1+xoff) = bval(v,1);   \
-//                                __byte(xbase, 4*c+2+xoff) = bval(v,2);   \
-//                                __byte(xbase, 4*c+3+xoff) = bval(v,3);   \
-//                            } while(0)
 
-#elif defined( SAFE_IO )
+
+/*  word_in(x,c):    Returns 4 byte word from word pointer &x[c]
+    word_out(x,c,v): Stores 4 byte word from variable v into word pointer &x[c]
+*/
+#if defined( SAFE_IO )
 #   define word_in(x,c)    bytes2word(((const uint_8t*)(x)+4*c)[0], ((const uint_8t*)(x)+4*c)[1], \
                                    ((const uint_8t*)(x)+4*c)[2], ((const uint_8t*)(x)+4*c)[3])
 #   define word_out(x,c,v) { ((uint_8t*)(x)+4*c)[0] = bval(v,0); ((uint_8t*)(x)+4*c)[1] = bval(v,1); \
@@ -668,6 +630,8 @@ inline uint_32t fn_word_in(uint_32t* x, int c) {
 #   define word_in(x,c)    aes_sw32(*((uint_32t*)(x)+(c)))
 #   define word_out(x,c,v) (*((uint_32t*)(x)+(c)) = aes_sw32(v))
 #endif
+
+
 
 /* the finite field modular polynomial and elements */
 

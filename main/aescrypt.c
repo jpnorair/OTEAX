@@ -87,14 +87,16 @@ extern "C"
 #   define fwd_lrnd(y,x,k,c)   (s(y,c) = (k)[c] ^ no_table(x,t_use(s,box),fwd_var,rf1,c))
 #endif
 
-AES_RETURN aes_encrypt(const uint_8t *in, uint_8t *out, const aes_encrypt_ctx cx[1]) {   
+AES_RETURN aes_encrypt(const io_t *in, io_t *out, const aes_encrypt_ctx cx[1]) {   
     uint_32t         locals(bb0, bb1);
     const uint_32t   *kp;
 #if defined( dec_fmvars )
     dec_fmvars; /* declare variables for fwd_mcol() if needed */
 #endif
-
-    if( cx->inf.b[0] != 10 * 16 && cx->inf.b[0] != 12 * 16 && cx->inf.b[0] != 14 * 16 )
+    
+    ///@note [JPN] changing inf access to support INF macro
+    //if( cx->inf.b[0] != 10 * 16 && cx->inf.b[0] != 12 * 16 && cx->inf.b[0] != 14 * 16 )
+    if( INF_B(cx->inf,0) != 10 * 16 && INF_B(cx->inf,0) != 12 * 16 && INF_B(cx->inf,0) != 14 * 16 )
         return EXIT_FAILURE;
 
     kp = cx->ks;
@@ -102,7 +104,9 @@ AES_RETURN aes_encrypt(const uint_8t *in, uint_8t *out, const aes_encrypt_ctx cx
 
 #if (ENC_UNROLL == FULL)
 
-    switch(cx->inf.b[0])
+    ///@note [JPN] changing inf access to support INF macro
+    //switch(cx->inf.b[0])
+    switch(INF_B(cx->inf,0))
     {
     case 14 * 16:
         round(fwd_rnd,  bb1, bb0, kp + 1 * N_COLS);
@@ -129,7 +133,9 @@ AES_RETURN aes_encrypt(const uint_8t *in, uint_8t *out, const aes_encrypt_ctx cx
 
 #if (ENC_UNROLL == PARTIAL)
     {   uint_32t    rnd;
-        for(rnd = 0; rnd < (cx->inf.b[0] >> 5) - 1; ++rnd)
+        ///@note [JPN] changing inf access to support INF macro
+        //for(rnd = 0; rnd < (cx->inf.b[0] >> 5) - 1; ++rnd)
+        for(rnd = 0; rnd < (INF_B(cx->inf,0) >> 5) - 1; ++rnd)
         {
             kp += N_COLS;
             round(fwd_rnd, bb1, bb0, kp);
@@ -140,7 +146,9 @@ AES_RETURN aes_encrypt(const uint_8t *in, uint_8t *out, const aes_encrypt_ctx cx
         round(fwd_rnd,  bb1, bb0, kp);
 #else
     {   uint_32t    rnd;
-        for(rnd = 0; rnd < (cx->inf.b[0] >> 4) - 1; ++rnd)
+        ///@note [JPN] changing inf access to support INF macro
+        //for(rnd = 0; rnd < (cx->inf.b[0] >> 4) - 1; ++rnd)
+        for(rnd = 0; rnd < (INF_B(cx->inf,0) >> 4) - 1; ++rnd)
         {
             kp += N_COLS;
             round(fwd_rnd, bb1, bb0, kp);
@@ -219,23 +227,32 @@ AES_RETURN aes_encrypt(const uint_8t *in, uint_8t *out, const aes_encrypt_ctx cx
 #define rnd_key(n)  (kp - n * N_COLS)
 #endif
 
-AES_RETURN aes_decrypt(const unsigned char *in, unsigned char *out, const aes_decrypt_ctx cx[1])
+AES_RETURN aes_decrypt(const io_t *in, io_t *out, const aes_decrypt_ctx cx[1])
 {   uint_32t        locals(bb0, bb1);
 #if defined( dec_imvars )
     dec_imvars; /* declare variables for inv_mcol() if needed */
 #endif
     const uint_32t *kp;
 
-    if( cx->inf.b[0] != 10 * 16 && cx->inf.b[0] != 12 * 16 && cx->inf.b[0] != 14 * 16 )
+    ///@note [JPN] changing inf access to support INF macro
+    //if( cx->inf.b[0] != 10 * 16 && cx->inf.b[0] != 12 * 16 && cx->inf.b[0] != 14 * 16 )
+    if( INF_B(cx->inf,0) != 10 * 16 && INF_B(cx->inf,0) != 12 * 16 && INF_B(cx->inf,0) != 14 * 16 )
         return EXIT_FAILURE;
 
-    kp = cx->ks + (key_ofs ? (cx->inf.b[0] >> 2) : 0);
+    ///@note [JPN] changing inf access to support INF macro
+    //kp = cx->ks + (key_ofs ? (cx->inf.b[0] >> 2) : 0);
+    kp = cx->ks + (key_ofs ? (INF_B(cx->inf,0) >> 2) : 0);
     state_in(bb0, in, kp);
 
 #if (DEC_UNROLL == FULL)
 
-    kp = cx->ks + (key_ofs ? 0 : (cx->inf.b[0] >> 2));
-    switch(cx->inf.b[0])
+    ///@note [JPN] changing inf access to support INF macro
+    //kp = cx->ks + (key_ofs ? 0 : (cx->inf.b[0] >> 2));
+    kp = cx->ks + (key_ofs ? 0 : (INF_B(cx->inf,0) >> 2));
+    
+    ///@note [JPN] changing inf access to support INF macro
+    //switch(cx->inf.b[0])
+    switch(INF_B(cx->inf,0))
     {
     case 14 * 16:
         round(inv_rnd,  bb1, bb0, rnd_key(-13));
@@ -260,7 +277,9 @@ AES_RETURN aes_decrypt(const unsigned char *in, unsigned char *out, const aes_de
 
 #if (DEC_UNROLL == PARTIAL)
     {   uint_32t    rnd;
-        for(rnd = 0; rnd < (cx->inf.b[0] >> 5) - 1; ++rnd)
+        ///@note [JPN] changing inf access to support INF macro
+        //for(rnd = 0; rnd < (cx->inf.b[0] >> 5) - 1; ++rnd)
+        for(rnd = 0; rnd < (INF_B(cx->inf,0) >> 5) - 1; ++rnd)
         {
             kp = rnd_key(1);
             round(inv_rnd, bb1, bb0, kp);
@@ -271,7 +290,9 @@ AES_RETURN aes_decrypt(const unsigned char *in, unsigned char *out, const aes_de
         round(inv_rnd, bb1, bb0, kp);
 #else
     {   uint_32t    rnd;
-        for(rnd = 0; rnd < (cx->inf.b[0] >> 4) - 1; ++rnd)
+        ///@note [JPN] changing inf access to support INF macro
+        //for(rnd = 0; rnd < (cx->inf.b[0] >> 4) - 1; ++rnd)
+        for(rnd = 0; rnd < (INF_B(cx->inf,0) >> 4) - 1; ++rnd)
         {
             kp = rnd_key(1);
             round(inv_rnd, bb1, bb0, kp);
