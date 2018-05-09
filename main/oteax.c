@@ -34,12 +34,32 @@ extern "C"
 #define BLOCK_SIZE      AES_BLOCK_SIZE      /* block length                 */
 #define BLK_ADR_MASK    (BLOCK_SIZE - 1)    /* mask for 'in block' address  */
 
-#define inc_ctr(x)  \
-    {   int i = BLOCK_SIZE; while(i-- > 0 && !++(UI8_PTR(x)[i])) ; }
-#define dec_ctr(x)  \
-    {   int i = BLOCK_SIZE; while(i-- > 0 && !(UI8_PTR(x)[i])--) ; }
 
+#if !defined(__C2000__)
+#   define inc_ctr(x)  \
+        {   int i = BLOCK_SIZE; while(i-- > 0 && !++(UI8_PTR(x)[i])) ; }
+#   define dec_ctr(x)  \
+        {   int i = BLOCK_SIZE; while(i-- > 0 && !(UI8_PTR(x)[i])--) ; }
+#else
+///@todo write this with __byte
+#   define inc_ctr(x)   do {    \
+                            for (int i=BLOCK_SIZE; i>0; i--) {      \
+                                __byte((int*)x, i) += 1;            \
+                                if ( __byte((int*)x, i) == 0 ) {    \
+                                    break;                          \
+                                }                                   \
+                            }   \
+                        while (0)
 
+#   define dec_ctr(x)   do {    \
+                            for (int i=BLOCK_SIZE; i>0; i--) {      \
+                                if ( __byte((int*)x, i) == 0 ) {    \
+                                    break;                          \
+                                }                                   \
+                                __byte((int*)x, i) -= 1;            \
+                            }   \
+                        while (0)
+#endif
 
 ret_type eax_init_and_key(const io_t key[], eax_ctx ctx[1]) {
     static uint_8t x_t[4] = { 0x00, 0x87, 0x0e, 0x87 ^ 0x0e };

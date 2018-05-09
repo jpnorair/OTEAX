@@ -237,8 +237,14 @@ extern "C" {
 #define UI_TYPE(size)               uint_##size##t
 #define UINT_TYPEDEF(x,size)        typedef UI_TYPE(size) x
 #define BUFR_TYPEDEF(x,size,bsize)  typedef UI_TYPE(size) x[bsize / (size >> 3)]
-#define UINT_CAST(x,size)           ((UI_TYPE(size) )(x))  
-#define UPTR_CAST(x,size)           ((UI_TYPE(size)*)(x))
+
+#if defined(__ALIGN32__)
+#   define UINT_CAST(x,size)        ((io_t)(x))  
+#   define UPTR_CAST(x,size)        ((io_t*)(x))
+#else
+#   define UINT_CAST(x,size)        ((UI_TYPE(size) )(x))  
+#   define UPTR_CAST(x,size)        ((UI_TYPE(size)*)(x))
+#endif
 
 #if defined(__cplusplus)
 }
