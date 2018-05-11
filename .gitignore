@@ -15,6 +15,8 @@
 # IDE Project Bloat   #
 #######################
 /xcode_oteax
+/xcode-proj
+/xcode_proj
 /_ccs_c2000_proj
 /_RIDE_proj
 

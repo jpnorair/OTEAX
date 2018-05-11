@@ -152,7 +152,7 @@ extern "C" {
 
 
 ///@note [JPN] Set this in makefile to build API as word-aligned.
-#if defined(__ALIGN32__)
+#if defined(__C2000__) || defined(__ALIGN32__)
     typedef uint_32t    io_t;
 #else
     typedef uint_8t     io_t;
@@ -238,7 +238,7 @@ extern "C" {
 #define UINT_TYPEDEF(x,size)        typedef UI_TYPE(size) x
 #define BUFR_TYPEDEF(x,size,bsize)  typedef UI_TYPE(size) x[bsize / (size >> 3)]
 
-#if defined(__ALIGN32__)
+#if defined(__C2000__) || defined(__ALIGN32__)
 #   define UINT_CAST(x,size)        ((io_t)(x))  
 #   define UPTR_CAST(x,size)        ((io_t*)(x))
 #else

@@ -65,11 +65,12 @@ extern "C"
 
 #define AES_RETURN INT_RETURN
 
+
+
 /* the character array 'inf' in the following structures is used    */
 /* to hold AES context information. This AES code uses cx->inf.b[0] */
 /* to hold the number of rounds multiplied by 16. The other three   */
 /* elements can be used by code that implements additional modes    */
-
 #if defined(__C2000__)
     typedef union {   
         uint_32t l;

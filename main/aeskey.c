@@ -72,8 +72,8 @@ extern "C"
     k[4*(i)+7] = ss[3] ^= ss[2]; \
 }
 
-AES_RETURN aes_encrypt_key128(const io_t *key, aes_encrypt_ctx cx[1])
-{   uint_32t    ss[4];
+AES_RETURN aes_encrypt_key128(const io_t *key, aes_encrypt_ctx cx[1]) {   
+    uint_32t    ss[4];
 
     cx->ks[0] = ss[0] = word_in(key, 0);
     cx->ks[1] = ss[1] = word_in(key, 1);
@@ -108,6 +108,9 @@ AES_RETURN aes_encrypt_key128(const io_t *key, aes_encrypt_ctx cx[1])
 }
 
 #endif
+
+
+
 
 #if defined(AES_192) || defined( AES_VAR )
 

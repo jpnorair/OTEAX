@@ -129,11 +129,17 @@ This header file is an INTERNAL file which supports mode implementation
     extern "C" {
 #endif
 
+
 #define  UI8_PTR(x)     UPTR_CAST(x,  8)
 #define UI16_PTR(x)     UPTR_CAST(x, 16)
 #define UI32_PTR(x)     UPTR_CAST(x, 32)
 #define UI64_PTR(x)     UPTR_CAST(x, 64)
 #define UINT_PTR(x)     UPTR_CAST(x, UINT_BITS)
+#if defined(__ALIGN32__)
+#   define IO_PTR(x)    UPTR_CAST(x, 32)
+#else
+#   define IO_PTR(x)    UPTR_CAST(x, 8)
+#endif
 
 #define  UI8_VAL(x)     UINT_CAST(x,  8)
 #define UI16_VAL(x)     UINT_CAST(x, 16)
