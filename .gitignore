@@ -4,12 +4,14 @@
 *.metadata*
 *.settings*
 
+
 ###############
 # Local Build #
 ###############
 /pkg
 /bin
 /build
+
 
 #######################
 # IDE Project Bloat   #
@@ -19,6 +21,7 @@
 /xcode_proj
 /_ccs_c2000_proj
 /_RIDE_proj
+
 
 ###################################
 # Compiler/Linker Generated Files #
@@ -44,22 +47,6 @@ ehthumbs.db
 Icon?
 Thumbs.db
 
-#########################
-# Ride7 Generated Files #
-#########################
-*.ctx
-*.dbi
-*.xdb
-
-#########################
-# CCS Generated Files #
-#########################
-*.map
-*.mk
-*.obj
-*.opt
-*.out
-*.pp
 
 #################
 # vim swap file #
