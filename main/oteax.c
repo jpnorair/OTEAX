@@ -114,7 +114,7 @@ ret_type eax_decrypt_message(const void* iv_v, void* msg_v, unsigned long msg_le
 #   if defined (__UNALIGNED_ACCESS__)
         *((uint_32t*)tag) = *((uint_32t*)(msg + msg_len)); 
 #   elif defined(__ALIGN32__) || defined(__C2000__)
-        tag[0] = ((io_t*)msg)[msg_len];
+        tag[0] = ((io_t*)msg_v)[msg_len];
 #   else
     {   io_t *cursor;
         cursor  = &((io_t*)msg_v)[msg_len];
@@ -139,10 +139,11 @@ ret_type eax_decrypt_message(const void* iv_v, void* msg_v, unsigned long msg_le
 ret_type eax_init_and_key(const void* key_v, eax_ctx ctx[1]) {
     uint_32t i;
     io_t *p;
-    uint_8t t;
-#   if defined(__C2000__)
+#   if defined(__C2000__) || defined(__ALIGN32__)
+    uint32_t t;
     static uint_32t x_t[1] = { 0x00870e87 ^ 0x0000000e };
 #   else
+    uint_8t t;
     static uint_8t x_t[4] = { 0x00, 0x87, 0x0e, 0x87 ^ 0x0e };
 #   endif
 
@@ -158,7 +159,47 @@ ret_type eax_init_and_key(const void* key_v, eax_ctx ctx[1]) {
 
     /* compute {02} * {E(0)} and {04} * {E(0)}  */
     /* GF(2^128) mod x^128 + x^7 + x^2 + x + 1  */
-#   if defined(__C2000__)
+#   if defined(__ALIGN32__) && !defined(__C2000__)
+    p   = IO_PTR(ctx->pad_xvv);
+    t   = *p >> 30;
+    for (i=0; i<(EAX_BLOCK_SIZE/4)-1; ++i) {
+        uint_8t m, n;
+        uint_8t b0, b1, b2, b3;
+        uint_8t b16, b17, b18, b19;
+
+        m   = bval(p[i], 0);
+        n   = bval(p[i], 1);
+        b0  = ((m << 1) | (n >> 7)) & 0xFF;
+        b16 = ((m << 2) | (n >> 6)) & 0xFF;
+
+        m   = n;
+        n   = bval(p[i], 2);
+        b1  = ((m << 1) | (n >> 7)) & 0xFF;
+        b17 = ((m << 2) | (n >> 6)) & 0xFF;
+        
+        m   = n;
+        n   = bval(p[i], 3);
+        b2  = ((m << 1) | (n >> 7)) & 0xFF;
+        b18 = ((m << 2) | (n >> 6)) & 0xFF;
+        
+        m   = n;
+        n   = bval(p[i+1], 0);
+        b3  = ((m << 1) | (n >> 7)) & 0xFF;
+        b19 = ((m << 2) | (n >> 6)) & 0xFF;
+
+        p[i]    = bytes2word(b0, b1, b2, b3);
+        p[i+4]  = bytes2word(b16, b17, b18, b19);
+    }
+    {   uint_8t m;
+        m = bval(p[i], 0);
+        
+        ///@todo need to make these calls byte masked
+        p[i+4,0]    = ((m << 2) ^ bval(x[0], t)) & 0xFF;     
+        p[i+3,3]    = (bval(p[i+3], 3) ^ (t >>= 1));
+        p[i,0]      = (m << 1) ^ bval(x[0], t);
+    }
+    
+#   elif defined(__C2000__)     // Not 32bit clean
     p   = IO_PTR(ctx->pad_xvv);
     t   = *p >> 30;
     for(i=0; i<EAX_BLOCK_SIZE-1; ++i) {
@@ -188,6 +229,7 @@ ret_type eax_init_and_key(const void* key_v, eax_ctx ctx[1]) {
     *(p+16)  = (*p << 2) ^ x_t[t];
     *(p+15) ^= (t >>= 1);
     *p       = (*p << 1) ^ x_t[t];
+    
 #   endif
 
 
@@ -203,7 +245,7 @@ ret_type eax_init_and_key(const void* key_v, eax_ctx ctx[1]) {
   */
 
 ret_type eax_init_message(const io_t* iv, eax_ctx ctx[1]) {
-#if defined(__C2000__)
+#if defined(__ALIGN32__)
 #   define _EAX_BLKSZ   (EAX_BLOCK_SIZE/4)
 #else
 #   define _EAX_BLKSZ   EAX_BLOCK_SIZE
@@ -213,25 +255,32 @@ ret_type eax_init_message(const io_t* iv, eax_ctx ctx[1]) {
     io_t *p;
 
     /* Initialize nonce and cipher-text block buffers */
-    memset(ctx->nce_cbc, 0, _EAX_BLKSZ);
-    memset(ctx->txt_cbc, 0, _EAX_BLKSZ);
+    memset(ctx->nce_cbc, 0, EAX_BLOCK_SIZE);
+    memset(ctx->txt_cbc, 0, EAX_BLOCK_SIZE);
 
     /* set the ciphertext CBC start value       */
-#   if defined(__C2000__)
-        __byte(ctx->txt_cbc, (_EAX_BLKSZ-1)) = 2;
+#   if defined(__ALIGN32__)
+        ctx->txt_cbc[_EAX_BLKSZ-1] = NET_ENDIAN32(0x00000002);
+#   elif defined(__C2000__)
+        __byte(ctx->txt_cbc, EAX_BLOCK_SIZE-1) = 2;
 #   else
         UI8_PTR(ctx->txt_cbc)[_EAX_BLKSZ - 1] = 2;
 #   endif
     ctx->txt_ccnt = 0;  /* encryption count     */
     ctx->txt_acnt = 0;  /* authentication count */
 
-    n_pos = 16;
-
     /* compile the OMAC value for the nonce     */
-    ///@todo can probably optimize this for word-align XOR
+#   if defined(__ALIGN32__)
+    n_pos = 7;      ///@todo inspect i and n_pos usage below
+    aes_encrypt(IO_PTR(ctx->nce_cbc), IO_PTR(ctx->nce_cbc), ctx->aes);
+    ctx->nce_cbc[0] ^= iv[0];
+    ctx->nce_cbc[1] ^= (iv[1] & NET_ENDIAN32(0xFFFF0000));
+    
+#   else // Not 32bit clean
+    n_pos = 16;
     i = 0;
-    while(i < 7) {
-        if (n_pos == _EAX_BLKSZ) {
+    while (i < 7) {
+        if (n_pos == EAX_BLOCK_SIZE) {
             aes_encrypt(IO_PTR(ctx->nce_cbc), IO_PTR(ctx->nce_cbc), ctx->aes);
             n_pos = 0;
         }
@@ -243,28 +292,37 @@ ret_type eax_init_message(const io_t* iv, eax_ctx ctx[1]) {
             UI8_PTR(ctx->nce_cbc)[n_pos++] ^= iv[i++];
 #       endif
     }
+#   endif
 
     /* do the OMAC padding for the nonce        */
     ///@todo can probably optimize this for word-align XOR
     p = IO_PTR(ctx->pad_xvv);
-    if(n_pos < _EAX_BLKSZ) {
-#       if defined(__C2000__)
+    if (n_pos < EAX_BLOCK_SIZE) {
+#       if defined(__ALIGN32__)
+            // Take advantage of fact that we know for sure: n_pos == 7
+            ctx->nce_cbc[1] ^= NET_ENDIAN32(0x00008000));
+            p = &p[4];
+            
+#       elif defined(__C2000__)     // Not 32bit clean
             __byte(ctx->nce_cbc, n_pos) ^= 0x80;
-#       else
+            p = &p[4];
+            
+#       else                        // Not 32bit clean
             UI8_PTR(ctx->nce_cbc)[n_pos] ^= 0x80;
+            p = &UI8_PTR(p)[16];
+            
 #       endif
-        p += 16;
     }
 
     ///@note this has been optimized for word-aligned XOR
-#   if defined(__C2000__)
-    for(i=0; i<_EAX_BLKSZ; ++i)
+    for(i=0; i<_EAX_BLKSZ; ++i) {
+#   if defined(__ALIGN32__) || defined(__C2000__)
         UI32_PTR(ctx->nce_cbc)[i] ^= UI32_PTR(p)[i];
 #   else
-    for(i = 0; i < _EAX_BLKSZ; ++i)
         UI8_PTR(ctx->nce_cbc)[i] ^= p[i];
 #   endif
-
+    }
+    
     /* compute the OMAC*(nonce) value           */
     aes_encrypt(IO_PTR(ctx->nce_cbc), IO_PTR(ctx->nce_cbc), ctx->aes);
 
@@ -443,7 +501,8 @@ ret_type eax_compute_tag(io_t* tag, eax_ctx ctx[1]) {
     i = ctx->txt_acnt & (_BLKSZ-1);
     if (i != 0) {
 #   if defined(__C2000__) || defined(__ALIGN32__)
-        __byte(ctx->txt_cbc, i*4) ^= 0x80;
+        //__byte(ctx->txt_cbc, i*4) ^= 0x80;
+        ctx->txt_cbc[i] ^= NET_ENDIAN32(0x80000000);
         p = &p[4];
 #   else
         UI8_PTR(ctx->txt_cbc)[i] ^= 0x80;

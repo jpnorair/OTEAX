@@ -42,13 +42,13 @@ static int test_decrypt(u8* nonce, u8* data, size_t datalen, u8* key);
 
 
 static int __eaxcrypt(u8* nonce, u8* data, size_t datalen, u8* key,
-                     int (*__crypt)(cu8*, u8*, ulong, eax_ctx*) )   {
+                     int (*__crypt)(const void*, void*, unsigned long, eax_ctx*) )   {
     eax_ctx context;
     int     retval;
     
-    retval = eax_init_and_key((cu8*)key, &context);
+    retval = eax_init_and_key(key, &context);
     if (retval == 0) {
-        retval = __crypt((cu8*)nonce, (u8*)data, (ulong)datalen, &context);
+        retval = __crypt(nonce, data, datalen, &context);
         retval = retval ? -2 : 4;
     }
     return retval;
@@ -95,11 +95,11 @@ int main(void) {
     
     // Test payload: set to a prime-number of bytes to show non-aligned 
     // cipher feature of EAX
-    u8 test_data[44]   = {   0,  1,  2,  3,  4,  5,  6,  7,  8,  9,
+    u8 test_data[43]   = {   0,  1,  2,  3,  4,  5,  6,  7,  8,  9,
                             10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
                             20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
                             30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
-                            40, 41, 42, 43
+                            40, 41, 42
     };
     
     // Expected output of test encryption
@@ -129,7 +129,7 @@ int main(void) {
             for (i=0; i<44; i++) {
                 printf("ks[%02d] = %u\n", i, context.aes[0].ks[i]);
             }
-            printf("aes.inf.l = %u\n", context.aes[0].inf.l);
+            printf("aes.inf.l = %u\n\n", context.aes[0].inf.l);
 
             retval = eax_encrypt_message((cu8*)test_nonce, (u8*)data_buf, sizeof(test_data), &context);
             if (retval != 0) {
@@ -144,6 +144,11 @@ int main(void) {
     if (tag_size < 0) {
         printf("test_encrypt() failed, unknown error\n\n");
     }
+    
+    // Print the input, for cross-checking, and then the output
+    printf("Plain-text Input\n");
+    print_hex(test_data, sizeof(test_data));
+    printf("\nOutput Data from EAX:\n");
     print_hex(data_buf, sizeof(test_data) + tag_size);
     putchar('\n');
     
@@ -162,7 +167,8 @@ int main(void) {
             }
         }
         if (j != 0) {
-            putchar('\n');
+            printf("\nOutput should be:\n");
+            print_hex(test_check, sizeof(test_check));
         }
         else {
             printf("Check done: no errors!\n");
@@ -175,6 +181,7 @@ int main(void) {
     if (tag_size != 4) {
         printf("test_decrypt() failed, unknown error\n\n");
     }
+    printf("Decrypted Output\n");
     print_hex(data_buf, sizeof(test_data));
     putchar('\n');
 
