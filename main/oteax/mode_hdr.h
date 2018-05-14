@@ -45,7 +45,7 @@ This header file is an INTERNAL file which supports mode implementation
 #       define bswap_32(x)  __bswap32(x)
 #       define bswap_64(x)  __bswap64(x)
 
-#       define NET_ENDIAN32(x)  bswap_32(x)
+#       define NET_ENDIAN32(W)  bswap_32(W)
 
 #   endif
 
@@ -57,15 +57,15 @@ This header file is an INTERNAL file which supports mode implementation
 
 #if defined(__C2000__)
     ///@todo replace with Some assembly hooks for fast byte swap functions, if they exist
-#   define NET_ENDIAN32(x)  ((((uint32_t)(W)>>24)&0xFF)|(((uint32_t)(W)>>8)&0xFF00)|(((uint32_t)(W)<<8)&0xFF0000)|(((uint32_t)(W)<<24)&0xFF000000))
+#   define NET_ENDIAN32(W)  ((((uint32_t)(W)>>24)&0xFF)|(((uint32_t)(W)>>8)&0xFF00)|(((uint32_t)(W)<<8)&0xFF0000)|(((uint32_t)(W)<<24)&0xFF000000))
 
 #elif (PLATFORM_BYTE_ORDER == IS_LITTLE_ENDIAN)
     ///@todo potentially include byteswap.h or similar
 //#   include <byteswap.h>
-#   define NET_ENDIAN32(x)  ((((uint32_t)(W)>>24)&0xFF)|(((uint32_t)(W)>>8)&0xFF00)|(((uint32_t)(W)<<8)&0xFF0000)|(((uint32_t)(W)<<24)&0xFF000000))
+#   define NET_ENDIAN32(W)  ((((uint32_t)(W)>>24)&0xFF)|(((uint32_t)(W)>>8)&0xFF00)|(((uint32_t)(W)<<8)&0xFF0000)|(((uint32_t)(W)<<24)&0xFF000000))
 
 #else 
-#   define NET_ENDIAN32(x)  (x)
+#   define NET_ENDIAN32(W)  (W)
 #endif
 
 

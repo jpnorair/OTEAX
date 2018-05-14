@@ -158,7 +158,7 @@ int main(void) {
         }
         else {
             for (i=0; i<44; i++) {
-                printf("ks[%02d] = %u\n", i, context.aes[0].ks[i]);
+                printf("ks[%02d] = %08X\n", i, context.aes[0].ks[i]);
             }
             printf("aes.inf.l = %u\n", context.aes[0].inf.l);
 

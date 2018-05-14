@@ -111,9 +111,9 @@ $(X_PRDCT): $(X_PRDCT).lib
 #There are several supported variants.
 $(LIBNAME).Darwin.lib: $(SUBMODULES) $(LIBMODULES)
 	$(eval LIBTOOL_OBJ := $(shell find $(BUILDDIR) -type f -name "*.$(OBJEXT)"))
-#	$(X_LIBTOOL) -static -o $(LIBNAME).a $(LIBTOOL_OBJ)
-#	@mv $(LIBNAME).a pkg/
-	$(X_CC) -dynamiclib -o pkg/$(LIBNAME).dylib $(LIBTOOL_OBJ)
+	$(X_LIBTOOL) -static -o $(LIBNAME).a $(LIBTOOL_OBJ)
+	@mv $(LIBNAME).a pkg/
+#	$(X_CC) -dynamiclib -o pkg/$(LIBNAME).dylib $(LIBTOOL_OBJ)
 
 $(LIBNAME).Linux.lib: $(SUBMODULES) $(LIBMODULES)
 	$(eval LIBTOOL_OBJ := $(shell find $(BUILDDIR) -type f -name "*.$(OBJEXT)"))
