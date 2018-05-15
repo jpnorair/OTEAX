@@ -29,8 +29,11 @@ Issue Date: 21/07/2009
 
 //#define OTEAX_TEST_INITKEY
 //#define OTEAX_TEST_INITMSG
+#define OTEAX_TEXT_CRYPT
 
-#if defined(OTEAX_TEST_INITKEY) || defined(OTEAX_TEST_INITMSG)
+#if defined(OTEAX_TEST_INITKEY) \
+ || defined(OTEAX_TEST_INITMSG) \
+ || defined(OTEAX_TEST_CRYPT)
 #   include <stdio.h>
 #endif
 
@@ -520,12 +523,17 @@ ret_type eax_crypt_data(io_t* data, unsigned long data_len, eax_ctx ctx[1]) {
 #if defined(__C2000__) || defined(__ALIGN32__)
 #   define _BUFINC  (BUF_INC/4)
 #   define _BLKSZ   (BLOCK_SIZE/4)
+#   define _ADRMASK (
 #   define _BUFMASK ((BUF_INC/4)-1)
 #else
 #   define _BUFINC  BUF_INC
 #   define _BLKSZ   BLOCK_SIZE
+#   define _ADRMASK BUF_ADRMASK
 #   define _BUFMASK BUF_ADRMASK
 #endif
+
+    ///@note b_pos is the buffer position.  EAX is a streaming encryption, so
+    ///      technically it could be done in multiple, sequential passes.
     uint_32t cnt    = 0;
     uint_32t b_pos  = ctx->txt_ccnt & _BUFMASK;
     
@@ -553,6 +561,8 @@ ret_type eax_crypt_data(io_t* data, unsigned long data_len, eax_ctx ctx[1]) {
             cnt += _BLKSZ;
         }
     }
+    
+    
     ///@note this "else" section will never run when IO is aligned with the
     ///      crypto-compute buffer (32 bit alignment)
 #   if !defined(__ALIGN32__) && !defined(__C2000__)
