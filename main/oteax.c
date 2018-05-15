@@ -29,7 +29,7 @@ Issue Date: 21/07/2009
 
 //#define OTEAX_TEST_INITKEY
 //#define OTEAX_TEST_INITMSG
-#define OTEAX_TEXT_CRYPT
+#define OTEAX_TEST_CRYPT
 
 #if defined(OTEAX_TEST_INITKEY) \
  || defined(OTEAX_TEST_INITMSG) \
@@ -518,7 +518,7 @@ ret_type eax_auth_data(const io_t* data, unsigned long data_len, eax_ctx ctx[1])
 
 
 
-
+/*
 ret_type eax_crypt_data(io_t* data, unsigned long data_len, eax_ctx ctx[1]) {
 #if defined(__C2000__) || defined(__ALIGN32__)
 #   define _BUFINC  (BUF_INC/4)
@@ -601,8 +601,140 @@ ret_type eax_crypt_data(io_t* data, unsigned long data_len, eax_ctx ctx[1]) {
 #undef _BLKSZ
 #undef _BUFINC
 }
+*/
 
 
+ret_type eax_crypt_data(io_t* data, unsigned long data_len, eax_ctx ctx[1]) {
+#if defined(__C2000__) || defined(__ALIGN32__)
+#   define _BUFINC  (BUF_INC/4)
+#   define _BLKSZ   (BLOCK_SIZE/4)
+#   define _BUFMASK ((BUF_INC/4)-1)
+#else
+#   define _BUFINC  BUF_INC
+#   define _BLKSZ   BLOCK_SIZE
+#   define _BUFMASK BUF_ADRMASK
+#endif
+    uint_32t cnt    = 0;
+    uint_32t b_pos  = ctx->txt_ccnt & _BUFMASK;
+    
+    {   int zz;
+        printf("eax_crypt_data() on data_len=%zu:\n", data_len);
+        for (zz=0; zz<(data_len*sizeof(io_t)); ) {
+            printf("%02X ", ((uint8_t*)data)[zz]);
+            zz++;
+            if ((zz % 16) == 0) {
+                printf("\n");
+            }
+        }
+        if ((zz % 16) == 0) {
+            printf("\n");
+        }
+        else {
+            printf("\n\n");
+        }
+    }
+    
+    if (data_len == 0) {
+        return RETURN_GOOD;
+    }
+
+    while(cnt + _BLKSZ <= data_len) {
+        aes_encrypt(IO_PTR(ctx->ctr_val), IO_PTR(ctx->enc_ctr), ctx->aes);
+        inc_ctr(ctx->ctr_val);
+        xor_block_aligned( &data[cnt], &data[cnt], ctx->enc_ctr);
+        cnt += _BLKSZ;
+    }
+
+    while(cnt < data_len) {
+        if(b_pos == _BLKSZ || (b_pos == 0)) {
+            aes_encrypt(IO_PTR(ctx->ctr_val), IO_PTR(ctx->enc_ctr), ctx->aes);
+            b_pos = 0;
+            inc_ctr(ctx->ctr_val);
+        }
+        data[cnt++] ^= IO_PTR(ctx->enc_ctr)[b_pos++];
+    }
+
+    ctx->txt_ccnt += cnt;
+    return RETURN_GOOD;
+    
+#undef _BUFMASK
+#undef _BLKSZ
+#undef _BUFINC
+}
+
+
+/* Working on 8 bit
+ret_type eax_crypt_data(io_t* data, unsigned long data_len, eax_ctx ctx[1]) {
+#if defined(__C2000__) || defined(__ALIGN32__)
+#   define _BUFINC  (BUF_INC/4)
+#   define _BLKSZ   (BLOCK_SIZE/4)
+#   define _BUFMASK ((BUF_INC/4)-1)
+#else
+#   define _BUFINC  BUF_INC
+#   define _BLKSZ   BLOCK_SIZE
+#   define _BUFMASK BUF_ADRMASK
+#endif
+    uint_32t cnt    = 0;
+    uint_32t b_pos  = ctx->txt_ccnt & _BUFMASK;
+    
+    if (data_len == 0) {
+        return RETURN_GOOD;
+    }
+
+    if(((data - &(IO_PTR(ctx->enc_ctr))[b_pos]) & _BUFMASK) == 0) {
+        if (b_pos != 0) {
+            while (cnt < data_len && (b_pos & _BUFMASK)) {
+                data[cnt++] ^= IO_PTR(ctx->enc_ctr)[b_pos++];
+              }
+
+            while (cnt + _BUFINC <= data_len && b_pos <= _BLKSZ - _BUFINC) {
+                *UINT_PTR(&IO_PTR(data)[cnt]) ^= *UINT_PTR(&IO_PTR(ctx->enc_ctr)[b_pos]);
+                cnt += _BUFINC;
+                b_pos += _BUFINC;
+            }
+        }
+
+        while(cnt + _BLKSZ <= data_len) {
+            aes_encrypt(IO_PTR(ctx->ctr_val), IO_PTR(ctx->enc_ctr), ctx->aes);
+            inc_ctr(ctx->ctr_val);
+            xor_block_aligned( &data[cnt], &data[cnt], ctx->enc_ctr);
+            cnt += _BLKSZ;
+        }
+    }
+    ///@note this "else" section will never run when IO is aligned with the
+    ///      crypto-compute buffer (32 bit alignment)
+#   if !defined(__ALIGN32__) && !defined(__C2000__)
+    else {
+        if (b_pos != 0)
+            while(cnt < data_len && b_pos < _BLKSZ)
+                data[cnt++] ^= UI8_PTR(ctx->enc_ctr)[b_pos++];
+
+        while(cnt + _BLKSZ <= data_len) {
+            aes_encrypt(UI8_PTR(ctx->ctr_val), UI8_PTR(ctx->enc_ctr), ctx->aes);
+            inc_ctr(ctx->ctr_val);
+            xor_block(data + cnt, data + cnt, ctx->enc_ctr);
+            cnt += _BLKSZ;
+        }
+    }
+#   endif
+
+    while(cnt < data_len) {
+        if(b_pos == _BLKSZ || (b_pos == 0)) {
+            aes_encrypt(IO_PTR(ctx->ctr_val), IO_PTR(ctx->enc_ctr), ctx->aes);
+            b_pos = 0;
+            inc_ctr(ctx->ctr_val);
+        }
+        data[cnt++] ^= IO_PTR(ctx->enc_ctr)[b_pos++];
+    }
+
+    ctx->txt_ccnt += cnt;
+    return RETURN_GOOD;
+    
+#undef _BUFMASK
+#undef _BLKSZ
+#undef _BUFINC
+}
+*/
 
 
 ret_type eax_compute_tag(io_t* tag, eax_ctx ctx[1]) {   
