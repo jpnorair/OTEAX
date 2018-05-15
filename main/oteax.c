@@ -438,7 +438,7 @@ ret_type eax_init_message(const io_t* iv, eax_ctx ctx[1]) {
 #   endif
 
     /* copy value into counter for CTR          */
-    memcpy(ctx->ctr_val, ctx->nce_cbc, _EAX_BLKSZ);
+    memcpy(ctx->ctr_val, ctx->nce_cbc, EAX_BLOCK_SIZE);
     return RETURN_GOOD;
     
 #undef _EAX_BLKSZ
@@ -523,8 +523,8 @@ ret_type eax_crypt_data(io_t* data, unsigned long data_len, eax_ctx ctx[1]) {
 #if defined(__C2000__) || defined(__ALIGN32__)
 #   define _BUFINC  (BUF_INC/4)
 #   define _BLKSZ   (BLOCK_SIZE/4)
-#   define _ADRMASK (
-#   define _BUFMASK ((BUF_INC/4)-1)
+#   define _ADRMASK ((BUF_ADRMASK/(4/sizeof(io_t)))-1)
+#   define _BUFMASK (0)
 #else
 #   define _BUFINC  BUF_INC
 #   define _BLKSZ   BLOCK_SIZE
@@ -536,12 +536,18 @@ ret_type eax_crypt_data(io_t* data, unsigned long data_len, eax_ctx ctx[1]) {
     ///      technically it could be done in multiple, sequential passes.
     uint_32t cnt    = 0;
     uint_32t b_pos  = ctx->txt_ccnt & _BUFMASK;
+    unsigned int pcmp;
     
     if (data_len == 0) {
         return RETURN_GOOD;
     }
 
-    if(((data - &(IO_PTR(ctx->enc_ctr))[b_pos]) & _BUFMASK) == 0) {
+    ///@note _BUFMASK will be 0 on 32bit Aligned case, therefore this statement
+    ///      will always run (the "else" will never run)
+    pcmp    = (unsigned int)data - (unsigned int)&(IO_PTR(ctx->enc_ctr)[b_pos]);
+    pcmp   &= _BUFMASK;
+    
+    if (pcmp == 0) {
         if (b_pos != 0) {
             while (cnt < data_len && (b_pos & _BUFMASK)) {
                 data[cnt++] ^= IO_PTR(ctx->enc_ctr)[b_pos++];
@@ -562,10 +568,8 @@ ret_type eax_crypt_data(io_t* data, unsigned long data_len, eax_ctx ctx[1]) {
         }
     }
     
-    
-    ///@note this "else" section will never run when IO is aligned with the
-    ///      crypto-compute buffer (32 bit alignment)
-#   if !defined(__ALIGN32__) && !defined(__C2000__)
+    // Encrypt block when input is not aligned
+#   if !defined(__ALIGN32__)
     else {
         if (b_pos != 0)
             while(cnt < data_len && b_pos < _BLKSZ)
@@ -579,9 +583,10 @@ ret_type eax_crypt_data(io_t* data, unsigned long data_len, eax_ctx ctx[1]) {
         }
     }
 #   endif
-
+    
+    // Encrypt Final Block
     while(cnt < data_len) {
-        if(b_pos == _BLKSZ || (b_pos == 0)) {
+        if (b_pos == _BLKSZ || (b_pos == 0)) {
             aes_encrypt(IO_PTR(ctx->ctr_val), IO_PTR(ctx->enc_ctr), ctx->aes);
             b_pos = 0;
             inc_ctr(ctx->ctr_val);

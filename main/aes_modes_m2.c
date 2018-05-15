@@ -93,119 +93,164 @@ AES_RETURN aes_mode_reset(aes_encrypt_ctx ctx[1]) {
 
 
 
-AES_RETURN aes_ecb_encrypt(const io_t *ibuf, io_t *obuf, int len, const aes_encrypt_ctx ctx[1])
-{   int nb = len >> 4;
+AES_RETURN aes_ecb_encrypt(const io_t *ibuf, io_t *obuf, int len, const aes_encrypt_ctx ctx[1]) {
+#if defined(__ALIGN32__)
+#   define _BLKSZ   (AES_BLOCK_SIZE/4)
+#else
+#   define _BLKSZ   (AES_BLOCK_SIZE/1)
+#endif
 
-    if(len & (AES_BLOCK_SIZE - 1))
+    int nb = len/_BLKSZ;
+
+    if (len & (_BLKSZ - 1))
         return EXIT_FAILURE;
 
-    while(nb--) {
-        if(aes_encrypt(ibuf, obuf, ctx) != EXIT_SUCCESS)
+    while (nb--) {
+        if (aes_encrypt(ibuf, obuf, ctx) != EXIT_SUCCESS)
             return EXIT_FAILURE;
-        ibuf += AES_BLOCK_SIZE;
-        obuf += AES_BLOCK_SIZE;
+            
+        ibuf = &ibuf[_BLKSZ];
+        obuf = &obuf[_BLKSZ];
     }
     
     return EXIT_SUCCESS;
+    
+#undef _BLKSZ
 }
 
 
 
 
-AES_RETURN aes_ecb_decrypt(const io_t *ibuf, io_t *obuf, int len, const aes_decrypt_ctx ctx[1])
-{   int nb = len >> 4;
+AES_RETURN aes_ecb_decrypt(const io_t *ibuf, io_t *obuf, int len, const aes_decrypt_ctx ctx[1]) {
+#if defined(__ALIGN32__)
+#   define _BLKSZ   (AES_BLOCK_SIZE/4)
+#else
+#   define _BLKSZ   (AES_BLOCK_SIZE/1)
+#endif
 
-    if(len & (AES_BLOCK_SIZE - 1))
+    int nb = len/_BLKSZ;
+
+    if (len & (_BLKSZ - 1))
         return EXIT_FAILURE;
 
-    while(nb--) {
-        if(aes_decrypt(ibuf, obuf, ctx) != EXIT_SUCCESS)
+    while (nb--) {
+        if (aes_decrypt(ibuf, obuf, ctx) != EXIT_SUCCESS)
             return EXIT_FAILURE;
-        ibuf += AES_BLOCK_SIZE;
-        obuf += AES_BLOCK_SIZE;
+            
+        ibuf = &ibuf[_BLKSZ];
+        obuf = &obuf[_BLKSZ];
     }
 
     return EXIT_SUCCESS;
+    
+#undef _BLKSZ
 }
 
 
 
+
+#include <stdio.h>
 
 ///@todo in addition to the basic functions, aes_ecb_...(), aes_ctr_crypt is 
 ///      probably the only function we need here, isolate it.
 
 #define BFR_LENGTH  (BFR_BLOCKS * AES_BLOCK_SIZE)
 
-AES_RETURN aes_ctr_crypt(const io_t *ibuf, io_t *obuf, int len, io_t *cbuf, cbuf_inc ctr_inc, aes_encrypt_ctx ctx[1])
-{   unsigned char   *ip;
-    int             i, blen, b_pos;
-    uint_8t         buf[BFR_LENGTH];
+AES_RETURN aes_ctr_crypt(const io_t *ibuf, io_t *obuf, int len, io_t *cbuf, cbuf_inc ctr_inc, aes_encrypt_ctx ctx[1]) {   
+#if defined(__ALIGN32__)
+#   define _BLKSZ   (AES_BLOCK_SIZE/4)
+#   define _BFRLEN  (BFR_LENGTH/4)
+#   define _128BIT  4
+#else
+#   define _BLKSZ   (AES_BLOCK_SIZE/1)
+#   define _BFRLEN  BFR_LENGTH
+#   define _128BIT  4
+#endif
+
+    io_t*   ip;
+    int     i, blen, b_pos;
+    io_t    buf[_BFRLEN];
     
     ///@note [JPN] changing inf access to support INF macro
     //b_pos = (int)(ctx->inf.b[2]);
     b_pos = (int)INF_B(ctx->inf, 2);
 
+    printf("b_pos=%d\n", b_pos);
+
     if (b_pos) {
-        memcpy(buf, cbuf, AES_BLOCK_SIZE);
-        if(aes_ecb_encrypt(buf, buf, AES_BLOCK_SIZE, ctx) != EXIT_SUCCESS)
+        memcpy( buf, cbuf, AES_BLOCK_SIZE);
+        if(aes_ecb_encrypt(buf, buf, _BLKSZ, ctx) != EXIT_SUCCESS)
             return EXIT_FAILURE;
 
-        while(b_pos < AES_BLOCK_SIZE && len) {
+        while ((b_pos < _BLKSZ) && len) {
             *obuf++ = *ibuf++ ^ buf[b_pos++];
             --len;
         }
 
-        if(len)
+        if (len)
             ctr_inc(cbuf), b_pos = 0;
     }
 
-    while(len) {
-        blen = (len > BFR_LENGTH ? BFR_LENGTH : len), len -= blen;
+    while (len) {
+        blen = (len > _BFRLEN ? _BFRLEN : len), len -= blen;
 
-        for(i = 0, ip = buf; i < (blen >> 4); ++i) {
+        for (i=0, ip=buf; i<(blen/_128BIT); ++i) {
             memcpy(ip, cbuf, AES_BLOCK_SIZE);
             ctr_inc(cbuf);
-            ip += AES_BLOCK_SIZE;
+            ip = &ip[_BLKSZ];
         }
 
-        if(blen & (AES_BLOCK_SIZE - 1))
+        if (blen & (_BLKSZ - 1))
             memcpy(ip, cbuf, AES_BLOCK_SIZE), i++;
 
-        if(aes_ecb_encrypt(buf, buf, i * AES_BLOCK_SIZE, ctx) != EXIT_SUCCESS)
+        if (aes_ecb_encrypt(buf, buf, i*_BLKSZ, ctx) != EXIT_SUCCESS)
             return EXIT_FAILURE;
 
         i = 0; ip = buf;
         
-#       ifdef FAST_BUFFER_OPERATIONS
-        if(!ALIGN_OFFSET( ibuf, 4 ) && !ALIGN_OFFSET( obuf, 4 ) && !ALIGN_OFFSET( ip, 4 ))
-            while(i + AES_BLOCK_SIZE <= blen)
-            {
+#       if defined(FAST_BUFFER_OPERATIONS) || defined(__ALIGN32__)
+#       if !defined(__ALIGN32__)
+        if (!ALIGN_OFFSET( ibuf, 4 ) && !ALIGN_OFFSET( obuf, 4 ) && !ALIGN_OFFSET( ip, 4 ))
+#       endif
+        {   while (i+_BLKSZ <= blen) {
                 lp32(obuf)[0] = lp32(ibuf)[0] ^ lp32(ip)[0];
                 lp32(obuf)[1] = lp32(ibuf)[1] ^ lp32(ip)[1];
                 lp32(obuf)[2] = lp32(ibuf)[2] ^ lp32(ip)[2];
                 lp32(obuf)[3] = lp32(ibuf)[3] ^ lp32(ip)[3];
-                i += AES_BLOCK_SIZE;
-                ip += AES_BLOCK_SIZE;
-                ibuf += AES_BLOCK_SIZE;
-                obuf += AES_BLOCK_SIZE;
+                i      += _BLKSZ;
+                ip      = &ip[_BLKSZ];
+                ibuf    = &ibuf[_BLKSZ];
+                obuf    = &obuf[_BLKSZ];
             }
-        else
+        }
+#       if !defined(__ALIGN32__)
+        else 
 #       endif
-            while(i + AES_BLOCK_SIZE <= blen) {
-                obuf[ 0] = ibuf[ 0] ^ ip[ 0]; obuf[ 1] = ibuf[ 1] ^ ip[ 1];
-                obuf[ 2] = ibuf[ 2] ^ ip[ 2]; obuf[ 3] = ibuf[ 3] ^ ip[ 3];
-                obuf[ 4] = ibuf[ 4] ^ ip[ 4]; obuf[ 5] = ibuf[ 5] ^ ip[ 5];
-                obuf[ 6] = ibuf[ 6] ^ ip[ 6]; obuf[ 7] = ibuf[ 7] ^ ip[ 7];
-                obuf[ 8] = ibuf[ 8] ^ ip[ 8]; obuf[ 9] = ibuf[ 9] ^ ip[ 9];
-                obuf[10] = ibuf[10] ^ ip[10]; obuf[11] = ibuf[11] ^ ip[11];
-                obuf[12] = ibuf[12] ^ ip[12]; obuf[13] = ibuf[13] ^ ip[13];
-                obuf[14] = ibuf[14] ^ ip[14]; obuf[15] = ibuf[15] ^ ip[15];
+#       endif
+        {    while (i + AES_BLOCK_SIZE <= blen) {
+                obuf[ 0] = ibuf[ 0] ^ ip[ 0]; 
+                obuf[ 1] = ibuf[ 1] ^ ip[ 1];
+                obuf[ 2] = ibuf[ 2] ^ ip[ 2]; 
+                obuf[ 3] = ibuf[ 3] ^ ip[ 3];
+                obuf[ 4] = ibuf[ 4] ^ ip[ 4]; 
+                obuf[ 5] = ibuf[ 5] ^ ip[ 5];
+                obuf[ 6] = ibuf[ 6] ^ ip[ 6]; 
+                obuf[ 7] = ibuf[ 7] ^ ip[ 7];
+                obuf[ 8] = ibuf[ 8] ^ ip[ 8]; 
+                obuf[ 9] = ibuf[ 9] ^ ip[ 9];
+                obuf[10] = ibuf[10] ^ ip[10]; 
+                obuf[11] = ibuf[11] ^ ip[11];
+                obuf[12] = ibuf[12] ^ ip[12]; 
+                obuf[13] = ibuf[13] ^ ip[13];
+                obuf[14] = ibuf[14] ^ ip[14]; 
+                obuf[15] = ibuf[15] ^ ip[15];
                 i += AES_BLOCK_SIZE;
                 ip += AES_BLOCK_SIZE;
                 ibuf += AES_BLOCK_SIZE;
                 obuf += AES_BLOCK_SIZE;
             }
-
+        }
+        
         while(i++ < blen)
             *obuf++ = *ibuf++ ^ ip[b_pos++];
     }
@@ -214,6 +259,10 @@ AES_RETURN aes_ctr_crypt(const io_t *ibuf, io_t *obuf, int len, io_t *cbuf, cbuf
     //ctx->inf.b[2] = (uint_8t)b_pos;
     INF_B(ctx->inf, 2) = (uint_8t)b_pos;
     return EXIT_SUCCESS;
+    
+#undef _BLKSZ
+#undef _BFRLEN
+#undef _128BIT
 }
 
 #endif
