@@ -39,26 +39,39 @@ extern "C" {
 #if defined( _MSC_VER ) && ( _MSC_VER >= 1300 )
 #   include <stddef.h>
 #   define ptrint_t intptr_t
+
 #elif defined( __ECOS__ )
 #   define intptr_t unsigned int
 #   define ptrint_t intptr_t
+
 #elif defined( __GNUC__ ) && ( __GNUC__ >= 3 )
 #   include <stdint.h>
 #   define ptrint_t intptr_t
-#else
-#   define ptrint_t int
-#endif
 
+#elif defined(__C2000__)
+#   include <stdint.h>
+#   define ptrint_t int32_t*
 
-#if defined(__C2000__)
 #   ifndef BYTE16
 #       define BYTE16
 #   endif
+#   ifndef __ALIGN32__
+#       warning "__C2000__ is defined, but __ALIGN32__ is NOT.  Best practice is to always use __ALIGN32__ with C2000."
+#   endif
+
+#else
+#   define ptrint_t int
+
 #endif
 
-#ifdef BYTE16
+
+
+#if defined(BYTE16)
     typedef const uint16_t          cubyte;
     typedef uint16_t                ubyte;
+#elif defined(BYTE32)
+    typedef const uint32_t          cubyte;
+    typedef uint32_t                ubyte;
 #else
     typedef const unsigned char     cubyte;
     typedef unsigned char           ubyte;
@@ -71,6 +84,9 @@ extern "C" {
 #   elif defined(BYTE16)
 #       warning "You are using a 16-bit byte size: see readme for necessary configuration options."
         typedef ubyte uint_8t;
+#   elif defined(BYTE32)
+#       warning "You are using a 32-bit byte size: see readme for necessary configuration options."
+        typedef ubyte uint_8t;
 #   else
 #       error Please define uint_8t as an 8-bit unsigned integer type in brg_types.h
 #   endif
@@ -80,6 +96,9 @@ extern "C" {
 #   define BRG_UI16
 #   if USHRT_MAX == 65535u
         typedef unsigned short uint_16t;
+#   elif defined(BYTE32)
+#       warning "You are using a 32-bit byte size: see readme for necessary configuration options."
+        typedef ubyte uint_16t;
 #   else
 #       error Please define uint_16t as a 16-bit unsigned short type in brg_types.h
 #   endif

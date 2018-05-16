@@ -57,7 +57,7 @@ else ifeq ($(X_TARG),c2000)
 	X_CC	    := cl2000
 	X_LIBTOOL   := ar2000
 	X_CFLAGS    := --c99 -O2 -v28 -ml -mt -g --cla_support=cla0 --float_support=fpu32 --vcu_support=vcu0 
-	X_DEF       := $(OPTIM_DEF) -DAPP_csip_c2000 -DBOARD_C2000_null -D__TMS320F2806x__ -D__C2000__ -D__TI_C__ -D__NO_SECTIONS__ $(EXT_DEF)
+	X_DEF       := $(OPTIM_DEF) -DAPP_csip_c2000 -DBOARD_C2000_null -D__TMS320F2806x__ -D__C2000__ -D__ALIGN32__ -D__TI_C__ -D__NO_SECTIONS__ $(EXT_DEF)
 	X_INC       := -I$(TICC_DIR)/include -I$(C2000_WARE) -I$(DEFAULT_INC) $(EXT_INC)
 	X_LIB       := -Wl,-Bstatic -L$(TICC_DIR)/lib -L./ $(EXT_LIBS)
 	X_PLAT      := ./platform/c2000
@@ -81,7 +81,7 @@ remake: cleaner all
 
 install: 
 	@mkdir -p $(X_PKGDIR)
-	@cp ./pkg/* ./$(X_PKGDIR)
+	@cp -R ./pkg/* ./$(X_PKGDIR)
 	@rm -f $(X_PKGDIR)/../$(LIBNAME)
 	@ln -s $(LIBNAME).$(VERSION) ./$(X_PKGDIR)/../$(LIBNAME)
 	

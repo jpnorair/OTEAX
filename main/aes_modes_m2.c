@@ -178,7 +178,7 @@ AES_RETURN aes_ctr_crypt(const io_t *ibuf, io_t *obuf, int len, io_t *cbuf, cbuf
     printf("b_pos=%d\n", b_pos);
 
     if (b_pos) {
-        memcpy( buf, cbuf, AES_BLOCK_SIZE);
+        oteax_memcpy( buf, cbuf, AES_BLOCK_SIZE);
         if(aes_ecb_encrypt(buf, buf, _BLKSZ, ctx) != EXIT_SUCCESS)
             return EXIT_FAILURE;
 
@@ -195,13 +195,13 @@ AES_RETURN aes_ctr_crypt(const io_t *ibuf, io_t *obuf, int len, io_t *cbuf, cbuf
         blen = (len > _BFRLEN ? _BFRLEN : len), len -= blen;
 
         for (i=0, ip=buf; i<(blen/_128BIT); ++i) {
-            memcpy(ip, cbuf, AES_BLOCK_SIZE);
+            oteax_memcpy(ip, cbuf, AES_BLOCK_SIZE);
             ctr_inc(cbuf);
             ip = &ip[_BLKSZ];
         }
 
         if (blen & (_BLKSZ - 1))
-            memcpy(ip, cbuf, AES_BLOCK_SIZE), i++;
+            oteax_memcpy(ip, cbuf, AES_BLOCK_SIZE), i++;
 
         if (aes_ecb_encrypt(buf, buf, i*_BLKSZ, ctx) != EXIT_SUCCESS)
             return EXIT_FAILURE;

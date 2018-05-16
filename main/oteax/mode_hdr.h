@@ -27,36 +27,49 @@ This header file is an INTERNAL file which supports mode implementation
 #include "brg_endian.h"
 
 
-///@note this is to link against platform-specific memcpy functions.
+#define oteax_memcpy    memcpy
+#define oteax_memset    memset
+
 #if (defined(__OPENTAG__) || defined(__opentag__) || defined(__LIBOTFS__))
 #   include <platform/config.h>
 #   include <otlib/memcpy.h>
 
-///@todo [JP Norair 25-Aug-2014] THis is a hack for STM32L CM3 on OpenTag
 #   if (defined(__STM32__) || defined(_STM32x_))
 //#       include <cm3_endian.h>
 //#       include <cm3_byteswap.h>
 //#       include <cm3_bitrotate.h>
-
-#       define rotl32       __rotl32
-#       define rotr32       __rotr32
-#       define rotl16       __rotr
-#       define bswap_16(x)  __bswap16(x)
-#       define bswap_32(x)  __bswap32(x)
-#       define bswap_64(x)  __bswap64(x)
-
+#       define rotl32           __rotl32
+#       define rotr32           __rotr32
+#       define rotl16           __rotr
+#       define bswap_16(x)      __bswap16(x)
+#       define bswap_32(x)      __bswap32(x)
+#       define bswap_64(x)      __bswap64(x)
 #       define NET_ENDIAN32(W)  bswap_32(W)
+#   endif
 
+#   if defined(__C2000__)
+#       undef  oteax_memcpy
+#       undef  oteax_memset
+#       define oteax_memcpy(DST, SRC, SIZE) memcpy(DST, SRC, ((SIZE)+1)>>1 )
+#       define oteax_memset(DST, VAL, SIZE) memcpy(DST, VAL, ((SIZE)+1)>>1 )
 #   endif
 
 #else
 #   include <string.h>
+#   if defined(__C2000__)
+#       undef  oteax_memcpy
+#       undef  oteax_memset
+#       define oteax_memcpy(DST, SRC, SIZE) memcpy(DST, SRC, ((SIZE)+1)>>1 )
+#       define oteax_memset(DST, VAL, SIZE) memcpy(DST, VAL, ((SIZE)+1)>>1 )
+#   endif
+
 #endif
 
 
 
 #if defined(__C2000__)
-    ///@todo replace with Some assembly hooks for fast byte swap functions, if they exist
+    ///@note there is no C2000 instruction for swapping bytes.
+    ///@todo make sure endianness isn't totally fucked by 16bit bytes.
 #   define NET_ENDIAN32(W)  ((((uint32_t)(W)>>24)&0xFF)|(((uint32_t)(W)>>8)&0xFF00)|(((uint32_t)(W)<<8)&0xFF0000)|(((uint32_t)(W)<<24)&0xFF000000))
 
 #elif (PLATFORM_BYTE_ORDER == IS_LITTLE_ENDIAN)
@@ -270,14 +283,14 @@ mh_decl uint_64t bswap_64(uint_64t x) {
 
 
 mh_decl void copy_block(void* p, const void* q) {
-    memcpy(p, q, 16);
+    oteax_memcpy(p, q, 16);
 }
 
 
 
 mh_decl void copy_block_aligned(void *p, const void *q) {
 #if UINT_BITS == 8
-    memcpy(p, q, 16);
+    oteax_memcpy(p, q, 16);
 #elif UINT_BITS == 32
     rep2_u4(f_copy,UINT_PTR(p),UINT_PTR(q));
 #else

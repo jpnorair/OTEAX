@@ -105,11 +105,11 @@ int main(void) {
     uword test_check[12]  = { };
     
     // Clear buffers
-    memset(data_buf, 0, sizeof(data_buf));
-    memset(nonce_buf, 0, sizeof(nonce_buf));
+    oteax_memset(data_buf, 0, sizeof(data_buf));
+    oteax_memset(nonce_buf, 0, sizeof(nonce_buf));
     
     // Copy test_data to data_buf
-    memcpy(data_buf, test_data, sizeof(test_data));
+    oteax_memcpy(data_buf, test_data, sizeof(test_data));
     
     // Run first encryption
     {   eax_ctx context;

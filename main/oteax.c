@@ -29,12 +29,32 @@ Issue Date: 21/07/2009
 
 //#define OTEAX_TEST_INITKEY
 //#define OTEAX_TEST_INITMSG
-#define OTEAX_TEST_CRYPT
+//#define OTEAX_TEST_CRYPT
 
 #if defined(OTEAX_TEST_INITKEY) \
  || defined(OTEAX_TEST_INITMSG) \
  || defined(OTEAX_TEST_CRYPT)
 #   include <stdio.h>
+    void sub_testprint(const char* header, io_t* input_data, size_t data_len) {
+        int zz;
+        uint8_t* data = (uint8_t*)input_data;
+        
+        printf("%s on %zu words:\n", header, data_len);
+        for (zz=0; zz<(data_len*sizeof(io_t)); ) {
+            printf("%02X ", data[zz]);
+            zz++;
+            if ((zz % 16) == 0) {
+                printf("\n");
+            }
+        }
+        if ((zz % 16) == 0) {
+            printf("\n");
+        }
+        else {
+            printf("\n\n");
+        }
+    }
+
 #endif
 
 #if defined(__cplusplus)
@@ -47,42 +67,21 @@ extern "C"
 
 ///@note it seems plausible to do in 32bit alignment, but not guaranteed
 #if defined(__ALIGN32__)
-//#   define inc_ctr(x)  \
-//        {   int i = (BLOCK_SIZE/4); while(i-- > 0 && !++(UI32_PTR(x)[i])) ; }
-//
-//
-//#   define dec_ctr(x)  \
-//        {   int i = (BLOCK_SIZE/4); while(i-- > 0 && !(UI32_PTR(x)[i])--) ; }
-
-
-//#   define inc_ctr(x)  \
-//    do {    \
-//        for (int zz=(BLOCK_SIZE/4)-1; zz>=0; zz--) {            \
-//            x[zz] = NET_ENDIAN((NET_ENDIAN32(x[zz]) + 1));    \
-//            if (x[zz] != 0) \
-//                break;   \
-//        }   \
-//    } while (0)
-
-
-#   define inc_ctr(x)   \
+#   define inc_ctr(x)  \
     do {    \
         for (int zz=(BLOCK_SIZE/4)-1; zz>=0; zz--) {            \
-            x[zz] += NET_ENDIAN32(0x00000001);    if (bval(x[zz],3) != 0) break;   \
-            x[zz] += NET_ENDIAN32(0x00000100);    if (bval(x[zz],2) != 0) break;   \
-            x[zz] += NET_ENDIAN32(0x00010000);    if (bval(x[zz],1) != 0) break;   \
-            x[zz] += NET_ENDIAN32(0x01000000);    if (bval(x[zz],0) != 0) break;   \
+            x[zz] = NET_ENDIAN32((NET_ENDIAN32(x[zz]) + 1));    \
+            if (x[zz] != 0) \
+                break;   \
         }   \
     } while (0)
-    
-        
-#   define dec_ctr(x)   \
+
+#   define dec_ctr(x)  \
     do {    \
         for (int zz=(BLOCK_SIZE/4)-1; zz>=0; zz--) {            \
-            if (bval(x[zz],3) != 0) break;   x[zz] -= NET_ENDIAN32(0x00000001);    \
-            if (bval(x[zz],2) != 0) break;   x[zz] -= NET_ENDIAN32(0x00000100);    \
-            if (bval(x[zz],1) != 0) break;   x[zz] -= NET_ENDIAN32(0x00010000);    \
-            if (bval(x[zz],0) != 0) break;   x[zz] -= NET_ENDIAN32(0x01000000);    \
+            if (x[zz] != 0) \
+                break;   \
+            x[zz] = NET_ENDIAN32((NET_ENDIAN32(x[zz]) - 1));    \
         }   \
     } while (0)
         
@@ -122,25 +121,6 @@ extern "C"
 
 
 
-void sub_testprint(const char* header, io_t* input_data, size_t data_len) {
-    int zz;
-    uint8_t* data = (uint8_t*)input_data;
-    
-    printf("%s on %zu words:\n", header, data_len);
-    for (zz=0; zz<(data_len*sizeof(io_t)); ) {
-        printf("%02X ", data[zz]);
-        zz++;
-        if ((zz % 16) == 0) {
-            printf("\n");
-        }
-    }
-    if ((zz % 16) == 0) {
-        printf("\n");
-    }
-    else {
-        printf("\n\n");
-    }
-}
 
 
 /** High-Level (User-Level) Encryption and Decryption routines for EAX
@@ -214,7 +194,7 @@ ret_type eax_init_and_key(const void* key_v, eax_ctx ctx[1]) {
 #   endif
 
     /* set the context to all zeroes            */
-    memset(ctx, 0, sizeof(eax_ctx));
+    oteax_memset(ctx, 0, sizeof(eax_ctx));
 
     /* set the AES key                          */
     //aes_encrypt_key(key, key_len, ctx->aes);
@@ -273,7 +253,8 @@ ret_type eax_init_and_key(const void* key_v, eax_ctx ctx[1]) {
 #       endif
     }
 
-    // This version uses C2000 byte intrinsic.  Not considered 32bit Clean.
+    ///@note This version uses C2000 byte intrinsic, but it isn't 32bit clean.
+    ///      Above version for __ALIGN32__ will also work on C2000.
 #   elif defined(__C2000__)
     p   = IO_PTR(ctx->pad_xvv);
     t   = __byte(p, 0) >> 6;
@@ -363,8 +344,8 @@ ret_type eax_init_message(const io_t* iv, eax_ctx ctx[1]) {
     io_t *p;
 
     /* Initialize nonce and cipher-text block buffers */
-    memset(ctx->nce_cbc, 0, EAX_BLOCK_SIZE);
-    memset(ctx->txt_cbc, 0, EAX_BLOCK_SIZE);
+    oteax_memset(ctx->nce_cbc, 0, EAX_BLOCK_SIZE);
+    oteax_memset(ctx->txt_cbc, 0, EAX_BLOCK_SIZE);
 
     /* set the ciphertext CBC start value       */
 #   if defined(__ALIGN32__)
@@ -379,11 +360,13 @@ ret_type eax_init_message(const io_t* iv, eax_ctx ctx[1]) {
 
     /* compile the OMAC value for the nonce     */
 #   if defined(__ALIGN32__)
-    n_pos = 7;      ///@todo inspect i and n_pos usage below
+    n_pos = 7;
     aes_encrypt(IO_PTR(ctx->nce_cbc), IO_PTR(ctx->nce_cbc), ctx->aes);
     ctx->nce_cbc[0] ^= iv[0];
     ctx->nce_cbc[1] ^= (iv[1] & NET_ENDIAN32(0xFFFFFF00));
     
+    ///@note This version is not 32 bit clean.
+    ///      Above version for __ALIGN32__ will also work for C2000
 #   else // Not 32bit clean
     n_pos = 16;
     i = 0;
@@ -472,7 +455,7 @@ ret_type eax_init_message(const io_t* iv, eax_ctx ctx[1]) {
 #   endif
 
     /* copy value into counter for CTR          */
-    memcpy(ctx->ctr_val, ctx->nce_cbc, EAX_BLOCK_SIZE);
+    oteax_memcpy(ctx->ctr_val, ctx->nce_cbc, EAX_BLOCK_SIZE);
     return RETURN_GOOD;
     
 #undef _EAX_BLKSZ
@@ -552,119 +535,36 @@ ret_type eax_auth_data(const io_t* data, unsigned long data_len, eax_ctx ctx[1])
 
 
 
-/*
-ret_type eax_crypt_data(io_t* data, unsigned long data_len, eax_ctx ctx[1]) {
-#if defined(__C2000__) || defined(__ALIGN32__)
-#   define _BUFINC  (BUF_INC/4)
-#   define _BLKSZ   (BLOCK_SIZE/4)
-#   define _ADRMASK ((BUF_ADRMASK/(4/sizeof(io_t)))-1)
-#   define _BUFMASK (0)
-#else
-#   define _BUFINC  BUF_INC
-#   define _BLKSZ   BLOCK_SIZE
-#   define _ADRMASK BUF_ADRMASK
-#   define _BUFMASK BUF_ADRMASK
-#endif
-
-    ///@note b_pos is the buffer position.  EAX is a streaming encryption, so
-    ///      technically it could be done in multiple, sequential passes.
-    uint_32t cnt    = 0;
-    uint_32t b_pos  = ctx->txt_ccnt & _BUFMASK;
-    unsigned int pcmp;
-    
-    if (data_len == 0) {
-        return RETURN_GOOD;
-    }
-
-    ///@note _BUFMASK will be 0 on 32bit Aligned case, therefore this statement
-    ///      will always run (the "else" will never run)
-    pcmp    = (unsigned int)data - (unsigned int)&(IO_PTR(ctx->enc_ctr)[b_pos]);
-    pcmp   &= _BUFMASK;
-    
-    if (pcmp == 0) {
-        if (b_pos != 0) {
-            while (cnt < data_len && (b_pos & _BUFMASK)) {
-                data[cnt++] ^= IO_PTR(ctx->enc_ctr)[b_pos++];
-              }
-
-            while (cnt + _BUFINC <= data_len && b_pos <= _BLKSZ - _BUFINC) {
-                *UINT_PTR(&IO_PTR(data)[cnt]) ^= *UINT_PTR(&IO_PTR(ctx->enc_ctr)[b_pos]);
-                cnt += _BUFINC;
-                b_pos += _BUFINC;
-            }
-        }
-
-        while(cnt + _BLKSZ <= data_len) {
-            aes_encrypt(IO_PTR(ctx->ctr_val), IO_PTR(ctx->enc_ctr), ctx->aes);
-            inc_ctr(ctx->ctr_val);
-            xor_block_aligned( &data[cnt], &data[cnt], ctx->enc_ctr);
-            cnt += _BLKSZ;
-        }
-    }
-    
-    // Encrypt block when input is not aligned
-#   if !defined(__ALIGN32__)
-    else {
-        if (b_pos != 0)
-            while(cnt < data_len && b_pos < _BLKSZ)
-                data[cnt++] ^= UI8_PTR(ctx->enc_ctr)[b_pos++];
-
-        while(cnt + _BLKSZ <= data_len) {
-            aes_encrypt(UI8_PTR(ctx->ctr_val), UI8_PTR(ctx->enc_ctr), ctx->aes);
-            inc_ctr(ctx->ctr_val);
-            xor_block(data + cnt, data + cnt, ctx->enc_ctr);
-            cnt += _BLKSZ;
-        }
-    }
-#   endif
-    
-    // Encrypt Final Block
-    while(cnt < data_len) {
-        if (b_pos == _BLKSZ || (b_pos == 0)) {
-            aes_encrypt(IO_PTR(ctx->ctr_val), IO_PTR(ctx->enc_ctr), ctx->aes);
-            b_pos = 0;
-            inc_ctr(ctx->ctr_val);
-        }
-        data[cnt++] ^= IO_PTR(ctx->enc_ctr)[b_pos++];
-    }
-
-    ctx->txt_ccnt += cnt;
-    return RETURN_GOOD;
-    
-#undef _BUFMASK
-#undef _BLKSZ
-#undef _BUFINC
-}
-*/
 
 #if defined(__ALIGN32__)
 ret_type eax_crypt_data(io_t* data, unsigned long data_len, eax_ctx ctx[1]) {
 #define _BUFINC  (BUF_INC/4)
 #define _BLKSZ   (BLOCK_SIZE/4)
 #define _BUFMASK ((BUF_INC/4)-1)
+#ifdef OTEAX_TEST_CRYPT
+#   define EAX_CRYPT_DATA_PRINT(...)   sub_testprint(...)
+#else
+#   define EAX_CRYPT_DATA_PRINT(...);
+#endif
 
     uint_32t cnt    = 0;
     uint_32t b_pos  = ctx->txt_ccnt & _BUFMASK;
     
-    sub_testprint("eax_crypt_data() data input", data, data_len);
+    EAX_CRYPT_DATA_PRINT("eax_crypt_data() data input", data, data_len);
     
     if (data_len == 0) {
         return RETURN_GOOD;
     }
 
     while(cnt + _BLKSZ <= data_len) {
-        printf("cnt = %u\n", cnt); 
-    
-        sub_testprint("ctx->ctr_val", IO_PTR(ctx->ctr_val), sizeof(ctx->ctr_val)/sizeof(io_t));
-        sub_testprint("ctx->enc_ctr", IO_PTR(ctx->enc_ctr), sizeof(ctx->enc_ctr)/sizeof(io_t));
+        EAX_CRYPT_DATA_PRINT("ctx->ctr_val", IO_PTR(ctx->ctr_val), sizeof(ctx->ctr_val)/sizeof(io_t));
+        EAX_CRYPT_DATA_PRINT("ctx->enc_ctr", IO_PTR(ctx->enc_ctr), sizeof(ctx->enc_ctr)/sizeof(io_t));
         
         aes_encrypt(IO_PTR(ctx->ctr_val), IO_PTR(ctx->enc_ctr), ctx->aes);
-        
-        sub_testprint("ctx->ctr_val", IO_PTR(ctx->ctr_val), sizeof(ctx->ctr_val)/sizeof(io_t));
+        EAX_CRYPT_DATA_PRINT("ctx->ctr_val", IO_PTR(ctx->ctr_val), sizeof(ctx->ctr_val)/sizeof(io_t));
         
         inc_ctr(ctx->ctr_val);
-        
-        sub_testprint("ctx->ctr_val", IO_PTR(ctx->ctr_val), sizeof(ctx->ctr_val)/sizeof(io_t));
+        EAX_CRYPT_DATA_PRINT("ctx->ctr_val", IO_PTR(ctx->ctr_val), sizeof(ctx->ctr_val)/sizeof(io_t));
         
         xor_block_aligned( &data[cnt], &data[cnt], ctx->enc_ctr);
         cnt += _BLKSZ;
@@ -681,7 +581,8 @@ ret_type eax_crypt_data(io_t* data, unsigned long data_len, eax_ctx ctx[1]) {
 
     ctx->txt_ccnt += cnt;
     return RETURN_GOOD;
-    
+
+#undef EAX_CRYPT_DATA_PRINT
 #undef _BUFMASK
 #undef _BLKSZ
 #undef _BUFINC
@@ -692,11 +593,16 @@ ret_type eax_crypt_data(io_t* data, unsigned long data_len, eax_ctx ctx[1]) {
 #define _BUFINC  BUF_INC
 #define _BLKSZ   BLOCK_SIZE
 #define _BUFMASK BUF_ADRMASK
+#ifdef OTEAX_TEST_CRYPT
+#   define EAX_CRYPT_DATA_PRINT(HDR, SRC, SIZE)   sub_testprint(HDR, SRC, SIZE)
+#else
+#   define EAX_CRYPT_DATA_PRINT(HDR, SRC, SIZE);
+#endif
 
     uint_32t cnt    = 0;
     uint_32t b_pos  = ctx->txt_ccnt & _BUFMASK;
     
-    sub_testprint("eax_crypt_data() data input", data, data_len);
+    EAX_CRYPT_DATA_PRINT("eax_crypt_data() data input", data, data_len);
     
     if (data_len == 0) {
         return RETURN_GOOD;
@@ -716,18 +622,14 @@ ret_type eax_crypt_data(io_t* data, unsigned long data_len, eax_ctx ctx[1]) {
         }
 
         while(cnt + _BLKSZ <= data_len) {
-            printf("cnt = %u\n", cnt); 
-    
-            sub_testprint("ctx->ctr_val", IO_PTR(ctx->ctr_val), sizeof(ctx->ctr_val)/sizeof(io_t));
-            sub_testprint("ctx->enc_ctr", IO_PTR(ctx->enc_ctr), sizeof(ctx->enc_ctr)/sizeof(io_t));
-        
-            aes_encrypt(IO_PTR(ctx->ctr_val), IO_PTR(ctx->enc_ctr), ctx->aes);
+            EAX_CRYPT_DATA_PRINT("ctx->ctr_val", IO_PTR(ctx->ctr_val), sizeof(ctx->ctr_val)/sizeof(io_t));
+            EAX_CRYPT_DATA_PRINT("ctx->enc_ctr", IO_PTR(ctx->enc_ctr), sizeof(ctx->enc_ctr)/sizeof(io_t));
             
-            sub_testprint("ctx->ctr_val", IO_PTR(ctx->ctr_val), sizeof(ctx->ctr_val)/sizeof(io_t));
+            aes_encrypt(IO_PTR(ctx->ctr_val), IO_PTR(ctx->enc_ctr), ctx->aes);
+            EAX_CRYPT_DATA_PRINT("ctx->ctr_val", IO_PTR(ctx->ctr_val), sizeof(ctx->ctr_val)/sizeof(io_t));
             
             inc_ctr(ctx->ctr_val);
-            
-            sub_testprint("ctx->ctr_val", IO_PTR(ctx->ctr_val), sizeof(ctx->ctr_val)/sizeof(io_t));
+            EAX_CRYPT_DATA_PRINT("ctx->ctr_val", IO_PTR(ctx->ctr_val), sizeof(ctx->ctr_val)/sizeof(io_t));
             
             xor_block_aligned( &data[cnt], &data[cnt], ctx->enc_ctr);
             cnt += _BLKSZ;
@@ -740,18 +642,14 @@ ret_type eax_crypt_data(io_t* data, unsigned long data_len, eax_ctx ctx[1]) {
                 data[cnt++] ^= UI8_PTR(ctx->enc_ctr)[b_pos++];
 
         while(cnt + _BLKSZ <= data_len) {
-            printf("cnt = %u\n", cnt); 
-    
-            sub_testprint("ctx->ctr_val", IO_PTR(ctx->ctr_val), sizeof(ctx->ctr_val)/sizeof(io_t));
-            sub_testprint("ctx->enc_ctr", IO_PTR(ctx->enc_ctr), sizeof(ctx->enc_ctr)/sizeof(io_t));
-        
+            EAX_CRYPT_DATA_PRINT("ctx->ctr_val", IO_PTR(ctx->ctr_val), sizeof(ctx->ctr_val)/sizeof(io_t));
+            EAX_CRYPT_DATA_PRINT("ctx->enc_ctr", IO_PTR(ctx->enc_ctr), sizeof(ctx->enc_ctr)/sizeof(io_t));
+            
             aes_encrypt(UI8_PTR(ctx->ctr_val), UI8_PTR(ctx->enc_ctr), ctx->aes);
-            
-            sub_testprint("ctx->ctr_val", IO_PTR(ctx->ctr_val), sizeof(ctx->ctr_val)/sizeof(io_t));
-            
+            EAX_CRYPT_DATA_PRINT("ctx->ctr_val", IO_PTR(ctx->ctr_val), sizeof(ctx->ctr_val)/sizeof(io_t));
+
             inc_ctr(ctx->ctr_val);
-            
-            sub_testprint("ctx->ctr_val", IO_PTR(ctx->ctr_val), sizeof(ctx->ctr_val)/sizeof(io_t));
+            EAX_CRYPT_DATA_PRINT("ctx->ctr_val", IO_PTR(ctx->ctr_val), sizeof(ctx->ctr_val)/sizeof(io_t));
             
             xor_block(data + cnt, data + cnt, ctx->enc_ctr);
             cnt += _BLKSZ;
@@ -770,7 +668,8 @@ ret_type eax_crypt_data(io_t* data, unsigned long data_len, eax_ctx ctx[1]) {
 
     ctx->txt_ccnt += cnt;
     return RETURN_GOOD;
-    
+
+#undef EAX_CRYPT_DATA_PRINT
 #undef _BUFMASK
 #undef _BLKSZ
 #undef _BUFINC
@@ -835,7 +734,7 @@ ret_type eax_compute_tag(io_t* tag, eax_ctx ctx[1]) {
 
 
 ret_type eax_end(eax_ctx ctx[1]) {
-    memset(ctx, 0, sizeof(eax_ctx));
+    oteax_memset(ctx, 0, sizeof(eax_ctx));
     return RETURN_GOOD;
 }
 
