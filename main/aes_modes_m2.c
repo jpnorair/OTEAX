@@ -28,10 +28,11 @@ and fitness for purpose.
 
 
 
-#include <string.h>
+//#include <string.h>
 #include <assert.h>
 
 #include "oteax/aesopt.h"
+#include "oteax/mode_hdr.h"
 
 #if defined( AES_MODES )
 
@@ -57,7 +58,7 @@ and fitness for purpose.
 
 
 /* test the code for detecting and setting pointer alignment */
-
+#ifndef __C2000__
 AES_RETURN aes_test_alignment_detection(unsigned int n)	/* 4 <= n <= 16 */
 {	uint_8t	p[16];
     uint_32t i, count_eq = 0, count_neq = 0;
@@ -79,7 +80,7 @@ AES_RETURN aes_test_alignment_detection(unsigned int n)	/* 4 <= n <= 16 */
     }
     return (count_eq != 1 || count_neq != n - 1 ? EXIT_FAILURE : EXIT_SUCCESS);
 }
-
+#endif
 
 
 
