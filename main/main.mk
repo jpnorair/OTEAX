@@ -1,13 +1,14 @@
-TARGET      := main
+GROUP     := main
 
 X_CC	    ?= gcc
 X_CFLAGS    ?= -std=gnu99 -O3
 X_DEF       ?= 
 X_INC       ?= 
 X_LIB       ?= 
+X_TARG	 	?= default
 
-BUILDDIR    := ../build/$(TARGET)
-TARGETDIR   := .
+BUILDDIR    := ../build/$(X_TARG)/$(GROUP)
+GROUPDIR   := .
 SRCEXT      := c
 DEPEXT      := d
 OBJEXT      := o
@@ -27,7 +28,7 @@ else
 endif
 
 
-all: resources $(TARGET)
+all: resources $(GROUP)
 obj: $(OBJECTS)
 remake: cleaner all
 
@@ -37,7 +38,7 @@ resources: directories
 
 #Make the Directories
 directories:
-	@mkdir -p $(TARGETDIR)
+	@mkdir -p $(GROUPDIR)
 	@mkdir -p $(BUILDDIR)
 
 #Clean only Objects
@@ -46,14 +47,14 @@ clean:
 
 #Full Clean, Objects and Binaries
 cleaner: clean
-	@$(RM) -rf $(TARGETDIR)
+	@$(RM) -rf $(GROUPDIR)
 
 #Pull in dependency info for *existing* .o files
 -include $(OBJECTS:.$(OBJEXT)=.$(DEPEXT))
 
 #Direct build of the test app with objects
-$(TARGET): $(OBJECTS)
-	$(X_CC) -o $(TARGETDIR)/$(TARGET) $^ $(LIB)
+$(GROUP): $(OBJECTS)
+	$(X_CC) -o $(GROUPDIR)/$(GROUP) $^ $(LIB)
 
 #Compile Stages
 $(BUILDDIR)/%.$(OBJEXT): ./%.$(SRCEXT)

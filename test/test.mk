@@ -1,12 +1,13 @@
-TARGET      := test
+GROUP      := test
 
 X_CC	    ?= gcc
 X_CFLAGS    ?= -std=gnu99 -O3
 X_DEF       ?= 
 X_INC       ?= 
 X_LIB       ?= 
+X_TARG      ?= .
 
-BUILDDIR    := ../build_$(TARGET)
+BUILDDIR    := ../build/$(X_TARG)/$(GROUP)
 PRODUCTDIR  := ../bin
 SRCEXT      := c
 DEPEXT      := d
