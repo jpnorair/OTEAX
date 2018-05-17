@@ -76,7 +76,7 @@ extern "C"
         uint_32t l;
     } aes_inf;
 #   define INF_L(i)     ((i).l)
-#   define INF_B(i,n)   (__byte(&((i).l), n))
+#   define INF_B(i,n)   (__byte((int*)&((i).l), n))
 
 #else
     typedef union {   
