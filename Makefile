@@ -11,7 +11,6 @@ LIBNAME     := lib$(PRODUCT)
 DEFAULT_INC := ./
 LIBMODULES  := 
 SUBMODULES  := main
-BUILDDIR    := ./build
 SRCEXT      := c
 DEPEXT      := d
 OBJEXT      := o
@@ -34,6 +33,9 @@ ifeq ($(TARGET),this)
 else
 	X_TARG      := $(TARGET)
 endif
+
+# BUILDDIR must be set after settling the target type
+BUILDDIR    := ./build/$(X_TARG)
 
 # Conditional Settings per Target
 ifeq ($(X_TARG),$(THISMACHINE))
@@ -72,7 +74,7 @@ export X_CFLAGS
 export X_DEF
 export X_INC
 export X_LIB
-
+export X_TARG
 
 # Global vars that get exported to sub-makefiles
 all: $(X_PRDCT) test
@@ -122,7 +124,7 @@ $(LIBNAME).Linux.lib: $(SUBMODULES) $(LIBMODULES)
 	$(X_CC) -shared -o pkg/$(LIBNAME).so $(LIBTOOL_OBJ)
 
 $(LIBNAME).c2000.lib: $(SUBMODULES) $(LIBMODULES)
-	$(eval LIBTOOL_OBJ := $(shell find $(BUILDDIR)/$(LIBNAME).c2000 -type f -name "*.$(OBJEXT)"))
+	$(eval LIBTOOL_OBJ := $(shell find $(BUILDDIR) -type f -name "*.$(OBJEXT)"))
 	ar2000 -a $(LIBNAME).a $(LIBTOOL_OBJ)
 	@mv $(LIBNAME).a pkg/
 
