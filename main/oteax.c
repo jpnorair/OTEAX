@@ -69,7 +69,8 @@ extern "C"
 #if defined(__ALIGN32__)
 #   define inc_ctr(x)  \
     do {    \
-        for (int zz=(BLOCK_SIZE/4)-1; zz>=0; zz--) {            \
+        int zz; \
+        for (zz=(BLOCK_SIZE/4)-1; zz>=0; zz--) {            \
             x[zz] = NET_ENDIAN32((NET_ENDIAN32(x[zz]) + 1));    \
             if (x[zz] != 0) \
                 break;   \
@@ -78,7 +79,8 @@ extern "C"
 
 #   define dec_ctr(x)  \
     do {    \
-        for (int zz=(BLOCK_SIZE/4)-1; zz>=0; zz--) {            \
+        int zz; \
+        for (zz=(BLOCK_SIZE/4)-1; zz>=0; zz--) {            \
             if (x[zz] != 0) \
                 break;   \
             x[zz] = NET_ENDIAN32((NET_ENDIAN32(x[zz]) - 1));    \
@@ -87,7 +89,8 @@ extern "C"
         
 #elif defined(__C2000__)
 #   define inc_ctr(x)   do {    \
-                            for (int i=BLOCK_SIZE-1; i>=0; i--) {      \
+                            int i; \
+                            for (i=BLOCK_SIZE-1; i>=0; i--) {      \
                                 __byte((int*)x, i) += 1;            \
                                 if ( __byte((int*)x, i) == 0 ) {    \
                                     break;                          \
@@ -96,7 +99,8 @@ extern "C"
                         while (0)
 
 #   define dec_ctr(x)   do {    \
-                            for (int i=BLOCK_SIZE-1; i>=0; i--) {      \
+                            int i;  \
+                            for (i=BLOCK_SIZE-1; i>=0; i--) {      \
                                 if ( __byte((int*)x, i) == 0 ) {    \
                                     break;                          \
                                 }                                   \
@@ -194,7 +198,7 @@ ret_type eax_init_and_key(const void* key_v, eax_ctx ctx[1]) {
 #   endif
 
     /* set the context to all zeroes            */
-    oteax_memset(ctx, 0, sizeof(eax_ctx));
+    memset(ctx, 0, sizeof(eax_ctx));
 
     /* set the AES key                          */
     //aes_encrypt_key(key, key_len, ctx->aes);
