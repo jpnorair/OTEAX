@@ -81,10 +81,14 @@ AES_RETURN aes_encrypt_key128(const io_t *key, aes_encrypt_ctx cx[1]) {
     cx->ks[3] = ss[3] = word_in(key, 3);
 
 #ifdef ENC_KS_UNROLL
-    ke4(cx->ks, 0);  ke4(cx->ks, 1);
-    ke4(cx->ks, 2);  ke4(cx->ks, 3);
-    ke4(cx->ks, 4);  ke4(cx->ks, 5);
-    ke4(cx->ks, 6);  ke4(cx->ks, 7);
+    ke4(cx->ks, 0);
+    ke4(cx->ks, 1);
+    ke4(cx->ks, 2);  
+    ke4(cx->ks, 3);
+    ke4(cx->ks, 4);  
+    ke4(cx->ks, 5);
+    ke4(cx->ks, 6);  
+    ke4(cx->ks, 7);
     ke4(cx->ks, 8);
 #else
     {   uint_32t i;
