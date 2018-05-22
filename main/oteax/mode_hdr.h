@@ -51,7 +51,7 @@ This header file is an INTERNAL file which supports mode implementation
 #       undef  oteax_memcpy
 #       undef  oteax_memset
 #       define oteax_memcpy(DST, SRC, SIZE) memcpy(DST, SRC, ((SIZE)+1)>>1 )
-#       define oteax_memset(DST, VAL, SIZE) memcpy(DST, VAL, ((SIZE)+1)>>1 )
+#       define oteax_memset(DST, VAL, SIZE) memset(DST, VAL, ((SIZE)+1)>>1 )
 #   endif
 
 #else
@@ -60,7 +60,7 @@ This header file is an INTERNAL file which supports mode implementation
 #       undef  oteax_memcpy
 #       undef  oteax_memset
 #       define oteax_memcpy(DST, SRC, SIZE) memcpy(DST, SRC, ((SIZE)+1)>>1 )
-#       define oteax_memset(DST, VAL, SIZE) memcpy(DST, VAL, ((SIZE)+1)>>1 )
+#       define oteax_memset(DST, VAL, SIZE) memset(DST, VAL, ((SIZE)+1)>>1 )
 #   endif
 
 #endif

@@ -588,23 +588,23 @@ Issue Date: 20/12/2007
                time constants
 */
 #if ( ALGORITHM_BYTE_ORDER == IS_LITTLE_ENDIAN )
-#   define upr(x,n)      (((uint_32t)(x) << (8 * (n))) | ((uint_32t)(x) >> (32 - 8 * (n))))
-#   define ups(x,n)      ((uint_32t) (x) << (8 * (n)))
-#   define bval(x,n)     to_byte((x) >> (8 * (n)))
+#   define upr(x,n)     (((uint_32t)(x) << (8 * (n))) | ((uint_32t)(x) >> (32 - 8 * (n))))
+#   define ups(x,n)     ((uint_32t) (x) << (8 * (n)))
+#   define bval(x,n)    to_byte((x) >> (8 * (n)))
 #   define bytes2word(b0, b1, b2, b3)  \
         (((uint_32t)(b3) << 24) | ((uint_32t)(b2) << 16) | ((uint_32t)(b1) << 8) | (b0))
 
 #elif ( ALGORITHM_BYTE_ORDER == IS_BIG_ENDIAN )
-#   define upr(x,n)      (((uint_32t)(x) >> (8 * (n))) | ((uint_32t)(x) << (32 - 8 * (n))))
-#   define ups(x,n)      ((uint_32t) (x) >> (8 * (n)))
-#   define bval(x,n)     to_byte((x) >> (24 - 8 * (n)))
+#   define upr(x,n)     (((uint_32t)(x) >> (8 * (n))) | ((uint_32t)(x) << (32 - 8 * (n))))
+#   define ups(x,n)     ((uint_32t) (x) >> (8 * (n)))
+#   define bval(x,n)    to_byte((x) >> (24 - 8 * (n)))
 #   define bytes2word(b0, b1, b2, b3)  \
         (((uint_32t)(b0) << 24) | ((uint_32t)(b1) << 16) | ((uint_32t)(b2) << 8) | (b3))
 #endif
 
 #if defined(__C2000__)
-#   undef bval
-#   define bval(x,n)     __byte((int*)(x), n)
+//#   undef bval
+//#   define bval(x,n)     __byte((int*)(&(x)), n)
 #   undef bytes2word
 #   define bytes2word(b0, b1, b2, b3)  \
         (((uint_32t)(b3&0xFF) << 24) | ((uint_32t)(b2&0xFF) << 16) | ((uint_32t)(b1&0xFF) << 8) | (b0&0xFF))
@@ -616,7 +616,11 @@ Issue Date: 20/12/2007
 /*  word_in(x,c):    Returns 4 byte word from word pointer &x[c]
     word_out(x,c,v): Stores 4 byte word from variable v into word pointer &x[c]
 */
-#if defined( SAFE_IO )
+#if defined(__ALIGN32__)
+#   define word_in(x,c)    x[c]
+#   define word_out(x,c,v) { x[c] = v; }
+
+#elif defined( SAFE_IO )
 #   define word_in(x,c)    bytes2word(((const uint_8t*)(x)+4*c)[0], ((const uint_8t*)(x)+4*c)[1], \
                                    ((const uint_8t*)(x)+4*c)[2], ((const uint_8t*)(x)+4*c)[3])
 #   define word_out(x,c,v) { ((uint_8t*)(x)+4*c)[0] = bval(v,0); ((uint_8t*)(x)+4*c)[1] = bval(v,1); \
@@ -745,6 +749,7 @@ Issue Date: 20/12/2007
     box[bval(vf(x,2,c),rf(2,c))], \
     box[bval(vf(x,3,c),rf(3,c))])
 
+// ls_box: one_table(x, upr, t_use(f,l), vf1, rf2, c)
 #define one_table(x,op,tab,vf,rf,c) \
  (     tab[bval(vf(x,0,c),rf(0,c))] \
   ^ op(tab[bval(vf(x,1,c),rf(1,c))],1) \
@@ -785,7 +790,7 @@ Issue Date: 20/12/2007
 #   endif
 
 #   if defined( FL4_SET )
-#       define ls_box(x,c)       four_tables(x,t_use(f,l),vf1,rf2,c)    /* Used on C2000 */
+#       define ls_box(x,c)       four_tables(x,t_use(f,l),vf1,rf2,c) 
 #   elif defined( LS4_SET )
 #       define ls_box(x,c)       four_tables(x,t_use(l,s),vf1,rf2,c)
 #   elif defined( FL1_SET )
