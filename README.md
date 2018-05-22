@@ -11,9 +11,9 @@ EAX is the perfect AES cipher mode for usage with IoT microcontrollers.
 
 1. It's completely royalty-free and the license is permissive.
 2. It doesn't require any block padding bytes.  For example, the commonly used CBC and CMAC ciphers enforce 16 byte alignment in cipher-data.  EAX does not.
-3. EAX has symmetric encoding and decoding stages, so the amount of memory and program code required for the application is comparably small.  A build for Cortex-M3 can be as small as 16KB, and requires less than 256 bytes of memory, which is held entirely on the stack.
+3. EAX has symmetric encoding and decoding stages, so the amount of memory and program code required for the application is comparably small.  A build for Cortex-M3 can be as small as 16KB, and requires less than 256 bytes of memory.  If you decide to save contexts on the heap, the size of the stack memory goes down to less than 64 bytes.
 4. EAX is slower than OFB and GCM cipher modes, but it is faster than CBC or CMAC.  It requires much less RAM and program code than all.
-5. Additional hardware optimization is possible via co-processors that support AES-CTR (many).  CTR is the inner loop for EAX.
+5. Additional hardware optimization is possible via co-processors that support AES-CTR and AES-CBC(many).  CTR and CBC are part of the inner loop in EAX.
 
 ## What is Novel About OTEAX?
 
@@ -22,6 +22,8 @@ OTEAX was adapted from [Brian Gladman's AES library](https://github.com/BrianGla
 1. OTEAX is entirely in C, making it portable for lots of embedded applications.  It is more accessible, as well, for engineers wishing to make modifications.  If simply you wish to build an AES library on desktop, use Brian Gladman's. 
 2. Due in part to the symmetric nature of EAX, OTEAX has a ridiculously simple API.  It's very easy to integrate into other projects.
 3. It is expected to be used mainly with Cortex-M devices and other microcontrollers.  
+4. OTEAX has several build options to simplify optimization
+5. OTEAX has a build option to support 32 bit aligned data I/O, which incidentally allows it to be run on some DSPs that don't support 8 bit bytes.
 
 
 # Building OTEAX
@@ -69,6 +71,35 @@ $ make lib OPTIMIZE=[normal|size|speed]
 * `normal` : strikes a balance between size and speed.
 
 Real benchmark data is TBD, but in terms of library size using gcc on ARM Cortex-M3, for example, size optimization has a 16KB library, normal is 26KB, and speed is 43KB.
+
+## Static or Dynamic Library
+
+You can build OTEAX as a static (.a) or shared/dynamic (.so, .dylib) library.  The default library type depends on the target.
+
+* Embedded Target (STM32, C2000, etc) : Default is Static
+* Desktop Target (Linux, Mac, etc): Default is Shared/Dynamic
+
+If you want to override the default library type, you can provide the following input (below). Keep in mind that for some targets, building dynamic library may not be possible.
+
+```
+$ make lib LIBTYPE=[static|dynamic]
+```
+
+## Special Features
+
+There are some special features that may be injected into the compilation process by using the `EXT_DEF` variable.  `EXT_DEF` passes definitions into the compiler, like such:
+
+```
+$ make lib EXT_DEF=-D__ALIGN32__
+```
+
+In the example above, the `__ALIGN32__` preprocessor variable gets passed into compilation.  Here is a list of variables you can pass at present:
+
+* `__ALIGN32__` : Compile OTEAX to work with 32 bit aligned input and output.  This is used by default (automatically) on C2000 builds.
+* `__OPENTAG__` : Build OTEAX to be integrated with OpenTag.  This will use OpenTag API functions instead of STDC or POSIX variants, when it makes sense.
+* [no more yet]
+
+
 
 # Including OTEAX Into Your Project
 

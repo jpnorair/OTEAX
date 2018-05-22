@@ -2,6 +2,7 @@
 TARGET      ?= $(shell uname -srm | sed -e 's/ /-/g')
 PRODUCT     ?= oteax
 OPTIMIZE    ?= normal
+LIBTYPE     ?= 
 VERSION     ?= "1.2.0"
 EXT_DEF     ?= 
 EXT_INC     ?= 
@@ -48,12 +49,18 @@ ifeq ($(X_TARG),$(THISMACHINE))
 	X_INC       := -I$(DEFAULT_INC) $(EXT_INC)
 	X_LIB       := $(EXT_LIBS)
 	X_PLAT      := ./platform/posix_c
+	ifeq ($(LIBTYPE),static)
+	    X_LIBTYPE := a
+	else ifeq ($(THISSYSTEM),Darwin)
+	    X_LIBTYPE := dylib
+	else
+	    X_LIBTYPE := so
+	endif
 
 else ifeq ($(X_TARG),c2000)
     # These two paths may need to be changed depending on your platform.
     C2000_WARE  ?= /Applications/ti/c2000/C2000Ware_1_00_02_00
 	TICC_DIR    ?= /Applications/ti/ccsv7/tools/compiler/ti-cgt-c2000_17.9.0.STS
-	
 	X_PRDCT     := $(LIBNAME).c2000
 	X_PKGDIR    ?= ./../_hbpkg/$(X_TARG)/$(LIBNAME).$(VERSION)
 	X_CC	    := cl2000
@@ -63,6 +70,7 @@ else ifeq ($(X_TARG),c2000)
 	X_INC       := -I$(TICC_DIR)/include -I$(C2000_WARE) -I$(DEFAULT_INC) $(EXT_INC)
 	X_LIB       := -Wl,-Bstatic -L$(TICC_DIR)/lib -L./ $(EXT_LIBS)
 	X_PLAT      := ./platform/c2000
+	X_LIBTYPE   := a
 
 else
 	error "TARGET set to unknown value: $(X_TARG)"
@@ -80,6 +88,8 @@ export X_TARG
 all: $(X_PRDCT) test
 lib: $(X_PRDCT)
 remake: cleaner all
+package: lib install
+
 
 install: 
 	@mkdir -p $(X_PKGDIR)
@@ -88,6 +98,7 @@ install:
 	@ln -s $(LIBNAME).$(VERSION) ./$(X_PKGDIR)/../$(LIBNAME)
 	
 directories:
+	@rm -rf pkg
 	@mkdir -p pkg
 	@mkdir -p $(BUILDDIR)
 
@@ -105,28 +116,44 @@ test: $(X_PRDCT)
 	cd ./$@ && $(MAKE) -f $(MKFILE).mk all
 
 #Packaging stage: copy/move files to pkg output directory
-$(X_PRDCT): $(X_PRDCT).lib
+$(X_PRDCT): $(X_PRDCT).$(X_LIBTYPE)
 	@cp ./main/$(PRODUCT).h ./pkg
 	@cp -R ./main/oteax ./pkg/
 
-#Build the static library
-#There are several supported variants.
-$(LIBNAME).Darwin.lib: $(SUBMODULES) $(LIBMODULES)
+
+
+# Build the library
+# There are several supported variants.
+# - Mac: static and dynamic
+# - Linux: static and dynamic
+# - C2000: static
+# - STM32: static (todo)
+$(LIBNAME).Darwin.a: $(SUBMODULES) $(LIBMODULES)
 	$(eval LIBTOOL_OBJ := $(shell find $(BUILDDIR) -type f -name "*.$(OBJEXT)"))
 	$(X_LIBTOOL) -static -o $(LIBNAME).a $(LIBTOOL_OBJ)
 	@mv $(LIBNAME).a pkg/
-#	$(X_CC) -dynamiclib -o pkg/$(LIBNAME).dylib $(LIBTOOL_OBJ)
 
-$(LIBNAME).Linux.lib: $(SUBMODULES) $(LIBMODULES)
+$(LIBNAME).Darwin.dylib: $(SUBMODULES) $(LIBMODULES)
 	$(eval LIBTOOL_OBJ := $(shell find $(BUILDDIR) -type f -name "*.$(OBJEXT)"))
-#	$(X_LIBTOOL) --tag=CC --mode=link $(X_CC) -all-static -g -O3 $(X_INC) $(X_LIB) -o $(LIBNAME).a $(LIBTOOL_OBJ)
-#	@mv $$(LIBNAME).a pkg/
-	$(X_CC) -shared -o pkg/$(LIBNAME).so $(LIBTOOL_OBJ)
+	$(X_CC) -dynamiclib -o pkg/$(LIBNAME).dylib $(LIBTOOL_OBJ)
 
-$(LIBNAME).c2000.lib: $(SUBMODULES) $(LIBMODULES)
+$(LIBNAME).Linux.a: $(SUBMODULES) $(LIBMODULES)
+	$(eval LIBTOOL_OBJ := $(shell find $(BUILDDIR) -type f -name "*.$(OBJEXT)"))
+	ar rcs $(LIBNAME).a $(LIBTOOL_OBJ)
+	ranlib $(LIBNAME).a
+#	$(X_LIBTOOL) --tag=CC --mode=link $(X_CC) -all-static -g -O3 $(X_INC) $(X_LIB) -o $(LIBNAME).a $(LIBTOOL_OBJ)
+	@mv $(LIBNAME).a pkg/
+	
+$(LIBNAME).Linux.so: $(SUBMODULES) $(LIBMODULES)
+	$(eval LIBTOOL_OBJ := $(shell find $(BUILDDIR) -type f -name "*.$(OBJEXT)"))
+	$(X_CC) -shared -o pkg/$(LIBNAME).so $(LIBTOOL_OBJ)
+	
+$(LIBNAME).c2000.a: $(SUBMODULES) $(LIBMODULES)
 	$(eval LIBTOOL_OBJ := $(shell find $(BUILDDIR) -type f -name "*.$(OBJEXT)"))
 	ar2000 -a $(LIBNAME).a $(LIBTOOL_OBJ)
 	@mv $(LIBNAME).a pkg/
+
+
 
 #Library dependencies (not in oteax sources)
 $(LIBMODULES): %: 
