@@ -135,7 +135,8 @@ $(LIBNAME).Darwin.a: $(SUBMODULES) $(LIBMODULES)
 
 $(LIBNAME).Darwin.dylib: $(SUBMODULES) $(LIBMODULES)
 	$(eval LIBTOOL_OBJ := $(shell find $(BUILDDIR) -type f -name "*.$(OBJEXT)"))
-	$(X_CC) -dynamiclib -o pkg/$(LIBNAME).dylib $(LIBTOOL_OBJ)
+	$(X_CC) -dynamiclib -o $(LIBNAME).dylib $(LIBTOOL_OBJ)
+	@mv $(LIBNAME).dylib pkg/
 
 $(LIBNAME).Linux.a: $(SUBMODULES) $(LIBMODULES)
 	$(eval LIBTOOL_OBJ := $(shell find $(BUILDDIR) -type f -name "*.$(OBJEXT)"))
@@ -146,7 +147,8 @@ $(LIBNAME).Linux.a: $(SUBMODULES) $(LIBMODULES)
 	
 $(LIBNAME).Linux.so: $(SUBMODULES) $(LIBMODULES)
 	$(eval LIBTOOL_OBJ := $(shell find $(BUILDDIR) -type f -name "*.$(OBJEXT)"))
-	$(X_CC) -shared -o pkg/$(LIBNAME).so $(LIBTOOL_OBJ)
+	$(X_CC) -shared -o $(LIBNAME).so $(LIBTOOL_OBJ)
+	@mv $(LIBNAME).so pkg/
 	
 $(LIBNAME).c2000.a: $(SUBMODULES) $(LIBMODULES)
 	$(eval LIBTOOL_OBJ := $(shell find $(BUILDDIR) -type f -name "*.$(OBJEXT)"))
