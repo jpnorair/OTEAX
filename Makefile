@@ -52,7 +52,7 @@ ifeq ($(X_TARG),$(THISMACHINE))
 	X_PKGDIR    ?= ./../_hbpkg/$(X_TARG)/$(LIBNAME).$(VERSION)
 	X_CC	    := gcc
 	X_LIBTOOL   := libtool
-	X_CFLAGS    := -std=gnu99 -fPIC -O3 -pthread
+	X_CFLAGS    := -std=gnu99 -O3 -pthread -fPIC
 	X_DEF       := $(OPTIM_DEF) $(EXT_DEF)
 	X_INC       := -I$(DEFAULT_INC) $(EXT_INC)
 	X_LIB       := $(EXT_LIBS)
@@ -148,7 +148,7 @@ $(LIBNAME).Linux.a: $(SUBMODULES) $(LIBMODULES)
 	@mv $(LIBNAME).a pkg/
 	
 $(LIBNAME).Linux.so: $(SUBMODULES) $(LIBMODULES)
-	$(eval LIBTOOL_OBJ := $(shell find $(BUILDDIR) -type f -name "*.$(OBJEXT)"))
+	$(eval LIBTOOL_OBJ := $(shell find $(BUILDDIR)/main -type f -name "*.$(OBJEXT)"))
 	$(X_CC) -shared -fPIC -Wl,-soname,$(LIBNAME).so.1 -o $(LIBNAME).so.$(VERSION) $(LIBTOOL_OBJ) -lc
 	@mv $(LIBNAME).so.$(VERSION) pkg/
 	

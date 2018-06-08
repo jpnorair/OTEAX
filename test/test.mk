@@ -52,7 +52,7 @@ clean:
 
 #Direct build of the test app with objects
 $(PRODUCTDIR)/%.$(APPEXT): $(BUILDDIR)/%.$(OBJEXT)
-	$(X_CC) $(LIB) $(INC) -o $@ $<
+	$(X_CC) $(INC) -o $@ $< $(LIB)
 	
 
 #Compile Stages
