@@ -21,10 +21,6 @@ Issue Date: 20/12/2007
 #include "oteax/aesopt.h"
 #include "oteax/aestab.h"
 
-#ifdef USE_VIA_ACE_IF_PRESENT
-#  include "oteax/aes_via_ace.h"
-#endif
-
 #if defined(__cplusplus)
 extern "C"
 {
@@ -102,12 +98,6 @@ AES_RETURN aes_encrypt_key128(const io_t *key, aes_encrypt_ctx cx[1]) {
     //cx->inf.b[0] = 10 * 16;
     INF_B(cx->inf,0) = 10 * 16;
 
-#ifdef USE_VIA_ACE_IF_PRESENT
-    if(VIA_ACE_AVAILABLE)
-        ///@note [JPN] changing inf access to support INF macro
-        //cx->inf.b[1] = 0xff;
-        INF_B(cx->inf,1) = 0xff;
-#endif
     return EXIT_SUCCESS;
 }
 
@@ -158,12 +148,6 @@ AES_RETURN aes_encrypt_key192(const io_t *key, aes_encrypt_ctx cx[1])
     //cx->inf.b[0] = 12 * 16;
     INF_B(cx->inf,0) = 12*16;
 
-#ifdef USE_VIA_ACE_IF_PRESENT
-    if(VIA_ACE_AVAILABLE)
-        ///@note [JPN] changing inf access to support INF macro
-        //cx->inf.b[1] = 0xff;
-        INF_B(cx->inf,1) = 0xff;
-#endif
     return EXIT_SUCCESS;
 }
 
@@ -214,12 +198,6 @@ AES_RETURN aes_encrypt_key256(const io_t *key, aes_encrypt_ctx cx[1])
     //cx->inf.b[0] = 14 * 16;
     INF_B(cx->inf,0) = 14 * 16;
 
-#ifdef USE_VIA_ACE_IF_PRESENT
-    if(VIA_ACE_AVAILABLE)
-        ///@note [JPN] changing inf access to support INF macro
-        //cx->inf.b[1] = 0xff;
-        INF_B(cx->inf,1) = 0xff;
-#endif
     return EXIT_SUCCESS;
 }
 
@@ -359,12 +337,6 @@ AES_RETURN aes_decrypt_key128(const io_t *key, aes_decrypt_ctx cx[1])
     //cx->inf.b[0] = 10 * 16;
     INF_B(cx->inf,0) = 10 * 16;
 
-#ifdef USE_VIA_ACE_IF_PRESENT
-    if(VIA_ACE_AVAILABLE)
-        ///@note [JPN] changing inf access to support INF macro
-        //cx->inf.b[1] = 0xff;
-        INF_B(cx->inf,1) = 0xff;
-#endif
     return EXIT_SUCCESS;
 }
 
@@ -447,12 +419,6 @@ AES_RETURN aes_decrypt_key192(const io_t *key, aes_decrypt_ctx cx[1])
     //cx->inf.b[0] = 12 * 16;
     INF_B(cx->inf,0) = 12 * 16;
 
-#ifdef USE_VIA_ACE_IF_PRESENT
-    if(VIA_ACE_AVAILABLE)
-        ///@note [JPN] changing inf access to support INF macro
-        //cx->inf.b[1] = 0xff;
-        INF_B(cx->inf,1) = 0xff;
-#endif
     return EXIT_SUCCESS;
 }
 
@@ -546,12 +512,6 @@ AES_RETURN aes_decrypt_key256(const io_t *key, aes_decrypt_ctx cx[1])
     //cx->inf.b[0] = 14 * 16;
     INF_B(cx->inf,0) = 14 * 16;
 
-#ifdef USE_VIA_ACE_IF_PRESENT
-    if(VIA_ACE_AVAILABLE)
-        ///@note [JPN] changing inf access to support INF macro
-        cx->inf.b[1] = 0xff;
-        INF_B(cx->inf,1) = 0xff;
-#endif
     return EXIT_SUCCESS;
 }
 

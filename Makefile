@@ -3,7 +3,7 @@ TARGET      ?= $(shell uname -srm | sed -e 's/ /-/g')
 PRODUCT     ?= oteax
 OPTIMIZE    ?= normal
 LIBTYPE     ?= 
-VERSION     ?= "1.2.0"
+VERSION     ?= 1.2.0
 EXT_DEF     ?= 
 EXT_INC     ?= 
 EXT_LIBS    ?= 
@@ -17,7 +17,6 @@ DEPEXT      := d
 OBJEXT      := o
 THISMACHINE := $(shell uname -srm | sed -e 's/ /-/g')
 THISSYSTEM	:= $(shell uname -s)
-
 
 # Conditional Architectural Optimization Settings
 ifeq ($(OPTIMIZE),size)
@@ -40,6 +39,15 @@ BUILDDIR    := ./build/$(X_TARG)
 
 # Conditional Settings per Target
 ifeq ($(X_TARG),$(THISMACHINE))
+	ifeq ($(THISSYSTEM),Darwin)
+	# Mac can't do conditional selection of static and dynamic libs at link time.
+	#	PRODUCT_LIBS := liboteax.$(THISSYSTEM).dylib liboteax.$(THISSYSTEM).a
+		PRODUCT_LIBS := liboteax.$(THISSYSTEM).a
+	else ifeq ($(THISSYSTEM),Linux)
+		PRODUCT_LIBS := liboteax.$(THISSYSTEM).so liboteax.$(THISSYSTEM).a
+	else
+		error "THISSYSTEM set to unknown value: $(THISSYSTEM)"
+	endif
 	X_PRDCT     := $(LIBNAME).$(THISSYSTEM)
 	X_PKGDIR    ?= ./../_hbpkg/$(X_TARG)/$(LIBNAME).$(VERSION)
 	X_CC	    := gcc
@@ -49,13 +57,6 @@ ifeq ($(X_TARG),$(THISMACHINE))
 	X_INC       := -I$(DEFAULT_INC) $(EXT_INC)
 	X_LIB       := $(EXT_LIBS)
 	X_PLAT      := ./platform/posix_c
-	ifeq ($(LIBTYPE),static)
-	    X_LIBTYPE := a
-	else ifeq ($(THISSYSTEM),Darwin)
-	    X_LIBTYPE := dylib
-	else
-	    X_LIBTYPE := so
-	endif
 
 else ifeq ($(X_TARG),c2000)
     # These two paths may need to be changed depending on your platform.
@@ -70,7 +71,7 @@ else ifeq ($(X_TARG),c2000)
 	X_INC       := -I$(TICC_DIR)/include -I$(C2000_WARE) -I$(DEFAULT_INC) $(EXT_INC)
 	X_LIB       := -Wl,-Bstatic -L$(TICC_DIR)/lib -L./ $(EXT_LIBS)
 	X_PLAT      := ./platform/c2000
-	X_LIBTYPE   := a
+	PRODUCT_LIBS:= liboteax.c2000.a
 
 else
 	error "TARGET set to unknown value: $(X_TARG)"
@@ -92,6 +93,7 @@ package: lib install
 
 
 install: 
+	@rm -rf $(X_PKGDIR)
 	@mkdir -p $(X_PKGDIR)
 	@cp -R ./pkg/* ./$(X_PKGDIR)
 	@rm -f $(X_PKGDIR)/../$(LIBNAME)
@@ -116,7 +118,7 @@ test: $(X_PRDCT)
 	cd ./$@ && $(MAKE) -f $(MKFILE).mk all
 
 #Packaging stage: copy/move files to pkg output directory
-$(X_PRDCT): $(X_PRDCT).$(X_LIBTYPE)
+$(X_PRDCT): $(PRODUCT_LIBS)
 	@cp ./main/$(PRODUCT).h ./pkg
 	@cp -R ./main/oteax ./pkg/
 
@@ -147,8 +149,8 @@ $(LIBNAME).Linux.a: $(SUBMODULES) $(LIBMODULES)
 	
 $(LIBNAME).Linux.so: $(SUBMODULES) $(LIBMODULES)
 	$(eval LIBTOOL_OBJ := $(shell find $(BUILDDIR) -type f -name "*.$(OBJEXT)"))
-	$(X_CC) -shared -o $(LIBNAME).so $(LIBTOOL_OBJ)
-	@mv $(LIBNAME).so pkg/
+	$(X_CC) -shared -fPIC -Wl,-soname,$(LIBNAME).so.1 -o $(LIBNAME).so.$(VERSION) $(LIBTOOL_OBJ) -lc
+	@mv $(LIBNAME).so.$(VERSION) pkg/
 	
 $(LIBNAME).c2000.a: $(SUBMODULES) $(LIBMODULES)
 	$(eval LIBTOOL_OBJ := $(shell find $(BUILDDIR) -type f -name "*.$(OBJEXT)"))

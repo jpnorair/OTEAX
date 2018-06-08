@@ -202,7 +202,7 @@ Issue Date: 20/12/2007
 #if defined( __GNUC__ ) && defined( __i386__ ) \
  || defined( _WIN32   ) && defined( _M_IX86  ) \
  && !( defined(_WIN64) || defined(_WIN32_WCE) || defined(_MSC_VER) && (_MSC_VER <= 800) )
-#  define VIA_ACE_POSSIBLE
+//#  define VIA_ACE_POSSIBLE
 #endif
 
 /*  Define this option if support for the VIA ACE is required. This uses
@@ -220,7 +220,7 @@ Issue Date: 20/12/2007
     order (which later checks below ensure).
 */
 
-#if 1 && defined( VIA_ACE_POSSIBLE ) && !defined( USE_VIA_ACE_IF_PRESENT )
+#if 0 && defined( VIA_ACE_POSSIBLE ) && !defined( USE_VIA_ACE_IF_PRESENT )
 #   define USE_VIA_ACE_IF_PRESENT
 #endif
 
