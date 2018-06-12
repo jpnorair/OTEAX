@@ -36,6 +36,7 @@ endif
 
 # BUILDDIR must be set after settling the target type
 BUILDDIR    := ./build/$(X_TARG)
+PRODUCTDIR  := ./bin/$(X_TARG)
 
 # Conditional Settings per Target
 ifeq ($(X_TARG),$(THISMACHINE))
@@ -95,32 +96,34 @@ package: lib install
 install: 
 	@rm -rf $(X_PKGDIR)
 	@mkdir -p $(X_PKGDIR)
-	@cp -R ./pkg/* ./$(X_PKGDIR)
+	@cp -R $(PRODUCTDIR)/* $(X_PKGDIR)
 	@rm -f $(X_PKGDIR)/../$(LIBNAME)
-	@ln -s $(LIBNAME).$(VERSION) ./$(X_PKGDIR)/../$(LIBNAME)
+	@ln -s $(LIBNAME).$(VERSION) $(X_PKGDIR)/../$(LIBNAME)
 	
 directories:
-	@rm -rf pkg
-	@mkdir -p pkg
+	@rm -rf $(PRODUCTDIR)
+	@mkdir -p $(PRODUCTDIR)
 	@mkdir -p $(BUILDDIR)
 
-#Clean only Objects
+# Clean only this machine target
 clean:
 	@$(RM) -rf $(BUILDDIR)
+	@$(RM) -rf $(PRODUCTDIR)
 
-#Full Clean, Objects and Binaries
-cleaner: clean
-	@$(RM) -rf pkg
+# Clean all machine targets
+cleaner: 
+	@$(RM) -rf ./bin
+	@$(RM) -rf ./build
 
 # Test
 test: $(X_PRDCT)
 	$(eval MKFILE := $(notdir $@))
 	cd ./$@ && $(MAKE) -f $(MKFILE).mk all
 
-#Packaging stage: copy/move files to pkg output directory
+#Packaging stage: copy/move files to output directory
 $(X_PRDCT): $(PRODUCT_LIBS)
-	@cp ./main/$(PRODUCT).h ./pkg
-	@cp -R ./main/oteax ./pkg/
+	@cp ./main/$(PRODUCT).h $(PRODUCTDIR)
+	@cp -R ./main/oteax $(PRODUCTDIR)/
 
 
 
@@ -133,29 +136,29 @@ $(X_PRDCT): $(PRODUCT_LIBS)
 $(LIBNAME).Darwin.a: $(SUBMODULES) $(LIBMODULES)
 	$(eval LIBTOOL_OBJ := $(shell find $(BUILDDIR) -type f -name "*.$(OBJEXT)"))
 	$(X_LIBTOOL) -static -o $(LIBNAME).a $(LIBTOOL_OBJ)
-	@mv $(LIBNAME).a pkg/
+	@mv $(LIBNAME).a $(PRODUCTDIR)/
 
 $(LIBNAME).Darwin.dylib: $(SUBMODULES) $(LIBMODULES)
 	$(eval LIBTOOL_OBJ := $(shell find $(BUILDDIR) -type f -name "*.$(OBJEXT)"))
 	$(X_CC) -dynamiclib -o $(LIBNAME).dylib $(LIBTOOL_OBJ)
-	@mv $(LIBNAME).dylib pkg/
+	@mv $(LIBNAME).dylib $(PRODUCTDIR)/
 
 $(LIBNAME).Linux.a: $(SUBMODULES) $(LIBMODULES)
 	$(eval LIBTOOL_OBJ := $(shell find $(BUILDDIR) -type f -name "*.$(OBJEXT)"))
 	ar rcs $(LIBNAME).a $(LIBTOOL_OBJ)
 	ranlib $(LIBNAME).a
 #	$(X_LIBTOOL) --tag=CC --mode=link $(X_CC) -all-static -g -O3 $(X_INC) $(X_LIB) -o $(LIBNAME).a $(LIBTOOL_OBJ)
-	@mv $(LIBNAME).a pkg/
+	@mv $(LIBNAME).a $(PRODUCTDIR)/
 	
 $(LIBNAME).Linux.so: $(SUBMODULES) $(LIBMODULES)
 	$(eval LIBTOOL_OBJ := $(shell find $(BUILDDIR)/main -type f -name "*.$(OBJEXT)"))
 	$(X_CC) -shared -fPIC -Wl,-soname,$(LIBNAME).so.1 -o $(LIBNAME).so.$(VERSION) $(LIBTOOL_OBJ) -lc
-	@mv $(LIBNAME).so.$(VERSION) pkg/
+	@mv $(LIBNAME).so.$(VERSION) $(PRODUCTDIR)/
 	
 $(LIBNAME).c2000.a: $(SUBMODULES) $(LIBMODULES)
 	$(eval LIBTOOL_OBJ := $(shell find $(BUILDDIR) -type f -name "*.$(OBJEXT)"))
 	ar2000 -a $(LIBNAME).a $(LIBTOOL_OBJ)
-	@mv $(LIBNAME).a pkg/
+	@mv $(LIBNAME).a $(PRODUCTDIR)/
 
 
 
