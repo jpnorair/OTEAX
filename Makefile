@@ -18,6 +18,7 @@ OBJEXT      := o
 THISMACHINE := $(shell uname -srm | sed -e 's/ /-/g')
 THISSYSTEM	:= $(shell uname -s)
 
+
 # Conditional Architectural Optimization Settings
 ifeq ($(OPTIMIZE),size)
     OPTIM_DEF   := -DOTEAX_OPTIMIZATION=-1
@@ -98,6 +99,7 @@ install:
 	@cp -R ./pkg/* ./$(X_PKGDIR)
 	@rm -f $(X_PKGDIR)/../$(LIBNAME)
 	@ln -s $(LIBNAME).$(VERSION) ./$(X_PKGDIR)/../$(LIBNAME)
+	cd ../_hbsys && $(MAKE) sys_install INS_MACHINE=$(THISMACHINE) INS_PKGNAME=liboteax
 	
 directories:
 	@rm -rf pkg
