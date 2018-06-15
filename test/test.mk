@@ -8,13 +8,14 @@ X_LIB       ?=
 X_TARG      ?= .
 
 BUILDDIR    := ../build/$(X_TARG)/$(GROUP)
-PRODUCTDIR  := ../bin
+LIBDIR      := ../bin/$(X_TARG)
+PRODUCTDIR  := ../bin/$(X_TARG)_test
 SRCEXT      := c
 DEPEXT      := d
 OBJEXT      := o
 APPEXT      := out
-LIB         := -loteax -L./../pkg $(patsubst -L./%,-L./../%,$(X_LIB))
-INC         := -I./../pkg $(patsubst -I./%,-I./../%,$(X_INC))
+LIB         := -loteax -L./$(LIBDIR) $(patsubst -L./%,-L./../%,$(X_LIB))
+INC         := -I./$(LIBDIR) $(patsubst -I./%,-I./../%,$(X_INC))
 INCDEP      := $(INC)
 
 SOURCES     := $(shell find . -type f -name "*.$(SRCEXT)")
