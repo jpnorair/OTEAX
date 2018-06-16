@@ -99,12 +99,8 @@ install:
 	@mkdir -p $(X_PKGDIR)
 	@cp -R $(PRODUCTDIR)/* $(X_PKGDIR)
 	@rm -f $(X_PKGDIR)/../$(LIBNAME)
-<<<<<<< HEAD
 	@ln -s $(LIBNAME).$(VERSION) ./$(X_PKGDIR)/../$(LIBNAME)
-	cd ../_hbsys && $(MAKE) sys_install INS_MACHINE=$(THISMACHINE) INS_PKGNAME=liboteax
-=======
-	@ln -s $(LIBNAME).$(VERSION) $(X_PKGDIR)/../$(LIBNAME)
->>>>>>> 35a86a2a768475f7989e3fc041cfc8e570bf474d
+	cd ../_hbsys && $(MAKE) sys_install INS_MACHINE=$(TARGET) INS_PKGNAME=liboteax
 	
 directories:
 	@rm -rf $(PRODUCTDIR)
