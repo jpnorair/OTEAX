@@ -55,9 +55,12 @@ extern "C" {
 #   ifndef BYTE16
 #       define BYTE16
 #   endif
-#   ifndef __ALIGN32__
-#       warning "__C2000__ is defined, but __ALIGN32__ is NOT.  Best practice is to always use __ALIGN32__ with C2000."
-#   endif
+#	ifndef __ALIGN32__
+#		define __ALIGN32__
+#	endif
+//#   ifndef __ALIGN32__
+//#       warning "__C2000__ is defined, but __ALIGN32__ is NOT.  Best practice is to always use __ALIGN32__ with C2000."
+//#   endif
 
 #else
 #   define ptrint_t int
