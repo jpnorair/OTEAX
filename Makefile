@@ -62,8 +62,19 @@ ifeq ($(X_TARG),$(THISMACHINE))
 
 else ifeq ($(X_TARG),c2000)
     # These two paths may need to be changed depending on your platform.
-    C2000_WARE  ?= /Applications/ti/c2000/C2000Ware_1_00_02_00
-	TICC_DIR    ?= /Applications/ti/ccsv7/tools/compiler/ti-cgt-c2000_17.9.0.STS
+    ifeq ($(THISSYSTEM),Darwin)
+        C2000_WARE  ?= /Applications/ti/c2000/C2000Ware_1_00_02_00
+	    TICC_DIR    ?= /Applications/ti/ccsv7/tools/compiler/ti-cgt-c2000_17.9.0.STS
+	else ifeq ($(THISSYSTEM),Linux)
+		C2000_WARE  ?= /opt/ti/c2000/C2000Ware_1_00_02_00
+	    TICC_DIR    ?= /opt/ti/ccsv7/tools/compiler/ti-cgt-c2000_17.9.0.STS
+	else ifeq ($(THISSYSTEM),CYGWIN_NT-10.0)
+	    C2000_WARE  ?= C:/ti/c2000/C2000Ware_1_00_02_00
+	    TICC_DIR    ?= C:/ti/ccsv7/tools/compiler/ti-cgt-c2000_17.9.0.STS
+	else
+		error "THISSYSTEM set to unknown value: $(THISSYSTEM)"
+	endif
+    
 	X_PRDCT     := $(LIBNAME).c2000
 	X_PKGDIR    ?= ./../_hbpkg/$(X_TARG)/$(LIBNAME).$(VERSION)
 	X_CC	    := cl2000
@@ -91,7 +102,7 @@ export X_TARG
 all: $(X_PRDCT) test
 lib: $(X_PRDCT)
 remake: cleaner all
-package: lib install
+pkg: lib install
 
 
 install: 
