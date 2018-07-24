@@ -62,15 +62,25 @@ ifeq ($(X_TARG),$(THISMACHINE))
 
 else ifeq ($(X_TARG),c2000)
     # These two paths may need to be changed depending on your platform.
-    ifeq ($(THISSYSTEM),Darwin)
+    ifdef C2000_WARE
+    # C2000_WARE is set as environment variable
+    else ifeq ($(THISSYSTEM),Darwin)
         C2000_WARE  ?= /Applications/ti/c2000/C2000Ware_1_00_02_00
-	    TICC_DIR    ?= /Applications/ti/ccsv7/tools/compiler/ti-cgt-c2000_17.9.0.STS
 	else ifeq ($(THISSYSTEM),Linux)
 		C2000_WARE  ?= /opt/ti/c2000/C2000Ware_1_00_02_00
+	else ifeq ($(THISSYSTEM),CYGWIN_NT-10.0)
+	    C2000_WARE  ?= C:/ti/c2000/C2000Ware_1_00_04_00
+	else
+		error "THISSYSTEM set to unknown value: $(THISSYSTEM)"
+	endif
+    ifdef TICC_DIR
+    # TICC_DIR is set as environment variable
+    else ifeq ($(THISSYSTEM),Darwin)
+	    TICC_DIR    ?= /Applications/ti/ccsv7/tools/compiler/ti-cgt-c2000_17.9.0.STS
+	else ifeq ($(THISSYSTEM),Linux)
 	    TICC_DIR    ?= /opt/ti/ccsv7/tools/compiler/ti-cgt-c2000_17.9.0.STS
 	else ifeq ($(THISSYSTEM),CYGWIN_NT-10.0)
-	    C2000_WARE  ?= C:/ti/c2000/C2000Ware_1_00_02_00
-	    TICC_DIR    ?= C:/ti/ccsv7/tools/compiler/ti-cgt-c2000_17.9.0.STS
+	    TICC_DIR    ?= C:/ti/ccsv8/tools/compiler/ti-cgt-c2000_18.1.2.LTS
 	else
 		error "THISSYSTEM set to unknown value: $(THISSYSTEM)"
 	endif
