@@ -85,7 +85,7 @@ extern "C" {
 #   if UCHAR_MAX == 255u
         typedef unsigned char uint_8t;
 #   elif defined(BYTE16)
-#       warning "You are using a 16-bit byte size: see readme for necessary configuration options."
+//#       warning "You are using a 16-bit byte size: see readme for necessary configuration options."
         typedef ubyte uint_8t;
 #   elif defined(BYTE32)
 #       warning "You are using a 32-bit byte size: see readme for necessary configuration options."
@@ -100,7 +100,7 @@ extern "C" {
 #   if USHRT_MAX == 65535u
         typedef unsigned short uint_16t;
 #   elif defined(BYTE32)
-#       warning "You are using a 32-bit byte size: see readme for necessary configuration options."
+//#       warning "You are using a 32-bit byte size: see readme for necessary configuration options."
         typedef ubyte uint_16t;
 #   else
 #       error Please define uint_16t as a 16-bit unsigned short type in brg_types.h

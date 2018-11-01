@@ -62,14 +62,36 @@ ifeq ($(X_TARG),$(THISMACHINE))
 
 else ifeq ($(X_TARG),c2000)
     # These two paths may need to be changed depending on your platform.
-    C2000_WARE  ?= /Applications/ti/c2000/C2000Ware_1_00_02_00
-	TICC_DIR    ?= /Applications/ti/ccsv7/tools/compiler/ti-cgt-c2000_17.9.0.STS
+    ifdef C2000_WARE
+    # C2000_WARE is set as environment variable
+    else ifeq ($(THISSYSTEM),Darwin)
+        C2000_WARE  ?= /Applications/ti/c2000/C2000Ware_1_00_02_00
+	else ifeq ($(THISSYSTEM),Linux)
+		C2000_WARE  ?= /opt/ti/c2000/C2000Ware_1_00_02_00
+	else ifeq ($(THISSYSTEM),CYGWIN_NT-10.0)
+	    C2000_WARE  ?= C:/ti/c2000/C2000Ware_1_00_04_00
+	else
+		error "THISSYSTEM set to unknown value: $(THISSYSTEM)"
+	endif
+    ifdef TICC_DIR
+    # TICC_DIR is set as environment variable
+    else ifeq ($(THISSYSTEM),Darwin)
+	    TICC_DIR    ?= /Applications/ti/ccsv7/tools/compiler/ti-cgt-c2000_17.9.0.STS
+	else ifeq ($(THISSYSTEM),Linux)
+	    TICC_DIR    ?= /opt/ti/ccsv7/tools/compiler/ti-cgt-c2000_17.9.0.STS
+	else ifeq ($(THISSYSTEM),CYGWIN_NT-10.0)
+	    TICC_DIR    ?= C:/ti/ccsv8/tools/compiler/ti-cgt-c2000_18.1.2.LTS
+	else
+		error "THISSYSTEM set to unknown value: $(THISSYSTEM)"
+	endif
+    
 	X_PRDCT     := $(LIBNAME).c2000
 	X_PKGDIR    ?= ./../_hbpkg/$(X_TARG)/$(LIBNAME).$(VERSION)
 	X_CC	    := cl2000
 	X_LIBTOOL   := ar2000
 	X_CFLAGS    := --c99 -O2 -v28 -ml -mt -g --cla_support=cla0 --float_support=fpu32 --vcu_support=vcu0 
-	X_DEF       := $(OPTIM_DEF) -DAPP_csip_c2000 -DBOARD_C2000_null -D__TMS320F2806x__ -D__C2000__ -D__ALIGN32__ -D__TI_C__ -D__NO_SECTIONS__ $(EXT_DEF)
+#	X_DEF       := $(OPTIM_DEF) -DAPP_csip_c2000 -DBOARD_C2000_null -D__TMS320F2806x__ -D__C2000__ -D__ALIGN32__ -D__TI_C__ -D__NO_SECTIONS__ $(EXT_DEF)
+	X_DEF       := $(OPTIM_DEF) -D__C2000__ -D__ALIGN32__ -D__TI_C__ -D__NO_SECTIONS__ $(EXT_DEF)
 	X_INC       := -I$(TICC_DIR)/include -I$(C2000_WARE) -I$(DEFAULT_INC) $(EXT_INC)
 	X_LIB       := -Wl,-Bstatic -L$(TICC_DIR)/lib -L./ $(EXT_LIBS)
 	X_PLAT      := ./platform/c2000
