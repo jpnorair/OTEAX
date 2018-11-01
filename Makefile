@@ -91,7 +91,7 @@ export X_TARG
 all: $(X_PRDCT) test
 lib: $(X_PRDCT)
 remake: cleaner all
-package: lib install
+pkg: lib install
 
 
 install: 
