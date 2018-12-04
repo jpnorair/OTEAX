@@ -76,9 +76,9 @@ else ifeq ($(X_TARG),c2000)
     ifdef TICC_DIR
     # TICC_DIR is set as environment variable
     else ifeq ($(THISSYSTEM),Darwin)
-	    TICC_DIR    ?= /Applications/ti/ccsv7/tools/compiler/ti-cgt-c2000_17.9.0.STS
+	    TICC_DIR    ?= /Applications/ti/ccsv8/tools/compiler/ti-cgt-c2000_latest
 	else ifeq ($(THISSYSTEM),Linux)
-	    TICC_DIR    ?= /opt/ti/ccsv7/tools/compiler/ti-cgt-c2000_17.9.0.STS
+	    TICC_DIR    ?= /opt/ti/ccsv8/tools/compiler/ti-cgt-c2000_latest
 	else ifeq ($(THISSYSTEM),CYGWIN_NT-10.0)
 	    TICC_DIR    ?= C:/ti/ccsv8/tools/compiler/ti-cgt-c2000_18.1.2.LTS
 	else
