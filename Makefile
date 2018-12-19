@@ -46,7 +46,9 @@ ifeq ($(X_TARG),$(THISMACHINE))
 	#	PRODUCT_LIBS := liboteax.$(THISSYSTEM).dylib liboteax.$(THISSYSTEM).a
 		PRODUCT_LIBS := liboteax.$(THISSYSTEM).a
 	else ifeq ($(THISSYSTEM),Linux)
-		PRODUCT_LIBS := liboteax.$(THISSYSTEM).so liboteax.$(THISSYSTEM).a
+		PRODUCT_LIBS := liboteax.$(THISSYSTEM).so liboteax.POSIX.a
+	else ifeq ($(THISSYSTEM),CYGWIN_NT-10.0)
+		PRODUCT_LIBS := liboteax.POSIX.a
 	else
 		error "THISSYSTEM set to unknown value: $(THISSYSTEM)"
 	endif
@@ -167,7 +169,7 @@ $(LIBNAME).Darwin.dylib: $(SUBMODULES) $(LIBMODULES)
 	$(X_CC) -dynamiclib -o $(LIBNAME).dylib $(LIBTOOL_OBJ)
 	@mv $(LIBNAME).dylib $(PRODUCTDIR)/
 
-$(LIBNAME).Linux.a: $(SUBMODULES) $(LIBMODULES)
+$(LIBNAME).POSIX.a: $(SUBMODULES) $(LIBMODULES)
 	$(eval LIBTOOL_OBJ := $(shell find $(BUILDDIR) -type f -name "*.$(OBJEXT)"))
 	ar rcs $(LIBNAME).a $(LIBTOOL_OBJ)
 	ranlib $(LIBNAME).a
