@@ -1,6 +1,9 @@
+CC := gcc
+LD := ld
+
 GROUP     := main
 
-X_CC	    ?= gcc
+X_CC	    ?= ${CC}
 X_CFLAGS    ?= -std=gnu99 -O3
 X_DEF       ?= 
 X_INC       ?= 
@@ -8,7 +11,7 @@ X_LIB       ?=
 X_TARG	 	?= default
 
 BUILDDIR    := ../build/$(X_TARG)/$(GROUP)
-GROUPDIR   := .
+GROUPDIR    := .
 SRCEXT      := c
 DEPEXT      := d
 OBJEXT      := o

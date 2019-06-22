@@ -1,6 +1,9 @@
+CC := gcc
+LD := ld
+
 GROUP      := test
 
-X_CC	    ?= gcc
+X_CC	    ?= ${CC}
 X_CFLAGS    ?= -std=gnu99 -O3
 X_DEF       ?= 
 X_INC       ?= 

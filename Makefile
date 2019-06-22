@@ -1,3 +1,6 @@
+CC := gcc
+LD := ld
+
 # Default Configuration
 TARGET      ?= $(shell uname -srm | sed -e 's/ /-/g')
 PRODUCT     ?= oteax
@@ -15,8 +18,8 @@ SUBMODULES  := main
 SRCEXT      := c
 DEPEXT      := d
 OBJEXT      := o
-THISMACHINE := $(shell uname -srm | sed -e 's/ /-/g')
-THISSYSTEM	:= $(shell uname -s)
+THISMACHINE ?= $(shell uname -srm | sed -e 's/ /-/g')
+THISSYSTEM	?= $(shell uname -s)
 
 
 # Conditional Architectural Optimization Settings
@@ -52,11 +55,12 @@ ifeq ($(X_TARG),$(THISMACHINE))
 	else
 		error "THISSYSTEM set to unknown value: $(THISSYSTEM)"
 	endif
-	X_PRDCT     := $(LIBNAME).$(THISSYSTEM)
+	CFLAGS      ?= -std=gnu99 -O3 -pthread -fPIC
 	X_PKGDIR    ?= ./../_hbpkg/$(X_TARG)/$(LIBNAME).$(VERSION)
-	X_CC	    := gcc
+	X_PRDCT     := $(LIBNAME).$(THISSYSTEM)
+	X_CC	    := ${CC}
 	X_LIBTOOL   := libtool
-	X_CFLAGS    := -std=gnu99 -O3 -pthread -fPIC
+	X_CFLAGS    := ${CFLAGS}
 	X_DEF       := $(OPTIM_DEF) $(EXT_DEF)
 	X_INC       := -I$(DEFAULT_INC) $(EXT_INC)
 	X_LIB       := $(EXT_LIBS)
