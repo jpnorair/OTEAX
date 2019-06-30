@@ -23,7 +23,7 @@ SOURCES     := $(shell find . -type f -name "*.$(SRCEXT)")
 OBJECTS     := $(patsubst ./%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.$(OBJEXT)))
 
 # Need to specify compiler input flags because TI compiler is stupid (doesn't abide by documentation)
-ifeq ($(X_CC),gcc)
+ifneq (,$(findstring gcc,$(X_CC)))
 	CCOUT = -o 
 else
     # TI Compiler
