@@ -3,7 +3,7 @@ LD := ld
 
 GROUP     := main
 
-X_CC	    ?= ${CC}
+X_CC	    ?= $(CC)
 X_CFLAGS    ?= -std=gnu99 -O3
 X_DEF       ?= 
 X_INC       ?= 

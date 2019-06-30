@@ -1,10 +1,11 @@
 CC := gcc
 LD := ld
+CFLAGS ?= -std=gnu99 -O3
 
 GROUP      := test
 
-X_CC	    ?= ${CC}
-X_CFLAGS    ?= -std=gnu99 -O3
+X_CC	    ?= $(CC)
+X_CFLAGS    ?= $(CFLAGS)
 X_DEF       ?= 
 X_INC       ?= 
 X_LIB       ?= 
